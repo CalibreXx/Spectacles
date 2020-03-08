@@ -1,0 +1,28 @@
+--cpu Cortex-M0
+".\polling\objects\miscutil.o"
+".\polling\objects\bluenrg1_adc.o"
+".\polling\objects\bluenrg1_dma.o"
+".\polling\objects\bluenrg1_flash.o"
+".\polling\objects\bluenrg1_gpio.o"
+".\polling\objects\bluenrg1_i2c.o"
+".\polling\objects\bluenrg1_mft.o"
+".\polling\objects\bluenrg1_rtc.o"
+".\polling\objects\bluenrg1_spi.o"
+".\polling\objects\bluenrg1_sysctrl.o"
+".\polling\objects\bluenrg1_uart.o"
+".\polling\objects\bluenrg1_wdg.o"
+".\polling\objects\misc.o"
+".\polling\objects\lps25hb.o"
+".\polling\objects\sdk_eval_button.o"
+".\polling\objects\sdk_eval_com.o"
+".\polling\objects\sdk_eval_config.o"
+".\polling\objects\sdk_eval_i2c.o"
+".\polling\objects\sdk_eval_led.o"
+".\polling\objects\context_switch.o"
+".\polling\objects\system_bluenrg1.o"
+".\polling\objects\bluenrg1_it.o"
+".\polling\objects\i2c_master_w_sensor_main.o"
+--library_type=microlib --diag_suppress 6314,6329 --strict --scatter "BlueNRG2.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Polling\Listings\I2C_Master_w_Sensor_Polling.map" -o .\Polling\Objects\I2C_Master_w_Sensor_Polling.axf

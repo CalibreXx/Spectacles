@@ -1,0 +1,433 @@
+Dependencies for Project 'I2C_Master_w_Sensor', Target 'Polling': (DO NOT MODIFY !)
+CompilerVersion: 5060750::V5.06 update 6 (build 750)::ARMCC
+F (../../../../../../Library/hal/src/miscutil.c)(0x5C1236F0)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\miscutil.o --omf_browse .\polling\objects\miscutil.crf --depend .\polling\objects\miscutil.d)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\miscutil.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\crash_handler.h)(0x5C1236F0)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9AD218)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_adc.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_adc.o --omf_browse .\polling\objects\bluenrg1_adc.crf --depend .\polling\objects\bluenrg1_adc.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_dma.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_dma.o --omf_browse .\polling\objects\bluenrg1_dma.crf --depend .\polling\objects\bluenrg1_dma.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_flash.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_flash.o --omf_browse .\polling\objects\bluenrg1_flash.crf --depend .\polling\objects\bluenrg1_flash.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_gpio.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_gpio.o --omf_browse .\polling\objects\bluenrg1_gpio.crf --depend .\polling\objects\bluenrg1_gpio.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_i2c.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_i2c.o --omf_browse .\polling\objects\bluenrg1_i2c.crf --depend .\polling\objects\bluenrg1_i2c.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_mft.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_mft.o --omf_browse .\polling\objects\bluenrg1_mft.crf --depend .\polling\objects\bluenrg1_mft.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_rtc.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_rtc.o --omf_browse .\polling\objects\bluenrg1_rtc.crf --depend .\polling\objects\bluenrg1_rtc.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_spi.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_spi.o --omf_browse .\polling\objects\bluenrg1_spi.crf --depend .\polling\objects\bluenrg1_spi.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_sysCtrl.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_sysctrl.o --omf_browse .\polling\objects\bluenrg1_sysctrl.crf --depend .\polling\objects\bluenrg1_sysctrl.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_uart.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_uart.o --omf_browse .\polling\objects\bluenrg1_uart.crf --depend .\polling\objects\bluenrg1_uart.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/BlueNRG1_wdg.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_wdg.o --omf_browse .\polling\objects\bluenrg1_wdg.crf --depend .\polling\objects\bluenrg1_wdg.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/BlueNRG1_Periph_Driver/src/misc.c)(0x5C1236EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\misc.o --omf_browse .\polling\objects\misc.crf --depend .\polling\objects\misc.d)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+F (../../../../../../Library/SDK_Eval_BlueNRG1/src/LPS25HB.c)(0x5B35E246)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\lps25hb.o --omf_browse .\polling\objects\lps25hb.crf --depend .\polling\objects\lps25hb.d)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\LPS25HB.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\LPS25HB_hal.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+F (../../../../../../Library/SDK_Eval_BlueNRG1/src/SDK_EVAL_Button.c)(0x5B35E246)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\sdk_eval_button.o --omf_browse .\polling\objects\sdk_eval_button.crf --depend .\polling\objects\sdk_eval_button.d)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+F (../../../../../../Library/SDK_Eval_BlueNRG1/src/SDK_EVAL_Com.c)(0x5C0F701A)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\sdk_eval_com.o --omf_browse .\polling\objects\sdk_eval_com.crf --depend .\polling\objects\sdk_eval_com.d)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5D9AD21A)
+F (../../../../../../Library/SDK_Eval_BlueNRG1/src/SDK_EVAL_Config.c)(0x5B35E246)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\sdk_eval_config.o --omf_browse .\polling\objects\sdk_eval_config.crf --depend .\polling\objects\sdk_eval_config.d)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+F (../../../../../../Library/SDK_Eval_BlueNRG1/src/SDK_EVAL_I2C.c)(0x5B35E246)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\sdk_eval_i2c.o --omf_browse .\polling\objects\sdk_eval_i2c.crf --depend .\polling\objects\sdk_eval_i2c.d)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+F (../../../../../../Library/SDK_Eval_BlueNRG1/src/SDK_EVAL_Led.c)(0x5B35E246)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\sdk_eval_led.o --omf_browse .\polling\objects\sdk_eval_led.crf --depend .\polling\objects\sdk_eval_led.d)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+F (../../../../../../Library/hal/src/context_switch.s)(0x5C1236F0)(--cpu Cortex-M0 -g --apcs=interwork --pd "__MICROLIB SETA 1" --cpreproc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 529"--list .\polling\listings\context_switch.lst --xref -o .\polling\objects\context_switch.o --depend .\polling\objects\context_switch.d)
+F (../../../../../../Library/CMSIS/Device/ST/BlueNRG1/Source/system_bluenrg1.c)(0x5C1236F0)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\system_bluenrg1.o --omf_browse .\polling\objects\system_bluenrg1.crf --depend .\polling\objects\system_bluenrg1.d)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BluenRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\hal\inc\miscutil.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\crash_handler.h)(0x5C1236F0)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+F (../../BlueNRG1_it.c)(0x5C12375C)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\bluenrg1_it.o --omf_browse .\polling\objects\bluenrg1_it.crf --depend .\polling\objects\bluenrg1_it.d)
+I (../../BlueNRG1_it.h)(0x5C12375C)
+I (../../BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+F (../../I2C_Master_w_Sensor_main.c)(0x5C12375C)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\.. -I ..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\..\Library\hal\inc-I.\RTE\_Polling-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DUSE_FULL_ASSERT -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\polling\objects\i2c_master_w_sensor_main.o --omf_browse .\polling\objects\i2c_master_w_sensor_main.crf --depend .\polling\objects\i2c_master_w_sensor_main.d)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG_x_device.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cm0.h)(0x5B35E244)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmInstr.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Include\core_cmFunc.h)(0x5B35E244)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_BlueNRG2.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\compiler.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\hal\inc\hal_types.h)(0x5C1236F0)
+I (..\..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include\system_bluenrg.h)(0x5C1236F0)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5D9AD21A)
+I (../../BlueNRG1_conf.h)(0x5C12375C)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_adc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_dma.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_flash.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_gpio.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_i2c.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_mft.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_rtc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_spi.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_sysCtrl.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_uart.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\BlueNRG1_wdg.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc\misc.h)(0x5C1236EE)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Config.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\USER_Platform_Configuration_auto.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\LPS25HB_hal.h)(0x5B35E246)
+I (..\..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\LPS25HB.h)(0x5B35E244)
