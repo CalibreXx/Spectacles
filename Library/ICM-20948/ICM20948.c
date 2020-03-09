@@ -15,6 +15,24 @@
 #include <string.h>
 #include "SDK_EVAL_I2C.h"
 
+void SdkDelayMs(volatile uint32_t lTimeMs);
+volatile uint32_t lSystickCounter=0;
+void SdkDelayMs(volatile uint32_t lTimeMs)
+{
+  uint32_t nWaitPeriod = ~lSystickCounter;
+  
+  if(nWaitPeriod<lTimeMs)
+  {
+    while( lSystickCounter != 0xFFFFFFFF);
+    nWaitPeriod = lTimeMs-nWaitPeriod;
+  }
+  else
+    nWaitPeriod = lTimeMs+ ~nWaitPeriod;
+  
+  while( lSystickCounter != nWaitPeriod ) ;
+
+}
+
 /*
  *
  * SPI abstraction
@@ -82,28 +100,28 @@ void ICM_WriteOneByte(uint8_t reg, uint8_t Data) // ***
  */
 void ICM_MagWrite(uint8_t reg, uint8_t value) {
 	ICM_WriteOneByte(0x7F, 0x30);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	ICM_WriteOneByte(0x03, 0x0C);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	ICM_WriteOneByte(0x04, reg);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	ICM_WriteOneByte(0x06, value);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 }
 
 static uint8_t ICM_MagRead(uint8_t reg) {
 	uint8_t Data;
 	ICM_WriteOneByte(0x7F, 0x30);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	ICM_WriteOneByte(0x03, 0x0C | 0x80);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	ICM_WriteOneByte(0x04, reg);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	ICM_WriteOneByte(0x06, 0xff);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	ICM_WriteOneByte(0x7F, 0x00);
 	ICM_ReadOneByte(0x3B, &Data);
-	HAL_Delay(1);
+	SdkDelayMs (1);
 	return Data;
 }
 
@@ -132,42 +150,42 @@ void ICM_PowerOn(void) {
 	uint8_t whoami = 0xEA;
 	uint8_t test = ICM_WHOAMI();
 	ICM_CSHigh();
-	HAL_Delay(10);
+	SdkDelayMs (10);
 	ICM_SelectBank(USER_BANK_0);
-	HAL_Delay(10);
+	SdkDelayMs (10);
 	ICM_Disable_I2C();
-	HAL_Delay(10);
+	SdkDelayMs (10);
 	ICM_SetClock((uint8_t) CLK_BEST_AVAIL);
-	HAL_Delay(10);
+	SdkDelayMs (10);
 	ICM_AccelGyroOff();
-	HAL_Delay(20);
+	SdkDelayMs (10);
 	ICM_AccelGyroOn();
-	HAL_Delay(10);
+	SdkDelayMs (10);
 	ICM_Initialize();
 }
 uint16_t ICM_Initialize(void) {
 	ICM_SelectBank(USER_BANK_2);
-	HAL_Delay(20);
+	SdkDelayMs (10);
 	ICM_SetGyroRateLPF(GYRO_RATE_250, GYRO_LPF_17HZ);
-	HAL_Delay(10);
+	SdkDelayMs (10);
 
 	// Set gyroscope sample rate to 100hz (0x0A) in GYRO_SMPLRT_DIV register (0x00)
 	ICM_WriteOneByte(0x00, 0x0A);
-	HAL_Delay(10);
+	SdkDelayMs (10);
 
 	// Set accelerometer low pass filter to 136hz (0x11) and the rate to 8G (0x04) in register ACCEL_CONFIG (0x14)
 	ICM_WriteOneByte(0x14, (0x04 | 0x11));
 
 	// Set accelerometer sample rate to 225hz (0x00) in ACCEL_SMPLRT_DIV_1 register (0x10)
 	ICM_WriteOneByte(0x10, 0x00);
-	HAL_Delay(10);
+	SdkDelayMs (10);
 
 	// Set accelerometer sample rate to 100 hz (0x0A) in ACCEL_SMPLRT_DIV_2 register (0x11)
 	ICM_WriteOneByte(0x11, 0x0A);
-	HAL_Delay(10);
+	SdkDelayMs (10);
 
 	ICM_SelectBank(USER_BANK_2);
-	HAL_Delay(20);
+	SdkDelayMs (20);
 
 	// Configure AUX_I2C Magnetometer (onboard ICM-20948)
 	ICM_WriteOneByte(0x7F, 0x00);
@@ -178,7 +196,7 @@ uint16_t ICM_Initialize(void) {
 	ICM_WriteOneByte(0x02, 0x01);
 	ICM_WriteOneByte(0x05, 0x81);
 	ICM_MagWrite(0x32, 0x01);
-	HAL_Delay(1000);
+	SdkDelayMs (1000);
 	ICM_MagWrite(0x31, 0x02);
 	return 1337;
 }
@@ -209,12 +227,12 @@ void ICM_SelectBank(uint8_t bank) {
 void ICM_Disable_I2C(void) {
 	ICM_WriteOneByte(0x03, 0x78);
 }
-void ICM_CSHigh(void) {
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, SET);
-}
-void ICM_CSLow(void) {
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, RESET);
-}
+//void ICM_CSHigh(void) {
+////	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, SET);
+//}
+//void ICM_CSLow(void) {
+////	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, RESET);
+//}
 void ICM_SetClock(uint8_t clk) {
 	ICM_WriteOneByte(PWR_MGMT_1, clk);
 }

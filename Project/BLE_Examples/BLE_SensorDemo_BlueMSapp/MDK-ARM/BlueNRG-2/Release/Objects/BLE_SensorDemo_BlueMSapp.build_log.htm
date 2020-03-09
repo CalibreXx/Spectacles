@@ -30,42 +30,19 @@ Build target 'Release'
 compiling ICM20948.c...
 ..\..\..\..\..\Library\ICM-20948\ICM20948.h(40): warning:  #1295-D: Deprecated declaration ICM_PowerOn - give arg types
   void ICM_PowerOn();
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(85): warning:  #223-D: function "HAL_Delay" declared implicitly
-  	HAL_Delay(1);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(97): warning:  #223-D: function "HAL_Delay" declared implicitly
-  	HAL_Delay(1);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(135): warning:  #223-D: function "HAL_Delay" declared implicitly
-  	HAL_Delay(10);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(131): warning:  #177-D: variable "uart_buffer"  was declared but never referenced
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(149): warning:  #177-D: variable "uart_buffer"  was declared but never referenced
   	char uart_buffer[200];
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(132): warning:  #177-D: variable "whoami"  was declared but never referenced
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(150): warning:  #177-D: variable "whoami"  was declared but never referenced
   	uint8_t whoami = 0xEA;
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(150): warning:  #223-D: function "HAL_Delay" declared implicitly
-  	HAL_Delay(20);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(213): warning:  #223-D: function "HAL_GPIO_WritePin" declared implicitly
-  	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, SET);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(213): error:  #20: identifier "ICM_CS_GPIO_Port" is undefined
-  	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, SET);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(213): error:  #20: identifier "ICM_CS_Pin" is undefined
-  	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, SET);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(216): warning:  #223-D: function "HAL_GPIO_WritePin" declared implicitly
-  	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, RESET);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(216): error:  #20: identifier "ICM_CS_GPIO_Port" is undefined
-  	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, RESET);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(216): error:  #20: identifier "ICM_CS_Pin" is undefined
-  	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, RESET);
-..\..\..\..\..\Library\ICM-20948\ICM20948.c: 9 warnings, 4 errors
-compiling SensorDemo_BlueMS_main.c...
-..\..\..\..\..\Library\ICM-20948\ICM20948.h(40): warning:  #1295-D: Deprecated declaration ICM_PowerOn - give arg types
-  void ICM_PowerOn();
-../../src/SensorDemo_BlueMS_main.c(238): warning:  #177-D: variable "ret"  was declared but never referenced
-    uint8_t ret;
-../../src/SensorDemo_BlueMS_main.c(239): warning:  #550-D: variable "status"  was set but never used
-  	int status;
-../../src/SensorDemo_BlueMS_main.c(240): warning:  #177-D: variable "dataReady"  was declared but never referenced
-  	uint8_t byteData,sensorState=0, dataReady;
-../../src/SensorDemo_BlueMS_main.c: 4 warnings, 0 errors
-".\Release\Objects\BLE_SensorDemo_BlueMSapp.axf" - 4 Error(s), 13 Warning(s).
+..\..\..\..\..\Library\ICM-20948\ICM20948.c: 3 warnings, 0 errors
+linking...
+.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf: Error: L6200E: Symbol mag_data multiply defined (by sensordemo_bluems_main.o and icm20948.o).
+.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf: Error: L6200E: Symbol accel_data multiply defined (by sensordemo_bluems_main.o and icm20948.o).
+.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf: Error: L6200E: Symbol gyro_data multiply defined (by sensordemo_bluems_main.o and icm20948.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 3 error messages.
+".\Release\Objects\BLE_SensorDemo_BlueMSapp.axf" - 3 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -79,7 +56,7 @@ Package Vendor: Keil
 
 <h2>Collection of Component Files used:</h2>
 Target not created.
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

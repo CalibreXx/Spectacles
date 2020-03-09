@@ -1,0 +1,26 @@
+--cpu Cortex-M0
+".\release\objects\miscutil.o"
+".\release\objects\bluenrg1_adc.o"
+".\release\objects\bluenrg1_dma.o"
+".\release\objects\bluenrg1_flash.o"
+".\release\objects\bluenrg1_gpio.o"
+".\release\objects\bluenrg1_i2c.o"
+".\release\objects\bluenrg1_mft.o"
+".\release\objects\bluenrg1_rtc.o"
+".\release\objects\bluenrg1_spi.o"
+".\release\objects\bluenrg1_sysctrl.o"
+".\release\objects\bluenrg1_uart.o"
+".\release\objects\bluenrg1_wdg.o"
+".\release\objects\misc.o"
+".\release\objects\sdk_eval_button.o"
+".\release\objects\sdk_eval_com.o"
+".\release\objects\sdk_eval_config.o"
+".\release\objects\sdk_eval_led.o"
+".\release\objects\context_switch.o"
+".\release\objects\system_bluenrg1.o"
+".\release\objects\bluenrg1_it.o"
+".\release\objects\gpio_iotoggle_main.o"
+--library_type=microlib --diag_suppress 6314,6329 --strict --scatter "BlueNRG2.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Release\Listings\GPIO_IOToggle.map" -o .\Release\Objects\GPIO_IOToggle.axf
