@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Release\Objects\BLE_SensorDemo_BlueMSapp.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun Mar 08 12:44:57 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon Mar 09 15:50:47 2020
 <BR><P>
 <H3>Maximum Stack Usage =        192 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -827,8 +827,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_WaitCmdDone
 </UL>
-<BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Erase_Sector
-<LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_delete
+<BR>[Called By]<UL><LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_delete
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Erase_Sector
 </UL>
 
 <P><STRONG><a name="[a2]"></a>FLASH_ProgramWord</STRONG> (Thumb, 38 bytes, Stack size 4 bytes, bluenrg1_flash.o(i.FLASH_ProgramWord))
@@ -864,8 +864,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_ProgramWord
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_write_record
+<BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_write_record
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
 </UL>
 
 <P><STRONG><a name="[a4]"></a>GAP_Connection_Complete_Handler</STRONG> (Thumb, 100 bytes, Stack size unknown bytes, gap.o(i.GAP_Connection_Complete_Handler))
@@ -999,8 +999,8 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GATT_Connection_Complete_Handler
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Find_Gatt_Client
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Rcv_Event_Handler_ISR
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Connection_Complete_Handler
+<BR>[Called By]<UL><LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Connection_Complete_Handler
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Rcv_Event_Handler_ISR
 </UL>
 
 <P><STRONG><a name="[c0]"></a>Gatt_Update_Charac_Value_Ext</STRONG> (Thumb, 900 bytes, Stack size unknown bytes, gatt_server.o(i.Gatt_Update_Charac_Value_Ext))
@@ -1265,8 +1265,8 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Connection_Complete_Signal_Handler
 <LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Reset_To_Closed_State
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Rcv_Event_Handler_ISR
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Connection_Complete_Handler
+<BR>[Called By]<UL><LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Connection_Complete_Handler
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Rcv_Event_Handler_ISR
 </UL>
 
 <P><STRONG><a name="[1be]"></a>LL_Data_Length_Change_Event_ucfg</STRONG> (Thumb, 4 bytes, Stack size unknown bytes, ll_routines.o(i.LL_Data_Length_Change_Event_ucfg))
@@ -1439,11 +1439,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memcmp
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Read_By_Type_Resp
+<BR>[Called By]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Read_By_Type_Resp
 <LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Accu_UuidTypes_Requiring_Auth
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDB_Add_Record
 <LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_find_client_data
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
 </UL>
 
 <P><STRONG><a name="[7d]"></a>Osal_MemCpy</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, osal.o(i.Osal_MemCpy))
@@ -1481,9 +1481,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memset
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;smp_pairing_completed
+<BR>[Called By]<UL><LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;smp_pairing_completed
 <LI><a href="#[1cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;smp_add_to_sdb
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
 </UL>
 
 <P><STRONG><a name="[20]"></a>PKA_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, system_bluenrg1.o(i.PKA_Handler))
@@ -1783,14 +1783,14 @@ Global Symbols
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;acl_list_first
 <LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PM_Release_Acl_Pckt
 <LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Is_Address_Initialized
-<LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_Get_Address
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SM_Get_Remote_Device_Info
 <LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;smp_sc_update_statistics_on_pairing_complete_ucfg
 <LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SM_Connection_Complete_Handler
 <LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;smp_find_remote_device_index
+<LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_Get_Address
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Rcv_Event_Handler_ISR
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Connection_Complete_Handler
+<BR>[Called By]<UL><LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Connection_Complete_Handler
+<LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;L2C_Rcv_Event_Handler_ISR
 </UL>
 
 <P><STRONG><a name="[15]"></a>SPI_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, system_bluenrg1.o(i.SPI_Handler))
@@ -2960,9 +2960,9 @@ Global Symbols
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;char_copy
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;advance_wakeup_timer
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;data_length_extension_csr_ucfg
+<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;timebase_start_connect
 <LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;le4ByteToInt32
 <LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;le2ByteToInt16
-<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;timebase_start_connect
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;isr_advertise_state
 </UL>
@@ -3347,12 +3347,12 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[161]"></a>swap_slaves</STRONG> (Thumb, 306 bytes, Stack size unknown bytes, routines_support.o(i.swap_slaves))
-<BR><BR>[Calls]<UL><LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap_u8
-<LI><a href="#[1cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap_u32
-<LI><a href="#[1ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap_u16
-<LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;time_offset2
+<BR><BR>[Calls]<UL><LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;time_offset2
 <LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_sca
 <LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WindowWiden2
+<LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap_u8
+<LI><a href="#[1cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap_u32
+<LI><a href="#[1ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap_u16
 </UL>
 <BR>[Called By]<UL><LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;advance_slave_timing_MultiSlave
 </UL>
@@ -3737,22 +3737,22 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[14e]"></a>int32ToLe4Byte</STRONG> (Thumb, 16 bytes, Stack size unknown bytes, sdb.o(i.int32ToLe4Byte))
-<BR><BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_read_record
+<BR><BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_read_record
 <LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_find_client_data
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
 </UL>
 
 <P><STRONG><a name="[114]"></a>sdb_delete</STRONG> (Thumb, 352 bytes, Stack size unknown bytes, sdb.o(i.sdb_delete))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20 + Unknown Stack Size
-<LI>Call Chain = sdb_delete &rArr; Write_Client_Data &rArr; Osal_MemCmp &rArr; memcmp
+<LI>Call Chain = sdb_delete &rArr; sdb_find_client_data &rArr; Osal_MemCmp &rArr; memcmp
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_ErasePage
-<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Erase_Sector
 <LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_write_record
 <LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_read_record_validity
 <LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_read_record
 <LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_find_client_data
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Erase_Sector
 </UL>
 <BR>[Called By]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDB_Add_Record
 </UL>
@@ -3770,8 +3770,8 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[14d]"></a>sdb_get_gatt_db_start_address</STRONG> (Thumb, 18 bytes, Stack size unknown bytes, sdb.o(i.sdb_get_gatt_db_start_address))
-<BR><BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_find_client_data
+<BR><BR>[Called By]<UL><LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_find_client_data
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
 </UL>
 
 <P><STRONG><a name="[115]"></a>sdb_invalidate_record</STRONG> (Thumb, 26 bytes, Stack size unknown bytes, sdb.o(i.sdb_invalidate_record))
@@ -3780,8 +3780,8 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_ProgramWord
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDB_Add_Record
+<BR>[Called By]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDB_Add_Record
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
 </UL>
 
 <P><STRONG><a name="[113]"></a>sdb_read_record</STRONG> (Thumb, 32 bytes, Stack size unknown bytes, sdb.o(i.sdb_read_record))
@@ -3792,10 +3792,10 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[112]"></a>sdb_read_record_validity</STRONG> (Thumb, 12 bytes, Stack size unknown bytes, sdb.o(i.sdb_read_record_validity))
-<BR><BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
-<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDB_Add_Record
+<BR><BR>[Called By]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDB_Add_Record
 <LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_find_client_data
 <LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_delete
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Write_Client_Data
 </UL>
 
 <P><STRONG><a name="[116]"></a>sdb_write_record</STRONG> (Thumb, 120 bytes, Stack size unknown bytes, sdb.o(i.sdb_write_record))
@@ -3803,8 +3803,8 @@ Local Symbols
 <LI>Call Chain = sdb_write_record &rArr; Flash_Write_Flagged &rArr; FLASH_ProgramWord
 </UL>
 <BR>[Calls]<UL><LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;system_time_trans
-<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay_With_NOP_Cycles
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Flash_Write_Flagged
+<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay_With_NOP_Cycles
 </UL>
 <BR>[Called By]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDB_Add_Record
 <LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;sdb_delete
