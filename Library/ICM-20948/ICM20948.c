@@ -5,13 +5,15 @@
  *      Author: cory
  */
 
-#include "main.h"
-#include "gpio.h"
-#include "spi.h"
-#include "usart.h"
-#include "dma.h"
+//#include "main.h"
+//#include "gpio.h"
+//#include "spi.h"
+//#include "usart.h"
+//#include "dma.h"
+
 #include "ICM20948.h"
 #include <string.h>
+#include "SDK_EVAL_I2C.h"
 
 /*
  *
@@ -22,42 +24,54 @@
 void ICM_ReadBytes(uint8_t reg, uint8_t *pData, uint16_t Size) // ***
 {
 	reg = reg | 0x80;
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
-	HAL_SPI_Receive_DMA(SPI_BUS, pData, Size);
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
+//	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
+//	HAL_SPI_Receive_DMA(SPI_BUS, pData, Size);
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+	
+	uint8_t buffer[1];
+	SdkEvalI2CRead16 ( buffer , ICM20948_SLAVE_ADD , reg, Size);
+	*pData = buffer[0];
 }
 
 void ICM_WriteBytes(uint8_t reg, uint8_t *pData, uint16_t Size) // ***
 {
 	reg = reg & 0x7F;
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
-	HAL_SPI_Transmit_DMA(SPI_BUS, pData, Size);
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
+//	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
+//	HAL_SPI_Transmit_DMA(SPI_BUS, pData, Size);
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+		
+	SdkEvalI2CWrite16 ( pData , ICM20948_SLAVE_ADD , reg, Size);
 
 }
 
 void ICM_ReadOneByte(uint8_t reg, uint8_t* pData) // ***
 {
 	reg = reg | 0x80;
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
-	while (HAL_SPI_GetState(SPI_BUS) != HAL_SPI_STATE_READY)
-		;
-	HAL_SPI_Receive_DMA(SPI_BUS, pData, 1);
-	while (HAL_SPI_GetState(SPI_BUS) != HAL_SPI_STATE_READY)
-		;
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
+//	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
+//	while (HAL_SPI_GetState(SPI_BUS) != HAL_SPI_STATE_READY)
+//		;
+//	HAL_SPI_Receive_DMA(SPI_BUS, pData, 1);
+//	while (HAL_SPI_GetState(SPI_BUS) != HAL_SPI_STATE_READY)
+//		;
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+		uint8_t buffer[1];
+	SdkEvalI2CRead16 ( buffer , ICM20948_SLAVE_ADD , reg, 1);
+	*pData = buffer[0];
 }
 
 void ICM_WriteOneByte(uint8_t reg, uint8_t Data) // ***
 {
 	reg = reg & 0x7F;
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
-	HAL_SPI_Transmit_DMA(SPI_BUS, &Data, 1);
-	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_RESET);
+//	HAL_SPI_Transmit_DMA(SPI_BUS, &reg, 1);
+//	HAL_SPI_Transmit_DMA(SPI_BUS, &Data, 1);
+//	HAL_GPIO_WritePin(ICM_CS_GPIO_Port, ICM_CS_Pin, GPIO_PIN_SET);
+	uint8_t buffer [1];
+	buffer[0] = (uint8_t)(Data);
+	SdkEvalI2CWrite16 ( buffer , ICM20948_SLAVE_ADD , reg, 1);
 }
 
 /*

@@ -187,6 +187,10 @@ Refer to the related documentation for more details.
  */
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "BlueNRG1_it.h"
 #include "BlueNRG1_conf.h"
 #include "ble_const.h" 
@@ -201,6 +205,10 @@ Refer to the related documentation for more details.
 #include "VL53L1X_api.h"
 #include "VL53L1X_calibration.h"
 #include "vl53l1_platform.h"
+
+#include "ICM20948.h"
+
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -256,6 +264,12 @@ int main(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
 	GPIO_InitStructure.GPIO_Pull = ENABLE;
 	GPIO_Init(&GPIO_InitStructure);
+	
+	
+	/* Configure Gyroscope at 0x68 */
+	ICM_SelectBank(USER_BANK_0);
+	ICM_PowerOn();
+	
 	
 	/* Those basic I2C read functions can be used to check your own I2C functions */
   status = VL53L1_RdByte(VL53L1_I2C_SLAVE_ADDR, 0x010F, &byteData);

@@ -4,6 +4,13 @@
  *  Created on: Oct 26, 2018
  *      Author: cory
  */
+#include <stdint.h>
+#include <stddef.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#define ICM20948_SLAVE_ADD 0x68
 
 #ifndef ICM20948_H_
 #define ICM20948_H_

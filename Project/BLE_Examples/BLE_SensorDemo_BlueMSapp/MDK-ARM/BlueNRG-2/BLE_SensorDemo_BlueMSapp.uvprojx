@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>LS_SOURCE=LS_SOURCE_EXTERNAL_32KHZ SMPS_INDUCTOR=SMPS_INDUCTOR_10uH BLUENRG2_DEVICE HS_SPEED_XTAL=HS_SPEED_XTAL_32MHZ USER_BUTTON=BUTTON_1</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\inc;..\..\..\..\..\Library\hal\inc;..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc;..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include;..\..\..\..\..\Library\CMSIS\Include;..\..\..\..\..\Library\Bluetooth_LE\inc;..\..\..\..\..\Library\BLE_Application\layers_inc;..\..\..\..\..\Library\BLE_Application\Utils\inc;..\..\..\..\..\Library\BLE_Application\OTA\inc;..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc;..\..\..\..\..\Library\VL53L1X\core;..\..\..\..\..\Library\VL53L1X\platform</IncludePath>
+              <IncludePath>..\..\inc;..\..\..\..\..\Library\hal\inc;..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc;..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include;..\..\..\..\..\Library\CMSIS\Include;..\..\..\..\..\Library\Bluetooth_LE\inc;..\..\..\..\..\Library\BLE_Application\layers_inc;..\..\..\..\..\Library\BLE_Application\Utils\inc;..\..\..\..\..\Library\BLE_Application\OTA\inc;..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc;..\..\..\..\..\Library\VL53L1X\core;..\..\..\..\..\Library\VL53L1X\platform;..\..\..\..\..\Library\ICM-20948</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -536,6 +536,11 @@
               <FileName>vl53l1_platform.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.c</FilePath>
+            </File>
+            <File>
+              <FileName>ICM20948.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\Library\ICM-20948\ICM20948.c</FilePath>
             </File>
           </Files>
         </Group>
