@@ -778,6 +778,7 @@ Section Cross References
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_StructInit) for GPIO_StructInit
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_Init) for GPIO_Init
     sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.ICM_SelectBank) for ICM_SelectBank
+    sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.SdkDelayMs) for SdkDelayMs
     sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.ICM_PowerOn) for ICM_PowerOn
     sensordemo_bluems_main.o(i.main) refers to vl53l1_platform.o(i.VL53L1_RdByte) for VL53L1_RdByte
     sensordemo_bluems_main.o(i.main) refers to printf5.o(i.__0printf$5) for __2printf

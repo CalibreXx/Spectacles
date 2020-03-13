@@ -145,7 +145,31 @@ void ICM_ReadMagData(int16_t heading[3]) {
  * Sequence to setup ICM290948 as early as possible after power on
  *
  */
-void ICM_PowerOn(void) {
+void ICM_PowerOn(void) { //calibrate
+	
+	// Reset ICM20948
+	ICM_WriteOneByte (PWR_MGMT_1,READ_FLAG);
+	SdkDelayMs(100);
+	ICM_WriteOneByte (PWR_MGMT_1, 0x01);
+	SdkDelayMs(100);
+	
+	//Read the WHO_AM_I REGISTER, test communication;
+	uint8_t c;
+	ICM_ReadOneByte(WHO_AM_I_ICM20948,&c);
+	printf("ICM20948: I am 0x");
+	printf("%X\n", c);
+	uint8_t cB = 0xEA;
+	printf("I should be %X\n", cB);
+	
+	if (c == 0xEA) // WHO_AM_I should always be 0x71
+	{
+		printf("ICM20948 is onine\n");
+		
+		// Start by performing self test and reporting values
+		
+		
+	}
+	
 	char uart_buffer[200];
 	uint8_t whoami = 0xEA;
 	uint8_t test = ICM_WHOAMI();
@@ -162,6 +186,54 @@ void ICM_PowerOn(void) {
 	ICM_AccelGyroOn();
 	SdkDelayMs (10);
 	ICM_Initialize();
+}
+
+void ICM_SelfTest(float *destination){
+	uint8_t rawData[6] = {0, 0, 0, 0, 0, 0};
+  uint8_t selfTest[6];
+  int32_t gAvg[3] = {0}, aAvg[3] = {0}, aSTAvg[3] = {0}, gSTAvg[3] = {0};
+  float factoryTrim[6];
+  uint8_t FS = 0;
+	
+	// Get stable time source
+  // Auto select clock source to be PLL gyroscope reference if ready else
+  ICM_WriteOneByte(PWR_MGMT_1, 0x01);
+  SdkDelayMs (200);
+	
+	// Switch to user bank 2
+  ICM_WriteOneByte(REG_BANK_SEL, 0x20);
+  // Set gyro sample rate to 1 kHz
+  ICM_WriteOneByte(GYRO_SMPLRT_DIV, 0x00);
+  // Set gyro sample rate to 1 kHz, DLPF to 119.5 Hz and FSR to 250 dps
+  ICM_WriteOneByte( GYRO_CONFIG_1, 0x11);
+  // Set accelerometer rate to 1 kHz and bandwidth to 111.4 Hz
+  // Set full scale range for the accelerometer to 2 g
+  ICM_WriteOneByte( ACCEL_CONFIG, 0x11);
+  // Switch to user bank 0
+  ICM_WriteOneByte( REG_BANK_SEL, 0x00);
+	
+	// Get average current values of gyro and acclerometer
+  for (int ii = 0; ii < 200; ii++)
+  {
+		printf("BHW::ii = ");
+		printf("%d\n",ii);
+		
+    // Read the six raw data registers into data array
+    readBytes(ICM20948_ADDRESS, ACCEL_XOUT_H, 6, &rawData[0]);
+    // Turn the MSB and LSB into a signed 16-bit value
+    aAvg[0] += (int16_t)(((int16_t)rawData[0] << 8) | rawData[1]) ;
+    aAvg[1] += (int16_t)(((int16_t)rawData[2] << 8) | rawData[3]) ;
+    aAvg[2] += (int16_t)(((int16_t)rawData[4] << 8) | rawData[5]) ;
+
+    // Read the six raw data registers sequentially into data array
+    readBytes(ICM20948_ADDRESS, GYRO_XOUT_H, 6, &rawData[0]);
+    // Turn the MSB and LSB into a signed 16-bit value
+    gAvg[0] += (int16_t)(((int16_t)rawData[0] << 8) | rawData[1]) ;
+    gAvg[1] += (int16_t)(((int16_t)rawData[2] << 8) | rawData[3]) ;
+    gAvg[2] += (int16_t)(((int16_t)rawData[4] << 8) | rawData[5]) ;
+  }
+	
+	
 }
 uint16_t ICM_Initialize(void) {
 	ICM_SelectBank(USER_BANK_2);

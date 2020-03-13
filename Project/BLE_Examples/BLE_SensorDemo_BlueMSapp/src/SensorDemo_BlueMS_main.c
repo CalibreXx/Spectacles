@@ -268,6 +268,7 @@ int main(void)
 	
 	/* Configure Gyroscope at 0x68 */
 	ICM_SelectBank(USER_BANK_0);
+	SdkDelayMs (10);
 	ICM_PowerOn();
 	
 	
