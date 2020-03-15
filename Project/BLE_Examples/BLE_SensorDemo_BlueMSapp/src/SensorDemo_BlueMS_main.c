@@ -206,7 +206,7 @@ Refer to the related documentation for more details.
 #include "VL53L1X_calibration.h"
 #include "vl53l1_platform.h"
 
-#include "ICM20948.h"
+//#include "ICM20948.h"
 
 
 
@@ -239,11 +239,13 @@ int main(void)
 	int status;
 	uint8_t byteData,sensorState=0, dataReady;
 	uint16_t wordData;
-	uint8_t RangeStatus;
-	  uint16_t Distance;
-  uint16_t SignalRate;
-	 uint16_t AmbientRate;
 	
+	uint16_t DistanceLeft;
+	uint16_t DistanceCentre;
+	uint16_t DistanceRight;
+	
+	uint8_t ToFSensor = 1;
+		
   /* System Init */
   SystemInit();
   
@@ -259,42 +261,118 @@ int main(void)
 	GPIO_InitType GPIO_InitStructure;
 	/** Init Structure */
 	GPIO_StructInit(&GPIO_InitStructure);
+	
 	/** Configure GPIO_Pin_7 for Proximity interrupt */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
 	GPIO_InitStructure.GPIO_Pull = ENABLE;
 	GPIO_Init(&GPIO_InitStructure);
 	
+	/** Configure GPIO_Pin_12 && 13 && 14 for Left TOF Sensor */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
+	GPIO_InitStructure.GPIO_Pull = DISABLE;
+	GPIO_InitStructure.GPIO_HighPwr = ENABLE;
+	GPIO_Init(&GPIO_InitStructure);
+
+	/* Put the PIN off */
+  GPIO_WriteBit(GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14, Bit_RESET); //BIT_SET to ON
 	
-	/* Configure Gyroscope at 0x68 */
-	ICM_SelectBank(USER_BANK_0);
-	SdkDelayMs (10);
-	ICM_PowerOn();
-	
-	
-	/* Those basic I2C read functions can be used to check your own I2C functions */
-  status = VL53L1_RdByte(VL53L1_I2C_SLAVE_ADDR, 0x010F, &byteData);
-  printf("VL53L1X Model_ID: %X\n", byteData);
-  status = VL53L1_RdByte(VL53L1_I2C_SLAVE_ADDR, 0x0110, &byteData);
-  printf("VL53L1X Module_Type: %X\n", byteData);
-  status = VL53L1_RdWord(VL53L1_I2C_SLAVE_ADDR, 0x0111, &wordData);
-  printf("VL53L1X: %X\n", wordData);
-	
-	while(sensorState==0){
-	status = VL53L1X_BootState(VL53L1_I2C_SLAVE_ADDR, &sensorState);
-  }
-	printf("Chip booted\n");
-	
-	
-	
-	/* This function must to be called */
-  status = VL53L1X_SensorInit(VL53L1_I2C_SLAVE_ADDR);
-	printf("Sensor Initialised\n");
-	
-	printf("VL53L1X Ultra Lite Driver Example running ...\n");
-  status = VL53L1X_StartRanging(VL53L1_I2C_SLAVE_ADDR);   /* This function has to be called to enable the ranging */
-	
-	
+	for ( ToFSensor = 0 ; ToFSensor <2; ToFSensor ++){ // 0/Pin_12 = left, 1/Pin_13 = centre , 2/Pin_14 = right
+		switch(ToFSensor){
+			case 0: //LEFT PIN_12
+				GPIO_WriteBit(GPIO_Pin_12, Bit_SET);
+				GPIO_WriteBit(GPIO_Pin_13 | GPIO_Pin_14 , Bit_RESET);
+
+				while(sensorState==0){
+					status = VL53L1X_BootState(VL53L1_I2C_SLAVE_ADDR, &sensorState);
+				}
+				printf("Chip booted\n");
+				sensorState = 0;
+				/* This function must to be called */
+				status = VL53L1X_SensorInit(VL53L1_I2C_SLAVE_ADDR);
+				printf("Left Sensor Initialised\n");
+				
+				VL53L1X_SetI2CAddress(VL53L1_I2C_SLAVE_ADDR, VL53l1X_LEFT_ADDR);
+				printf("Left Sensor address changed");
+				
+				status = VL53L1_RdByte(VL53l1X_LEFT_ADDR, 0x010F, &byteData);
+				printf("Left VL53L1X Model_ID: %X\n", byteData);
+				status = VL53L1_RdByte(VL53l1X_LEFT_ADDR, 0x0110, &byteData);
+				printf("Left VL53L1X Module_Type: %X\n", byteData);
+				status = VL53L1_RdWord(VL53l1X_LEFT_ADDR, 0x0111, &wordData);
+				printf("Left VL53L1X: %X\n", wordData);
+				
+				while(sensorState==0){
+					status = VL53L1X_BootState(VL53l1X_LEFT_ADDR, &sensorState);
+				}
+				printf("Left Chip booted\n");
+				status = VL53L1X_StartRanging(VL53l1X_LEFT_ADDR);   /* This function has to be called to enable the ranging */
+				break;
+			
+			case 1: //CENTRE PIN_13
+				GPIO_WriteBit(GPIO_Pin_12 | GPIO_Pin_14, Bit_RESET);
+				GPIO_WriteBit(GPIO_Pin_13, Bit_SET);
+			
+				while(sensorState==0){
+					status = VL53L1X_BootState(VL53L1_I2C_SLAVE_ADDR, &sensorState);
+				}
+				printf("Chip booted\n");
+				sensorState = 0;
+				/* This function must to be called */
+				status = VL53L1X_SensorInit(VL53L1_I2C_SLAVE_ADDR);
+				printf("Centre Sensor Initialised\n");
+				
+				VL53L1X_SetI2CAddress(VL53L1_I2C_SLAVE_ADDR, VL53l1X_CENTRE_ADDR);
+				printf("Centre Sensor address changed");
+				
+				status = VL53L1_RdByte(VL53l1X_CENTRE_ADDR, 0x010F, &byteData);
+				printf("Centre VL53L1X Model_ID: %X\n", byteData);
+				status = VL53L1_RdByte(VL53l1X_CENTRE_ADDR, 0x0110, &byteData);
+				printf("Centre VL53L1X Module_Type: %X\n", byteData);
+				status = VL53L1_RdWord(VL53l1X_CENTRE_ADDR, 0x0111, &wordData);
+				printf("Centre VL53L1X: %X\n", wordData);
+				
+				while(sensorState==0){
+					status = VL53L1X_BootState(VL53l1X_CENTRE_ADDR, &sensorState);
+				}
+				printf("Centre Chip booted\n");
+				status = VL53L1X_StartRanging(VL53l1X_CENTRE_ADDR);   /* This function has to be called to enable the ranging */
+				break;
+			
+			case 2: //RIGHT
+				GPIO_WriteBit(GPIO_Pin_12 | GPIO_Pin_13 , Bit_RESET);
+				GPIO_WriteBit(GPIO_Pin_14, Bit_SET);
+				while(sensorState==0){
+					status = VL53L1X_BootState(VL53L1_I2C_SLAVE_ADDR, &sensorState);
+				}
+				printf("Right Chip booted\n");
+				sensorState = 0;
+				/* This function must to be called */
+				status = VL53L1X_SensorInit(VL53L1_I2C_SLAVE_ADDR);
+				printf("Left Sensor Initialised\n");
+				
+				VL53L1X_SetI2CAddress(VL53L1_I2C_SLAVE_ADDR, VL53l1X_RIGHT_ADDR);
+				printf("Left Sensor address changed");
+				
+				status = VL53L1_RdByte(VL53l1X_RIGHT_ADDR, 0x010F, &byteData);
+				printf("VL53L1X Model_ID: %X\n", byteData);
+				status = VL53L1_RdByte(VL53l1X_RIGHT_ADDR, 0x0110, &byteData);
+				printf("VL53L1X Module_Type: %X\n", byteData);
+				status = VL53L1_RdWord(VL53l1X_RIGHT_ADDR, 0x0111, &wordData);
+				printf("VL53L1X: %X\n", wordData);
+				
+				while(sensorState==0){
+					status = VL53L1X_BootState(VL53l1X_RIGHT_ADDR, &sensorState);
+				}
+				printf("Chip booted\n");
+				status = VL53L1X_StartRanging(VL53l1X_RIGHT_ADDR);   /* This function has to be called to enable the ranging */
+				break;
+		}
+	}
+//	/* Configure Gyroscope at 0x68 */
+//	ICM_SelectBank(USER_BANK_0);
+//	ICM_PowerOn();
 		
 //  /* BlueNRG-1 stack init */
 //  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
@@ -319,19 +397,18 @@ int main(void)
 //  }
  
   while(1)
-  {
-//		 while (dataReady == 0){
-//		  status = VL53L1X_CheckForDataReady(VL53L1_I2C_SLAVE_ADDR, &dataReady);
-//		  printf("Stuck in dataready");
-//	  }
-//		 dataReady = 0;
-	  status = VL53L1X_GetRangeStatus(VL53L1_I2C_SLAVE_ADDR, &RangeStatus);
-	  status = VL53L1X_GetDistance(VL53L1_I2C_SLAVE_ADDR, &Distance);
-	  status = VL53L1X_GetSignalRate(VL53L1_I2C_SLAVE_ADDR, &SignalRate);
-	  status = VL53L1X_GetAmbientRate(VL53L1_I2C_SLAVE_ADDR, &AmbientRate);
-	  status = VL53L1X_ClearInterrupt(VL53L1_I2C_SLAVE_ADDR); /* clear interrupt has to be called to enable next interrupt*/
+  {		
+//	  status = VL53L1X_GetRangeStatus(newAdd, &RangeStatus);
+//	  status = VL53L1X_GetDistance(newAdd, &Distance);
+//	  status = VL53L1X_GetSignalRate(newAdd, &SignalRate);
+//	  status = VL53L1X_GetAmbientRate(newAdd, &AmbientRate);
+//	  status = VL53L1X_ClearInterrupt(newAdd); /* clear interrupt has to be called to enable next interrupt*/
+		status = VL53L1X_GetDistance(VL53l1X_LEFT_ADDR, &DistanceLeft);
+		status = VL53L1X_GetDistance(VL53l1X_CENTRE_ADDR, &DistanceCentre);
+//		status = VL53L1X_GetDistance(VL53l1X_RIGHT_ADDR, &DistanceRight);
+		
 	  printf("Data: ");
-		printf("%u, %u, %u, %u\n", RangeStatus, Distance, SignalRate, AmbientRate);
+		printf("%u, %u, %u \n", VL53l1X_LEFT_ADDR, VL53l1X_CENTRE_ADDR, VL53l1X_RIGHT_ADDR);
 		
 //    /* BLE Stack Tick */
 //    BTLE_StackTick();

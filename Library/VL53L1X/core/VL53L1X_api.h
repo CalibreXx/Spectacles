@@ -155,10 +155,31 @@ VL53L1X_ERROR VL53L1X_GetSWVersion(VL53L1X_Version_t *pVersion);
 VL53L1X_ERROR VL53L1X_SetI2CAddress(uint16_t, uint8_t new_address);
 
 /**
+ * @brief Set new device address
+ *
+ * After completion the device will answer to the new address programmed.
+ * This function should be called when several devices are used in parallel
+ * before start programming the sensor.
+ * When a single device us used, there is no need to call this function.
+ *
+ * When it is requested for multi devices system this function MUST be called
+ * prior to VL53L1_DataInit()
+ *
+ * @note This function Access to the device
+ *
+ * @param   Dev                   Device Handle
+ * @param   DeviceAddress         The new Device address
+ * @return  VL53L1_ERROR_NONE     Success
+ * @return  "Other error code"    See ::VL53L1_Error
+ */
+VL53L1X_ERROR VL53L1_SetDeviceAddress(uint16_t, uint8_t DeviceAddress);
+/**
  * @brief This function loads the 135 bytes default values to initialize the sensor.
  * @param dev Device address
  * @return 0:success, != 0:failed
  */
+
+
 VL53L1X_ERROR VL53L1X_SensorInit(uint16_t dev);
 
 /**

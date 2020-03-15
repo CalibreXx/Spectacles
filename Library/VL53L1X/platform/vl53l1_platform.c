@@ -72,6 +72,7 @@ int8_t VL53L1_WrByte(uint16_t dev, uint16_t index, uint8_t data) {
 
 }
 
+
 int8_t VL53L1_WrWord(uint16_t dev, uint16_t index, uint16_t data) {
 
 	uint8_t buffer[2];

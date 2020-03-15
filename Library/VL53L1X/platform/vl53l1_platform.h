@@ -21,6 +21,10 @@ typedef VL53L1_Dev_t *VL53L1_DEV;
 
 
 #define VL53L1_I2C_SLAVE_ADDR 0x29
+#define VL53l1X_LEFT_ADDR 0x30
+#define VL53l1X_CENTRE_ADDR 0x31
+#define VL53l1X_RIGHT_ADDR 0x32
+
 
 /** @brief VL53L1_WriteMulti() definition.\n
  * To be implemented by the developer

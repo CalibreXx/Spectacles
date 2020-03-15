@@ -15,9 +15,9 @@
 #ifndef ICM20948_H_
 #define ICM20948_H_
 
-uint16_t accel_data[3];
-uint16_t gyro_data[3];
-int16_t mag_data[3];
+uint16_t ICM_accel_data[3];
+uint16_t ICM_gyro_data[3];
+int16_t ICM_mag_data[3];
 
 #define SPI_BUS			(&hspi1) // ***
 #define UART_BUS		(&huart1) // ***
@@ -167,10 +167,6 @@ int16_t mag_data[3];
 #define I2C_SLV4_DI        		0x17
 
 #define READ_FLAG 0x80
-
-float selfTest[6]; 
-void ICM20948SelfTest(float * destination);
-
 
 
 void ICM_PowerOn();

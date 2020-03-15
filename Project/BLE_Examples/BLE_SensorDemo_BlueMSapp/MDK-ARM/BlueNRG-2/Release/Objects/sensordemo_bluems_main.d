@@ -52,4 +52,3 @@
 .\release\objects\sensordemo_bluems_main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 .\release\objects\sensordemo_bluems_main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\VL53L1X\core\VL53L1X_calibration.h
-.\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\ICM-20948\ICM20948.h
