@@ -585,7 +585,6 @@ Section Cross References
     vl53l1x_api.o(i.VL53L1X_StartTemperatureUpdate) refers to vl53l1x_api.o(i.VL53L1X_ClearInterrupt) for VL53L1X_ClearInterrupt
     vl53l1x_api.o(i.VL53L1X_StartTemperatureUpdate) refers to vl53l1x_api.o(i.VL53L1X_StopRanging) for VL53L1X_StopRanging
     vl53l1x_api.o(i.VL53L1X_StopRanging) refers to vl53l1_platform.o(i.VL53L1_WrByte) for VL53L1_WrByte
-    vl53l1x_api.o(i.VL53L1_SetDeviceAddress) refers to vl53l1_platform.o(i.VL53L1_WrByte) for VL53L1_WrByte
     vl53l1x_calibration.o(i.VL53L1X_CalibrateOffset) refers to vl53l1_platform.o(i.VL53L1_WrWord) for VL53L1_WrWord
     vl53l1x_calibration.o(i.VL53L1X_CalibrateOffset) refers to vl53l1x_api.o(i.VL53L1X_StartRanging) for VL53L1X_StartRanging
     vl53l1x_calibration.o(i.VL53L1X_CalibrateOffset) refers to vl53l1x_api.o(i.VL53L1X_CheckForDataReady) for VL53L1X_CheckForDataReady
@@ -634,11 +633,8 @@ Section Cross References
     icm20948.o(i.ICM_MagRead) refers to icm20948.o(i.ICM_ReadOneByte) for ICM_ReadOneByte
     icm20948.o(i.ICM_MagWrite) refers to icm20948.o(i.ICM_WriteOneByte) for ICM_WriteOneByte
     icm20948.o(i.ICM_MagWrite) refers to icm20948.o(i.SdkDelayMs) for SdkDelayMs
-    icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.ICM_WriteOneByte) for ICM_WriteOneByte
-    icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.SdkDelayMs) for SdkDelayMs
-    icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.ICM_ReadOneByte) for ICM_ReadOneByte
-    icm20948.o(i.ICM_PowerOn) refers to printf5.o(i.__0printf$5) for __2printf
     icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.ICM_WHOAMI) for ICM_WHOAMI
+    icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.SdkDelayMs) for SdkDelayMs
     icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.ICM_SelectBank) for ICM_SelectBank
     icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.ICM_Disable_I2C) for ICM_Disable_I2C
     icm20948.o(i.ICM_PowerOn) refers to icm20948.o(i.ICM_SetClock) for ICM_SetClock
@@ -783,6 +779,7 @@ Section Cross References
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_StructInit) for GPIO_StructInit
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_Init) for GPIO_Init
 <<<<<<< HEAD
+<<<<<<< HEAD
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_WriteBit) for GPIO_WriteBit
 =======
     sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.ICM_SelectBank) for ICM_SelectBank
@@ -794,10 +791,22 @@ Section Cross References
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_BootState) for VL53L1X_BootState
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_SensorInit) for VL53L1X_SensorInit
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_SetI2CAddress) for VL53L1X_SetI2CAddress
+=======
+    sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.ICM_SelectBank) for ICM_SelectBank
+    sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.SdkDelayMs) for SdkDelayMs
+    sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.ICM_PowerOn) for ICM_PowerOn
+>>>>>>> parent of ae51721... For Multiranging
     sensordemo_bluems_main.o(i.main) refers to vl53l1_platform.o(i.VL53L1_RdByte) for VL53L1_RdByte
+    sensordemo_bluems_main.o(i.main) refers to printf5.o(i.__0printf$5) for __2printf
     sensordemo_bluems_main.o(i.main) refers to vl53l1_platform.o(i.VL53L1_RdWord) for VL53L1_RdWord
+    sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_BootState) for VL53L1X_BootState
+    sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_SensorInit) for VL53L1X_SensorInit
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_StartRanging) for VL53L1X_StartRanging
+    sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_GetRangeStatus) for VL53L1X_GetRangeStatus
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_GetDistance) for VL53L1X_GetDistance
+    sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_GetSignalRate) for VL53L1X_GetSignalRate
+    sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_GetAmbientRate) for VL53L1X_GetAmbientRate
+    sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_ClearInterrupt) for VL53L1X_ClearInterrupt
     sensordemo_bluems_main.o(.constdata) refers to sensordemo_bluems_main.o(.noinit.stacklib_flash_data) for stacklib_flash_data
     sensordemo_bluems_main.o(.constdata) refers to sensordemo_bluems_main.o(.noinit.stacklib_stored_device_id_data) for stacklib_stored_device_id_data
     sensordemo_bluems_main.o(.constdata) refers to sensordemo_bluems_main.o(.noinit.data) for dyn_alloc_a
@@ -3789,6 +3798,7 @@ Section Cross References
     dfixul.o(.text) refers to llshl.o(.text) for __aeabi_llsl
     init.o(.text) refers to entry5.o(.ARM.Collect$$$$00000004) for __main_after_scatterload
 
+<<<<<<< HEAD
 
 ==============================================================================
 
@@ -7147,3 +7157,5 @@ Image component sizes
 
 ==============================================================================
 
+=======
+>>>>>>> parent of ae51721... For Multiranging

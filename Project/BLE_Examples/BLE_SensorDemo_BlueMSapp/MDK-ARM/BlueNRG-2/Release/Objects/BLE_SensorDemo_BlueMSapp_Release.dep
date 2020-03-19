@@ -443,9 +443,9 @@ I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Button.h)(0x5C0B5948)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_I2C.h)(0x5E646CD4)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
-F (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.c)(0x5E6E01EE)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\vl53l1x_api.o --omf_browse .\release\objects\vl53l1x_api.crf --depend .\release\objects\vl53l1x_api.d)
-I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.h)(0x5E6DF929)
-I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E6E283C)
+F (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.c)(0x5CD18830)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\vl53l1x_api.o --omf_browse .\release\objects\vl53l1x_api.crf --depend .\release\objects\vl53l1x_api.d)
+I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.h)(0x5CD18935)
+I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E646E49)
 I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_types.h)(0x5AE074CB)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9AD218)
@@ -453,8 +453,8 @@ I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9AD218)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5D9AD21A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5D9AD21A)
 F (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_calibration.c)(0x5CAC82B0)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\vl53l1x_calibration.o --omf_browse .\release\objects\vl53l1x_calibration.crf --depend .\release\objects\vl53l1x_calibration.d)
-I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.h)(0x5E6DF929)
-I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E6E283C)
+I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.h)(0x5CD18935)
+I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E646E49)
 I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_types.h)(0x5AE074CB)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9AD218)
@@ -462,8 +462,8 @@ I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9AD218)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5D9AD21A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5D9AD21A)
 I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_calibration.h)(0x5CAC82B0)
-F (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.c)(0x5E6DF924)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\vl53l1_platform.o --omf_browse .\release\objects\vl53l1_platform.crf --depend .\release\objects\vl53l1_platform.d)
-I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E6E283C)
+F (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.c)(0x5E646C56)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\vl53l1_platform.o --omf_browse .\release\objects\vl53l1_platform.crf --depend .\release\objects\vl53l1_platform.d)
+I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E646E49)
 I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_types.h)(0x5AE074CB)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9AD218)
@@ -498,8 +498,13 @@ I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Com.h)(0x5BFC8E12)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_Led.h)(0x5B35E246)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\SDK_EVAL_SPI.h)(0x5B35E246)
 I (..\..\..\..\..\Library\hal\inc\clock.h)(0x5C1236F0)
+<<<<<<< HEAD
 F (..\..\..\..\..\Library\ICM-20948\ICM20948.c)(0x5E738539)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\icm20948.o --omf_browse .\release\objects\icm20948.crf --depend .\release\objects\icm20948.d)
 I (..\..\..\..\..\Library\ICM-20948\ICM20948.h)(0x5E738539)
+=======
+F (..\..\..\..\..\Library\ICM-20948\ICM20948.c)(0x5E6B1E91)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\icm20948.o --omf_browse .\release\objects\icm20948.crf --depend .\release\objects\icm20948.d)
+I (..\..\..\..\..\Library\ICM-20948\ICM20948.h)(0x5E6B1E8A)
+>>>>>>> parent of ae51721... For Multiranging
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5D9AD218)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9AD218)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9AD218)
@@ -690,7 +695,11 @@ I (..\..\inc\gatt_db.h)(0x5C12372E)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\lsm6ds3.h)(0x5B35E246)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\LPS25HB.h)(0x5B35E244)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\lsm6ds3_hal.h)(0x5B35E246)
+<<<<<<< HEAD
 F (../../src/SensorDemo_BlueMS_main.c)(0x5E738624)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\sensordemo_bluems_main.o --omf_browse .\release\objects\sensordemo_bluems_main.crf --depend .\release\objects\sensordemo_bluems_main.d)
+=======
+F (../../src/SensorDemo_BlueMS_main.c)(0x5E6B1A38)(--c99 -c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I ..\..\inc -I ..\..\..\..\..\Library\hal\inc -I ..\..\..\..\..\Library\BlueNRG1_Periph_Driver\inc -I ..\..\..\..\..\Library\CMSIS\Device\ST\BlueNRG1\Include -I ..\..\..\..\..\Library\CMSIS\Include -I ..\..\..\..\..\Library\Bluetooth_LE\inc -I ..\..\..\..\..\Library\BLE_Application\layers_inc -I ..\..\..\..\..\Library\BLE_Application\Utils\inc -I ..\..\..\..\..\Library\BLE_Application\OTA\inc -I ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc -I ..\..\..\..\..\Library\VL53L1X\core -I ..\..\..\..\..\Library\VL53L1X\platform -I ..\..\..\..\..\Library\ICM-20948-I.\RTE\_Release-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="529" -DLS_SOURCE="LS_SOURCE_EXTERNAL_32KHZ" -DSMPS_INDUCTOR="SMPS_INDUCTOR_10uH" -DBLUENRG2_DEVICE -DHS_SPEED_XTAL="HS_SPEED_XTAL_32MHZ" -DUSER_BUTTON="BUTTON_1"-o .\release\objects\sensordemo_bluems_main.o --omf_browse .\release\objects\sensordemo_bluems_main.crf --depend .\release\objects\sensordemo_bluems_main.d)
+>>>>>>> parent of ae51721... For Multiranging
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5D9AD21A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5D9AD21A)
 I (..\..\inc\BlueNRG1_it.h)(0x5C12372E)
@@ -736,11 +745,17 @@ I (..\..\inc\SensorDemo_config.h)(0x5C12372E)
 I (..\..\..\..\..\Library\Bluetooth_LE\inc\stack_user_cfg.h)(0x5C1236EE)
 I (..\..\inc\gatt_db.h)(0x5C12372E)
 I (..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\lsm6ds3.h)(0x5B35E246)
+<<<<<<< HEAD
 I (..\..\..\..\..\Library\hal\inc\miscutil.h)(0x5C1236F0)
 I (..\..\..\..\..\Library\hal\inc\crash_handler.h)(0x5C1236F0)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5D9AD218)
 I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.h)(0x5E6DF929)
 I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E6E283C)
+=======
+I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.h)(0x5CD18935)
+I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h)(0x5E646E49)
+>>>>>>> parent of ae51721... For Multiranging
 I (..\..\..\..\..\Library\VL53L1X\platform\vl53l1_types.h)(0x5AE074CB)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x5D9AD218)
 I (..\..\..\..\..\Library\VL53L1X\core\VL53L1X_calibration.h)(0x5CAC82B0)
+I (..\..\..\..\..\Library\ICM-20948\ICM20948.h)(0x5E6B1E8A)

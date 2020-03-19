@@ -206,7 +206,14 @@ Refer to the related documentation for more details.
 #include "VL53L1X_calibration.h"
 #include "vl53l1_platform.h"
 
+<<<<<<< HEAD
 //#include "ICM20948.h"
+=======
+#include "ICM20948.h"
+
+
+
+>>>>>>> parent of ae51721... For Multiranging
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #ifndef DEBUG
@@ -236,7 +243,12 @@ int main(void)
 	int status;
 	uint8_t byteData,sensorState=0, dataReady;
 	uint16_t wordData;
+	uint8_t RangeStatus;
+	  uint16_t Distance;
+  uint16_t SignalRate;
+	 uint16_t AmbientRate;
 	
+<<<<<<< HEAD
 	uint16_t DistanceLeft;
 	uint16_t DistanceCentre;
 	uint16_t DistanceRight;
@@ -244,6 +256,8 @@ int main(void)
 	uint8_t ToFSensor = 1;
 	
 	printf("Device started");
+=======
+>>>>>>> parent of ae51721... For Multiranging
   /* System Init */
   SystemInit();
   
@@ -259,13 +273,13 @@ int main(void)
 	GPIO_InitType GPIO_InitStructure;
 	/** Init Structure */
 	GPIO_StructInit(&GPIO_InitStructure);
-	
 	/** Configure GPIO_Pin_7 for Proximity interrupt */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
 	GPIO_InitStructure.GPIO_Pull = ENABLE;
 	GPIO_Init(&GPIO_InitStructure);
 	
+<<<<<<< HEAD
 	/** Configure 10 12 13 for TOF Sensor */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Output;
@@ -281,6 +295,13 @@ int main(void)
 	/* Configure Gyroscope at 0x68 */
 //	ICM_SelectBank(USER_BANK_0);
 //	ICM_PowerOn();
+=======
+	
+	/* Configure Gyroscope at 0x68 */
+	ICM_SelectBank(USER_BANK_0);
+	SdkDelayMs (10);
+	ICM_PowerOn();
+>>>>>>> parent of ae51721... For Multiranging
 	
 	
 	/* Those basic I2C read functions can be used to check your own I2C functions */
@@ -291,6 +312,7 @@ int main(void)
   status = VL53L1_RdWord(VL53L1_I2C_SLAVE_ADDR, 0x0111, &wordData);
   printf("VL53L1X: %X\n", wordData);
 	
+<<<<<<< HEAD
 	printf("Help started");
 	while(sensorState==0){
 		status = VL53L1X_BootState(VL53L1_I2C_SLAVE_ADDR, &sensorState);
@@ -322,6 +344,23 @@ int main(void)
 //	/* Configure Gyroscope at 0x68 */
 //	ICM_SelectBank(USER_BANK_0);
 //	ICM_PowerOn();
+=======
+	while(sensorState==0){
+	status = VL53L1X_BootState(VL53L1_I2C_SLAVE_ADDR, &sensorState);
+  }
+	printf("Chip booted\n");
+	
+	
+	
+	/* This function must to be called */
+  status = VL53L1X_SensorInit(VL53L1_I2C_SLAVE_ADDR);
+	printf("Sensor Initialised\n");
+	
+	printf("VL53L1X Ultra Lite Driver Example running ...\n");
+  status = VL53L1X_StartRanging(VL53L1_I2C_SLAVE_ADDR);   /* This function has to be called to enable the ranging */
+	
+	
+>>>>>>> parent of ae51721... For Multiranging
 		
 //  /* BlueNRG-1 stack init */
 //  ret = BlueNRG_Stack_Initialization(&BlueNRG_Stack_Init_params);
@@ -346,6 +385,7 @@ int main(void)
 //  }
 		
   while(1)
+<<<<<<< HEAD
   {		
 //	  status = VL53L1X_GetRangeStatus(newAdd, &RangeStatus);
 //	  status = VL53L1X_GetDistance(newAdd, &Distance);
@@ -358,6 +398,21 @@ int main(void)
 		
 	  printf("Data: ");
 		printf("%u \n", DistanceLeft);
+=======
+  {
+//		 while (dataReady == 0){
+//		  status = VL53L1X_CheckForDataReady(VL53L1_I2C_SLAVE_ADDR, &dataReady);
+//		  printf("Stuck in dataready");
+//	  }
+//		 dataReady = 0;
+	  status = VL53L1X_GetRangeStatus(VL53L1_I2C_SLAVE_ADDR, &RangeStatus);
+	  status = VL53L1X_GetDistance(VL53L1_I2C_SLAVE_ADDR, &Distance);
+	  status = VL53L1X_GetSignalRate(VL53L1_I2C_SLAVE_ADDR, &SignalRate);
+	  status = VL53L1X_GetAmbientRate(VL53L1_I2C_SLAVE_ADDR, &AmbientRate);
+	  status = VL53L1X_ClearInterrupt(VL53L1_I2C_SLAVE_ADDR); /* clear interrupt has to be called to enable next interrupt*/
+	  printf("Data: ");
+		printf("%u, %u, %u, %u\n", RangeStatus, Distance, SignalRate, AmbientRate);
+>>>>>>> parent of ae51721... For Multiranging
 		
 //    /* BLE Stack Tick */
 //    BTLE_StackTick();
