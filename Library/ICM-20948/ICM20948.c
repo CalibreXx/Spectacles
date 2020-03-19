@@ -145,31 +145,7 @@ void ICM_ReadMagData(int16_t heading[3]) {
  * Sequence to setup ICM290948 as early as possible after power on
  *
  */
-void ICM_PowerOn(void) { //calibrate
-	
-	// Reset ICM20948
-	ICM_WriteOneByte (PWR_MGMT_1,READ_FLAG);
-	SdkDelayMs(100);
-	ICM_WriteOneByte (PWR_MGMT_1, 0x01);
-	SdkDelayMs(100);
-	
-	//Read the WHO_AM_I REGISTER, test communication;
-	uint8_t c;
-	ICM_ReadOneByte(WHO_AM_I_ICM20948,&c);
-	printf("ICM20948: I am 0x");
-	printf("%X\n", c);
-	uint8_t cB = 0xEA;
-	printf("I should be %X\n", cB);
-	
-	if (c == 0xEA) // WHO_AM_I should always be 0x71
-	{
-		printf("ICM20948 is onine\n");
-		
-		// Start by performing self test and reporting values
-		
-		
-	}
-	
+void ICM_PowerOn(void) {
 	char uart_buffer[200];
 	uint8_t whoami = 0xEA;
 	uint8_t test = ICM_WHOAMI();
@@ -187,7 +163,10 @@ void ICM_PowerOn(void) { //calibrate
 	SdkDelayMs (10);
 	ICM_Initialize();
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 5878563... Added to PoweON in ICM20948
 uint16_t ICM_Initialize(void) {
 	ICM_SelectBank(USER_BANK_2);
 	SdkDelayMs (10);

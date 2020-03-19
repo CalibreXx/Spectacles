@@ -276,8 +276,23 @@ int main(void)
 	/* Put the PIN off */
   GPIO_WriteBit(GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14, Bit_RESET); //Turn off pins
 	
+<<<<<<< HEAD
 	GPIO_WriteBit(GPIO_Pin_13, Bit_SET);
 //	GPIO_WriteBit(GPIO_Pin_13 | GPIO_Pin_14 , Bit_RESET);
+=======
+	/* Configure Gyroscope at 0x68 */
+	ICM_SelectBank(USER_BANK_0);
+	ICM_PowerOn();
+	
+	
+	/* Those basic I2C read functions can be used to check your own I2C functions */
+  status = VL53L1_RdByte(VL53L1_I2C_SLAVE_ADDR, 0x010F, &byteData);
+  printf("VL53L1X Model_ID: %X\n", byteData);
+  status = VL53L1_RdByte(VL53L1_I2C_SLAVE_ADDR, 0x0110, &byteData);
+  printf("VL53L1X Module_Type: %X\n", byteData);
+  status = VL53L1_RdWord(VL53L1_I2C_SLAVE_ADDR, 0x0111, &wordData);
+  printf("VL53L1X: %X\n", wordData);
+>>>>>>> parent of 5878563... Added to PoweON in ICM20948
 	
 	printf("Help started");
 	while(sensorState==0){

@@ -782,7 +782,15 @@ Section Cross References
     sensordemo_bluems_main.o(i.main) refers to sdk_eval_i2c.o(i.SdkEvalI2CInit) for SdkEvalI2CInit
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_StructInit) for GPIO_StructInit
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_Init) for GPIO_Init
+<<<<<<< HEAD
     sensordemo_bluems_main.o(i.main) refers to bluenrg1_gpio.o(i.GPIO_WriteBit) for GPIO_WriteBit
+=======
+    sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.ICM_SelectBank) for ICM_SelectBank
+    sensordemo_bluems_main.o(i.main) refers to icm20948.o(i.ICM_PowerOn) for ICM_PowerOn
+    sensordemo_bluems_main.o(i.main) refers to vl53l1_platform.o(i.VL53L1_RdByte) for VL53L1_RdByte
+    sensordemo_bluems_main.o(i.main) refers to printf5.o(i.__0printf$5) for __2printf
+    sensordemo_bluems_main.o(i.main) refers to vl53l1_platform.o(i.VL53L1_RdWord) for VL53L1_RdWord
+>>>>>>> parent of 5878563... Added to PoweON in ICM20948
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_BootState) for VL53L1X_BootState
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_SensorInit) for VL53L1X_SensorInit
     sensordemo_bluems_main.o(i.main) refers to vl53l1x_api.o(i.VL53L1X_SetI2CAddress) for VL53L1X_SetI2CAddress

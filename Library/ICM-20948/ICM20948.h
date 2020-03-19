@@ -28,15 +28,16 @@ int16_t ICM_mag_data[3];
 #define USER_BANK_2		(0x20)
 #define USER_BANK_3		(0x30)
 
-//#define PWR_MGMT_1 		(0x06)
-//#define PWR_MGMT_2		(0x07)
-//#define GYRO_CONFIG_1	(0x01)
+#define PWR_MGMT_1 		(0x06)
+#define PWR_MGMT_2		(0x07)
+#define GYRO_CONFIG_1	(0x01)
 
 
 #define CLK_BEST_AVAIL	(0x01)
 #define GYRO_RATE_250	(0x00)
 #define GYRO_LPF_17HZ 	(0x29)
 
+<<<<<<< HEAD
 // USER BANK 0 REGISTER MAP
 #define WHO_AM_I_ICM20948  0x00 // Should return 0xEA
 #define USER_CTRL          0x03  // Bit 7 enable DMP, bit 3 reset DMP
@@ -169,6 +170,8 @@ int16_t ICM_mag_data[3];
 #define READ_FLAG 0x80
 
 
+=======
+>>>>>>> parent of 5878563... Added to PoweON in ICM20948
 void ICM_PowerOn();
 uint8_t ICM_WHOAMI(void);
 void ICM_SelectBank(uint8_t bank);
