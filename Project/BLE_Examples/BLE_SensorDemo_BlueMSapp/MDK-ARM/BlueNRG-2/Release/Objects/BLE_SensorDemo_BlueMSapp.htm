@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Release\Objects\BLE_SensorDemo_BlueMSapp.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun Mar 15 21:28:36 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Mar 19 22:39:28 2020
 <BR><P>
-<H3>Maximum Stack Usage =        184 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        176 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 RESET_HANDLER &rArr; main &rArr; VL53L1X_SensorInit &rArr; VL53L1X_CheckForDataReady &rArr; VL53L1X_GetInterruptPolarity &rArr; VL53L1_RdByte &rArr; VL53L1_ReadMulti &rArr; SdkEvalI2CRead16 &rArr; I2C_BeginTransaction
 <P>
@@ -934,7 +934,7 @@ Global Symbols
 <LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[1c2]"></a>GPIO_StructInit</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, bluenrg1_gpio.o(i.GPIO_StructInit))
+<P><STRONG><a name="[1c3]"></a>GPIO_StructInit</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, bluenrg1_gpio.o(i.GPIO_StructInit))
 <BR><BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1605,7 +1605,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[c]"></a>RESET_HANDLER</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, system_bluenrg1.o(i.RESET_HANDLER))
-<BR><BR>[Stack]<UL><LI>Max Depth = 184 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 176 + Unknown Stack Size
 <LI>Call Chain = RESET_HANDLER &rArr; main &rArr; VL53L1X_SensorInit &rArr; VL53L1X_CheckForDataReady &rArr; VL53L1X_GetInterruptPolarity &rArr; VL53L1_RdByte &rArr; VL53L1_ReadMulti &rArr; SdkEvalI2CRead16 &rArr; I2C_BeginTransaction
 </UL>
 <BR>[Calls]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1907,7 +1907,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VL53L1_WriteMulti
 </UL>
 
-<P><STRONG><a name="[1c1]"></a>SdkEvalIdentification</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sdk_eval_config.o(i.SdkEvalIdentification))
+<P><STRONG><a name="[1c2]"></a>SdkEvalIdentification</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sdk_eval_config.o(i.SdkEvalIdentification))
 <BR><BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -2204,7 +2204,7 @@ Global Symbols
 
 <P><STRONG><a name="[1e8]"></a>__1printf$5</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf5.o(i.__0printf$5), UNUSED)
 
-<P><STRONG><a name="[1c3]"></a>__2printf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf5.o(i.__0printf$5))
+<P><STRONG><a name="[1c1]"></a>__2printf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf5.o(i.__0printf$5))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -3218,13 +3218,13 @@ Global Symbols
 <LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;advance_slave_timing_MultiSlave
 </UL>
 
-<P><STRONG><a name="[22]"></a>main</STRONG> (Thumb, 644 bytes, Stack size 32 bytes, sensordemo_bluems_main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = main &rArr; VL53L1X_SensorInit &rArr; VL53L1X_CheckForDataReady &rArr; VL53L1X_GetInterruptPolarity &rArr; VL53L1_RdByte &rArr; VL53L1_ReadMulti &rArr; SdkEvalI2CRead16 &rArr; I2C_BeginTransaction
+<P><STRONG><a name="[22]"></a>main</STRONG> (Thumb, 272 bytes, Stack size 24 bytes, sensordemo_bluems_main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 168<LI>Call Chain = main &rArr; VL53L1X_SensorInit &rArr; VL53L1X_CheckForDataReady &rArr; VL53L1X_GetInterruptPolarity &rArr; VL53L1_RdByte &rArr; VL53L1_ReadMulti &rArr; SdkEvalI2CRead16 &rArr; I2C_BeginTransaction
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_WriteBit
-<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_StructInit
+<LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_StructInit
 <LI><a href="#[11f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
-<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SdkEvalIdentification
+<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SdkEvalIdentification
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SdkEvalComUartInit
 <LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SdkEvalI2CInit
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemInit
@@ -3235,7 +3235,7 @@ Global Symbols
 <LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VL53L1X_SensorInit
 <LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VL53L1X_GetDistance
 <LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;VL53L1X_BootState
-<LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RESET_HANDLER
 </UL>

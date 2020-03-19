@@ -46,9 +46,11 @@
 .\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\Bluetooth_LE\inc\stack_user_cfg.h
 .\release\objects\sensordemo_bluems_main.o: ..\..\inc\gatt_db.h
 .\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\SDK_Eval_BlueNRG1\inc\lsm6ds3.h
+.\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\hal\inc\miscutil.h
+.\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\hal\inc\crash_handler.h
+.\release\objects\sensordemo_bluems_main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\VL53L1X\core\VL53L1X_api.h
 .\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\VL53L1X\platform\vl53l1_platform.h
 .\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\VL53L1X\platform\vl53l1_types.h
 .\release\objects\sensordemo_bluems_main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-.\release\objects\sensordemo_bluems_main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\release\objects\sensordemo_bluems_main.o: ..\..\..\..\..\Library\VL53L1X\core\VL53L1X_calibration.h
