@@ -27,7 +27,82 @@ Project File Date:  03/09/2020
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Release'
-<<<<<<< HEAD
+compiling ICM20948.c...
+..\..\..\..\..\Library\ICM-20948\ICM20948.h(40): error:  #169: expected a declaration
+  <<<<<<< HEAD
+..\..\..\..\..\Library\ICM-20948\ICM20948.h(45): warning:  #47-D: incompatible redefinition of macro "PWR_MGMT_1"  (declared at line 31)
+  #define PWR_MGMT_1         0x06 // Device defaults to the SLEEP mode
+..\..\..\..\..\Library\ICM-20948\ICM20948.h(46): warning:  #47-D: incompatible redefinition of macro "PWR_MGMT_2"  (declared at line 32)
+  #define PWR_MGMT_2         0x07
+..\..\..\..\..\Library\ICM-20948\ICM20948.h(125): warning:  #47-D: incompatible redefinition of macro "GYRO_CONFIG_1"  (declared at line 33)
+  #define GYRO_CONFIG_1      		0x01 // Not found in MPU-9250
+..\..\..\..\..\Library\ICM-20948\ICM20948.h(175): warning:  #12-D: parsing restarts here after previous syntax error
+  void ICM_PowerOn();
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(149): warning:  #177-D: variable "uart_buffer"  was declared but never referenced
+  	char uart_buffer[200];
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(150): warning:  #177-D: variable "whoami"  was declared but never referenced
+  	uint8_t whoami = 0xEA;
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(166): error:  #169: expected a declaration
+  <<<<<<< HEAD
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(191): warning:  #12-D: parsing restarts here after previous syntax error
+  	ICM_SelectBank(USER_BANK_2);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(192): error:  #79: expected a type specifier
+  	SdkDelayMs (20);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(192): error:  #260-D: explicit type is missing ("int" assumed)
+  	SdkDelayMs (20);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(192): error:  #147: declaration is incompatible with "void SdkDelayMs(volatile uint32_t)"  (declared at line 20)
+  	SdkDelayMs (20);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(195): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x7F, 0x00);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(195): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x7F, 0x00);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(195): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_WriteOneByte(0x7F, 0x00);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(195): error:  #147: declaration is incompatible with "void ICM_WriteOneByte(uint8_t, uint8_t)"  (declared at line 83)
+  	ICM_WriteOneByte(0x7F, 0x00);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(196): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x0F, 0x30);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(196): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x0F, 0x30);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(196): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_WriteOneByte(0x0F, 0x30);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(197): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x03, 0x20);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(197): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x03, 0x20);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(197): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_WriteOneByte(0x03, 0x20);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(198): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x7F, 0x30);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(198): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x7F, 0x30);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(198): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_WriteOneByte(0x7F, 0x30);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(199): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x01, 0x4D);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(199): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x01, 0x4D);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(199): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_WriteOneByte(0x01, 0x4D);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(200): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x02, 0x01);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(200): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x02, 0x01);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(200): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_WriteOneByte(0x02, 0x01);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(201): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x05, 0x81);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(201): error:  #79: expected a type specifier
+  	ICM_WriteOneByte(0x05, 0x81);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(201): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_WriteOneByte(0x05, 0x81);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(202): error:  #79: expected a type specifier
+  	ICM_MagWrite(0x32, 0x01);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(202): error:  #79: expected a type specifier
+  	ICM_MagWrite(0x32, 0x01);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c(202): error:  #260-D: explicit type is missing ("int" assumed)
+  	ICM_MagWrite(0x32, 0x01);
+..\..\..\..\..\Library\ICM-20948\ICM20948.c: 7 warnings, 30 errors
 compiling SensorDemo_BlueMS_main.c...
 ../../src/SensorDemo_BlueMS_main.c(235): warning:  #177-D: variable "ret"  was declared but never referenced
     uint8_t ret;
@@ -42,29 +117,7 @@ compiling SensorDemo_BlueMS_main.c...
 ../../src/SensorDemo_BlueMS_main.c(244): warning:  #177-D: variable "ToFSensor"  was declared but never referenced
   	uint8_t ToFSensor = 1;
 ../../src/SensorDemo_BlueMS_main.c: 6 warnings, 0 errors
-linking...
-Program Size: Code=37288 RO-data=844 RW-data=764 ZI-data=5204  
-FromELF: creating hex file...
-After Build - User command #1: fromelf.exe --bin Release\Objects\BLE_SensorDemo_BlueMSapp.axf --output Release\Objects\BLE_SensorDemo_BlueMSapp.bin
-".\Release\Objects\BLE_SensorDemo_BlueMSapp.axf" - 0 Error(s), 6 Warning(s).
-=======
-compiling ICM20948.c...
-..\..\..\..\..\Library\ICM-20948\ICM20948.h(40): warning:  #1295-D: Deprecated declaration ICM_PowerOn - give arg types
-  void ICM_PowerOn();
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(149): warning:  #177-D: variable "uart_buffer"  was declared but never referenced
-  	char uart_buffer[200];
-..\..\..\..\..\Library\ICM-20948\ICM20948.c(150): warning:  #177-D: variable "whoami"  was declared but never referenced
-  	uint8_t whoami = 0xEA;
-..\..\..\..\..\Library\ICM-20948\ICM20948.c: 3 warnings, 0 errors
-linking...
-.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf: Error: L6200E: Symbol mag_data multiply defined (by sensordemo_bluems_main.o and icm20948.o).
-.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf: Error: L6200E: Symbol accel_data multiply defined (by sensordemo_bluems_main.o and icm20948.o).
-.\Release\Objects\BLE_SensorDemo_BlueMSapp.axf: Error: L6200E: Symbol gyro_data multiply defined (by sensordemo_bluems_main.o and icm20948.o).
-Not enough information to list image symbols.
-Not enough information to list load addresses in the image map.
-Finished: 2 information, 0 warning and 3 error messages.
-".\Release\Objects\BLE_SensorDemo_BlueMSapp.axf" - 3 Error(s), 3 Warning(s).
->>>>>>> parent of 5878563... Added to PoweON in ICM20948
+".\Release\Objects\BLE_SensorDemo_BlueMSapp.axf" - 30 Error(s), 13 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -77,12 +130,8 @@ Package Vendor: Keil
   .\RTE\_Release
 
 <h2>Collection of Component Files used:</h2>
-<<<<<<< HEAD
-Build Time Elapsed:  00:00:02
-=======
 Target not created.
-Build Time Elapsed:  00:00:01
->>>>>>> parent of 5878563... Added to PoweON in ICM20948
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>
