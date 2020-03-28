@@ -5,6 +5,9 @@
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <BLE2902.h>
+#include "FS.h"
+#include "SD.h"
+#include "SPI.h"
 
 // SERVICE and CHARACTERISTICS UUID for BLE
 #define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
@@ -23,7 +26,6 @@
 //TOF Private Variables
 VL53L1X sensor1;
 unsigned int TOF_1_cm;
-byte TOF_1[8] = [1 , 0 ,0 ,0 ,0 ,0 ,0];
 unsigned int TOF_2_cm;
 VL53L1X sensor2;
 //ICM20948 Private Variables
@@ -58,34 +60,49 @@ void setup()
   Serial.begin (115200);
   Sensor_Init();
   BLE_Init(); //TOF_1_Characteristic TOF_2_Characteristic Accel_Characteristic Pitch_Characteristic Yaw_Characteristic
+  SD_Init();
 }
 
 void loop()
 {
+  String Bryan = "BRYAN";
+  LogtoSD(Bryan);
+  // notify changed value
+  //  if (deviceConnected) {
+  //    TOF_1_Characteristic->setValue((uint8_t*)&value, 4);
+  //    pCharacteristic->notify();
+  //    value++;
+  //    delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
+  //  }
+  //  // disconnecting
+  //  if (!deviceConnected && oldDeviceConnected) {
+  //    delay(500); // give the bluetooth stack the chance to get things ready
+  //    pServer->startAdvertising(); // restart advertising
+  //    Serial.println("start advertising");
+  //    oldDeviceConnected = deviceConnected;
+  //  }
+  //  // connecting
+  //  if (deviceConnected && !oldDeviceConnected) {
+  //    // do stuff here on connecting
+  //    oldDeviceConnected = deviceConnected;
+  //    //  }
+  //    delay(600);
+  //  }
+}
+
+void GetSensor() {
   TOF_1_cm = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_2_cm = (sensor2.readRangeContinuousMillimeters()) / 10;
   Serial.print("TOF: [");
-  Serial.print(sensor1.readRangeContinuousMillimeters());
-  Serial.print(',');
-  Serial.print(sensor2.readRangeContinuousMillimeters());
-  Serial.print("]");
   Serial.print(TOF_1_cm);
   Serial.print(',');
   Serial.print(TOF_2_cm);
-  Serial.print("]");
-
+  Serial.println("]");
   IMU.readSensor();
   // display the data
   AcX = IMU.getAccelX_mss();
   AcY = IMU.getAccelY_mss();
   AcZ = IMU.getAccelZ_mss();
-
-  Serial.print(AcX , 2);
-  Serial.print(",");
-  Serial.print(AcY, 2);
-  Serial.print(",");
-  Serial.print(AcZ, 2 );
-  Serial.println("\t");
   //Rotation around Y
   angleY = atan(-1 * AcX / sqrt(pow(AcY, 2) + pow(AcZ, 2))) * 180 / PI;
   //Rotation Around X
@@ -112,27 +129,6 @@ void loop()
   //  Serial.print("\t");
   //  Serial.println(IMU.getTemperature_C(),6);
 
-  // notify changed value
-  //  if (deviceConnected) {
-  //    TOF_1_Characteristic->setValue((uint8_t*)&value, 4);
-  //    pCharacteristic->notify();
-  //    value++;
-  //    delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-  //  }
-  //  // disconnecting
-  //  if (!deviceConnected && oldDeviceConnected) {
-  //    delay(500); // give the bluetooth stack the chance to get things ready
-  //    pServer->startAdvertising(); // restart advertising
-  //    Serial.println("start advertising");
-  //    oldDeviceConnected = deviceConnected;
-  //  }
-  //  // connecting
-  //  if (deviceConnected && !oldDeviceConnected) {
-  //    // do stuff here on connecting
-  //    oldDeviceConnected = deviceConnected;
-  //    //  }
-  //    delay(600);
-  //  }
 }
 
 void Sensor_Init() {
@@ -240,8 +236,90 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   Serial.println("Waiting a client connection to notify...");
 }
 
-byte TOF_to_Bit(unsigned int reading){ //limited to 0cm to 255cm
-  if (reading-128 <0){
-    
+/* SD Card functions */
+void LogtoSD(String Data) {
+  char copy[50];
+  Data = Data + "\n";
+  Data.toCharArray(copy, 50);
+  appendFile(SD, "/data.txt", copy);
+}
+void SD_Init() {
+  if (!SD.begin()) {
+    Serial.println("Card Mount Failed");
+    return;
+  }
+  uint8_t cardType = SD.cardType();
+  if (cardType == CARD_NONE) {
+    Serial.println("No SD card attached");
+    return;
+  }
+  // If the data.txt file doesn't exist, Create a file on the SD card and write the data labels
+  File file = SD.open("/data.txt");
+  if (!file) {
+    Serial.println("File doens't exist");
+    Serial.println("Creating file...");
+    writeFile(SD, "/data.txt", "Date, Time, TOF_1, TOF_2, Accel, Pitch,Yaw \r\n");
+  }
+  else {
+    Serial.println("File already exists");
+  }
+  file.close();
+
+}
+
+void readFile(fs::FS &fs, const char * path) {
+  Serial.printf("Reading file: %s\n", path);
+
+  File file = fs.open(path);
+  if (!file) {
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+
+  Serial.print("Read from file: ");
+  while (file.available()) {
+    Serial.write(file.read());
+  }
+  file.close();
+}
+
+void writeFile(fs::FS &fs, const char * path, const char * message) {
+  Serial.printf("Writing file: %s\n", path);
+
+  File file = fs.open(path, FILE_WRITE);
+  if (!file) {
+    Serial.println("Failed to open file for writing");
+    return;
+  }
+  if (file.print(message)) {
+    Serial.println("File written");
+  } else {
+    Serial.println("Write failed");
+  }
+  file.close();
+}
+
+void appendFile(fs::FS &fs, const char * path, const char * message) {
+  Serial.printf("Appending to file: %s\n", path);
+
+  File file = fs.open(path, FILE_APPEND);
+  if (!file) {
+    Serial.println("Failed to open file for appending");
+    return;
+  }
+  if (file.print(message)) {
+    Serial.println("Message appended");
+  } else {
+    Serial.println("Append failed");
+  }
+  file.close();
+}
+
+void deleteFile(fs::FS &fs, const char * path) {
+  Serial.printf("Deleting file: %s\n", path);
+  if (fs.remove(path)) {
+    Serial.println("File deleted");
+  } else {
+    Serial.println("Delete failed");
   }
 }
