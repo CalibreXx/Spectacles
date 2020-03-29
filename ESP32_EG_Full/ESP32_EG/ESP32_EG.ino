@@ -31,8 +31,9 @@ VL53L1X sensor2;
 //ICM20948 Private Variables
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
 float AcX, AcY, AcZ;
+float gyroX, gyroY, gyroZ;
 int status;
-float angleX, angleY, angleZ;
+int Pitch, Yaw;
 //BLE Private Variables
 BLEServer* pServer = NULL;
 BLECharacteristic* TOF_1_Characteristic = NULL;
@@ -65,29 +66,8 @@ void setup()
 
 void loop()
 {
-  String Bryan = "BRYAN";
-  LogtoSD(Bryan);
-  // notify changed value
-  //  if (deviceConnected) {
-  //    TOF_1_Characteristic->setValue((uint8_t*)&value, 4);
-  //    pCharacteristic->notify();
-  //    value++;
-  //    delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-  //  }
-  //  // disconnecting
-  //  if (!deviceConnected && oldDeviceConnected) {
-  //    delay(500); // give the bluetooth stack the chance to get things ready
-  //    pServer->startAdvertising(); // restart advertising
-  //    Serial.println("start advertising");
-  //    oldDeviceConnected = deviceConnected;
-  //  }
-  //  // connecting
-  //  if (deviceConnected && !oldDeviceConnected) {
-  //    // do stuff here on connecting
-  //    oldDeviceConnected = deviceConnected;
-  //    //  }
-  //    delay(600);
-  //  }
+  GetSensor();
+//  BLE_Notify();
 }
 
 void GetSensor() {
@@ -104,23 +84,36 @@ void GetSensor() {
   AcY = IMU.getAccelY_mss();
   AcZ = IMU.getAccelZ_mss();
   //Rotation around Y
-  angleY = atan(-1 * AcX / sqrt(pow(AcY, 2) + pow(AcZ, 2))) * 180 / PI;
+  Pitch = atan(-1 * AcX / sqrt(pow(AcY, 2) + pow(AcZ, 2))) * 180 / PI;
+  if (Pitch < 0) { // if looking down, i.e. -ve
+    Pitch = 90 - Pitch;
+  } else {
+    Pitch = 90 + Pitch;
+  }
   //Rotation Around X
-  angleX = atan(-1 * AcY / sqrt(pow(AcX, 2) + pow(AcZ, 2))) * 180 / PI;
-  //Rotation Around Z
-  angleZ = atan(-1 * AcZ / sqrt(pow(AcX, 2) + pow(AcY, 2))) * 180 / PI;
-  Serial.print ("AngleX: ");
-  Serial.print(abs(angleZ), 2);
+  Yaw = atan(-1 * AcY / sqrt(pow(AcX, 2) + pow(AcZ, 2))) * 180 / PI;
+  if ( Yaw < 0) {
+    Yaw = 90 - Yaw;
+  } else {
+    Yaw = 90 + Yaw;
+  }
+  Serial.print ("Pitch: ");
+  Serial.print(Pitch);
   Serial.print ("\t");
-  Serial.print ("AngleY: ");
-  Serial.print(abs(angleY), 2);
+  Serial.print ("Yaw: ");
+  Serial.print(Yaw);
   Serial.println  ("\t");
-  //  Serial.print(IMU.getGyroX_rads(), 6);
-  //  Serial.print("\t");
-  //  Serial.print(IMU.getGyroY_rads(), 6);
-  //  Serial.print("\t");
-  //  Serial.print(IMU.getGyroZ_rads(), 6);
-  //  Serial.println("\t");
+
+  gyroX = IMU.getGyroX_rads();
+  gyroY = IMU.getGyroY_rads();
+  gyroZ = IMU.getGyroZ_rads();
+
+  Serial.print("gyroX: ");
+  Serial.print(gyroY, 2);
+  Serial.print("gyroY: ");
+  Serial.print(gyroY, 2);
+  Serial.print("gyroZ: ");
+  Serial.println(gyroZ, 2);
   //  Serial.print(IMU.getMagX_uT(),6);
   //  Serial.print("\t");
   //  Serial.print(IMU.getMagY_uT(),6);
@@ -165,6 +158,47 @@ void Sensor_Init() {
   }
 }
 
+void BLE_Notify() {
+  //   notify changed value
+  unsigned int TOF_NULL = 0;
+  if (deviceConnected) {
+    if (TOF_1_cm < 256) {
+      TOF_1_Characteristic->setValue((uint8_t*)&TOF_1_cm, 1); // 1 = 1 byte = 8 bits
+      TOF_1_Characteristic->notify();
+    } else {
+      TOF_1_Characteristic->setValue((uint8_t*)&TOF_NULL, 1);
+      TOF_1_Characteristic->notify();
+    }
+    if (TOF_2_cm < 256) {
+      TOF_2_Characteristic->setValue((uint8_t*)&TOF_2_cm, 1);
+      TOF_2_Characteristic->notify();
+    } else {
+      TOF_2_Characteristic->setValue((uint8_t*)&TOF_NULL, 1);
+      TOF_2_Characteristic->notify();
+    }
+
+    Pitch_Characteristic->setValue((uint8_t*)&Pitch, 1);
+    Pitch_Characteristic->notify();
+    Yaw_Characteristic->setValue((uint8_t*)&Yaw, 1);
+    Yaw_Characteristic->notify();
+
+    delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
+  }
+  // disconnecting
+  if (!deviceConnected && oldDeviceConnected) {
+    delay(500); // give the bluetooth stack the chance to get things ready
+    pServer->startAdvertising(); // restart advertising
+    Serial.println("start advertising");
+    oldDeviceConnected = deviceConnected;
+  }
+  // connecting
+  if (deviceConnected && !oldDeviceConnected) {
+    // do stuff here on connecting
+    oldDeviceConnected = deviceConnected;
+    //  }
+    delay(600);
+  }
+}
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
@@ -237,12 +271,13 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
 }
 
 /* SD Card functions */
-void LogtoSD(String Data) {
+void LogtoSD(String Data) { //convert data to char array and log into sd card
   char copy[50];
   Data = Data + "\n";
   Data.toCharArray(copy, 50);
   appendFile(SD, "/data.txt", copy);
 }
+
 void SD_Init() {
   if (!SD.begin()) {
     Serial.println("Card Mount Failed");
