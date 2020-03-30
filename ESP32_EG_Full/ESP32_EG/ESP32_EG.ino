@@ -11,8 +11,7 @@
 
 // SERVICE and CHARACTERISTICS UUID for BLE
 #define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
-#define TOF_1_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
-#define TOF_2_UUID        "d8286de8-a471-447a-a0af-3e122df5c817"
+#define TOF_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
 
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
 #define GYROX_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
@@ -27,21 +26,20 @@
 
 //TOF Private Variables
 VL53L1X sensor1;
-unsigned int TOF_1_cm;
-unsigned int TOF_2_cm;
+unsigned int TOF_cm[3] = {0, 0, 0};
+byte TOF_byte[3] = {0, 0, 0};
 VL53L1X sensor2;
 //ICM20948 Private Variables
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
 float AcX, AcY, AcZ;
 float gyroX, gyroY, gyroZ;
+byte gyrobyte[3] = {0, 0, 0};
 unsigned int gyroX_int, gyroY_int, gyroZ_int;
 int status;
 int Pitch, Yaw;
 //BLE Private Variables
 BLEServer* pServer = NULL;
-BLECharacteristic* TOF_1_Characteristic = NULL;
-BLECharacteristic* TOF_2_Characteristic = NULL;
-BLECharacteristic* Accel_Characteristic = NULL;
+BLECharacteristic* TOF_Characteristic = NULL;
 BLECharacteristic* Pitch_Characteristic = NULL;
 BLECharacteristic* Yaw_Characteristic = NULL;
 BLECharacteristic* GYROX_Characteristic = NULL;
@@ -61,6 +59,15 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
+struct splitLong { //split long into 4 byte sized packets
+  union {
+    long value;
+    char split[4];
+  } __attribute__((packed));
+};
+
+struct splitLong LongByteConverter;
+
 void setup()
 {
   Wire.begin();
@@ -72,18 +79,45 @@ void setup()
 
 void loop()
 {
-  GetSensor();
-  BLE_Notify();
+  //  GetSensor();
+  //  BLE_Notify();
+  unsigned long value = 12345678;
+  unsigned long val2;
+  byte arr[4];
+
+  LongByteConverter.value = value;
+
+  int i ;
+  for ( i = 3 ; i >= 0 ; i--) {
+    Serial.print(LongByteConverter.split[i], HEX);
+    arr[i] = LongByteConverter.split[i];
+  }
+  Serial.println(" ");
+  val2 = * ((unsigned long *) arr ) ;
+  Serial.println(val2);
 }
 
 void GetSensor() {
-  TOF_1_cm = (sensor1.readRangeContinuousMillimeters()) / 10;
-  TOF_2_cm = (sensor2.readRangeContinuousMillimeters()) / 10;
-  //  Serial.print("TOF: [");
-  //  Serial.print(TOF_1_cm);
-  //  Serial.print(',');
-  //  Serial.print(TOF_2_cm);
-  //  Serial.println("]");
+  TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
+  TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
+  int i;
+  for (int i = 0 ; i < 3 ; i++) {
+    if ( TOF_cm[i] > 255 ) {
+      TOF_byte[i] = 0;
+    }
+    else {
+      TOF_byte[i] = TOF_cm[i];
+    }
+  }
+  for ( i = 0 ; i <= 1 ; i ++) {
+    Serial.print("TOF_");
+    Serial.print(i);
+    Serial.println (TOF_byte[i]);
+  }
+  //  getICM20948();
+
+}
+void getICM20948() {
   IMU.readSensor();
   // display the data
   AcX = IMU.getAccelX_mss();
@@ -93,20 +127,20 @@ void GetSensor() {
   Pitch = atan(-1 * AcX / sqrt(pow(AcY, 2) + pow(AcZ, 2))) * 180 / PI;
   //Rotation around X
   Yaw = atan(-1 * AcY / sqrt(pow(AcX, 2) + pow(AcZ, 2))) * 180 / PI;
-  Serial.print ("Pitch: ");
-  Serial.print(Pitch);
-  Serial.print ("\t");
-  Serial.print ("Yaw: ");
-  Serial.print(Yaw);
-  Serial.println  ("\t");
+  //  Serial.print ("Pitch: ");
+  //  Serial.print(Pitch);
+  //  Serial.print ("\t");
+  //  Serial.print ("Yaw: ");
+  //  Serial.print(Yaw);
+  //  Serial.println  ("\t");
   Pitch = Pitch + 90; // convert data from -90 < a < 90 to 0 < a < 180
   Yaw = Yaw + 90;
-  Serial.print ("Pitch: ");
-  Serial.print(Pitch);
-  Serial.print ("\t");
-  Serial.print ("Yaw: ");
-  Serial.print(Yaw);
-  Serial.println  ("\t");
+  //  Serial.print ("Pitch: ");
+  //  Serial.print(Pitch);
+  //  Serial.print ("\t");
+  //  Serial.print ("Yaw: ");
+  //  Serial.print(Yaw);
+  //  Serial.println  ("\t");
 
   gyroX = IMU.getGyroX_rads();
   gyroY = IMU.getGyroY_rads();
@@ -120,32 +154,15 @@ void GetSensor() {
   gyroY_int = gyroX_int + 32767;
   gyroZ_int = gyroX_int + 32767;
 
-  Serial.print (" GYROX: ");
-  Serial.print(gyroX);
-  Serial.print (":");
-  Serial.print (gyroX_int);
-  Serial.print (" GYROY: ");
-  Serial.print(gyroY);
-  Serial.print (":");
-  Serial.print (gyroY_int);
-  Serial.print (" GYROY: ");
-  Serial.print(gyroY);
-  Serial.print (":");
-  Serial.print (gyroY_int);
-  Serial.print (" GYROZ: ");
-  Serial.print(gyroZ);
-  Serial.print (":");
-  Serial.print (gyroZ_int);
+  //  Serial.print (" GYROX: ");
+  //  Serial.print(gyroX);
+  //  Serial.print (":");
+  //  Serial.print (gyroX_int);
 
   //  Serial.print(IMU.getMagX_uT(),6);
   //  Serial.print("\t");
-  //  Serial.print(IMU.getMagY_uT(),6);
-  //  Serial.print("\t");
-  //  Serial.print(IMU.getMagZ_uT(),6);
-  //  Serial.print("\t");
   //  Serial.println(IMU.getTemperature_C(),6);
 }
-
 void Sensor_Init() {
   pinMode(TOF_1, OUTPUT);
   pinMode(TOF_2, OUTPUT);
@@ -166,6 +183,9 @@ void Sensor_Init() {
   sensor2.setTimeout(500);
   sensor1.startContinuous(33);
   sensor2.startContinuous(33);
+  //  initICM20948();
+}
+void initICM20948() {
   while (!Serial) {}
   // start communication with IMU
   status = IMU.begin();
@@ -184,20 +204,8 @@ void BLE_Notify() {
   //   notify changed value
   unsigned int TOF_NULL = 0;
   if (deviceConnected) {
-    if (TOF_1_cm < 256) {
-      TOF_1_Characteristic->setValue((uint8_t*)&TOF_1_cm, 1); // 1 = 1 byte = 8 bits
-      TOF_1_Characteristic->notify();
-    } else {
-      TOF_1_Characteristic->setValue((uint8_t*)&TOF_NULL, 1);
-      TOF_1_Characteristic->notify();
-    }
-    if (TOF_2_cm < 256) {
-      TOF_2_Characteristic->setValue((uint8_t*)&TOF_2_cm, 1);
-      TOF_2_Characteristic->notify();
-    } else {
-      TOF_2_Characteristic->setValue((uint8_t*)&TOF_NULL, 1);
-      TOF_2_Characteristic->notify();
-    }
+    TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
+    TOF_Characteristic->notify();
 
     //    if ( gyroX_int > 65535) {
     //      GYROX_Characteristic->setValue((uint8_t*)&gyroX_int, 2); // 1 = 1 byte = 8 bits
@@ -252,24 +260,14 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   BLEService *TOFService = pServer->createService(TOF_SERVICE_UUID);
   BLEService *MovementService = pServer->createService(MOVEMENT_SERVICE_UUID);
   // Create a BLE TOF_1 Characteristic
-  TOF_1_Characteristic = TOFService->createCharacteristic(
-                           TOF_1_UUID,
-                           BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_WRITE  |
-                           BLECharacteristic::PROPERTY_NOTIFY |
-                           BLECharacteristic::PROPERTY_INDICATE
-                         );
-  TOF_1_Characteristic->addDescriptor(new BLE2902());
-
-  // Create a BLE TOF_2 Characteristic
-  TOF_2_Characteristic = TOFService->createCharacteristic(
-                           TOF_2_UUID,
-                           BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_WRITE  |
-                           BLECharacteristic::PROPERTY_NOTIFY |
-                           BLECharacteristic::PROPERTY_INDICATE
-                         );
-  TOF_2_Characteristic->addDescriptor(new BLE2902());
+  TOF_Characteristic = TOFService->createCharacteristic(
+                         TOF_UUID,
+                         BLECharacteristic::PROPERTY_READ   |
+                         BLECharacteristic::PROPERTY_WRITE  |
+                         BLECharacteristic::PROPERTY_NOTIFY |
+                         BLECharacteristic::PROPERTY_INDICATE
+                       );
+  TOF_Characteristic->addDescriptor(new BLE2902());
 
   // Create a GYROX Characteristic
   GYROX_Characteristic = MovementService->createCharacteristic(
