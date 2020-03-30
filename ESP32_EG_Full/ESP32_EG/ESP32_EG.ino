@@ -8,6 +8,7 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
+#include <WiFiManager.h>
 
 // SERVICE and CHARACTERISTICS UUID for BLE
 #define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
@@ -30,10 +31,9 @@ ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C
 float gyro_float[3] = {0, 0, 0};
 float gyro_cal[3] = {0, 0, 0};
 float acc_cal[3] = {0, 0, 0} ;
-byte rotation_byte[3] = {0,0,0};
+byte rotation_byte[3] = {0, 0, 0};
 float elapsedTime, currentTime, previousTime;
 int status;
-
 //BLE Private Variables
 BLEServer* pServer = NULL;
 BLECharacteristic* TOF_Characteristic = NULL;
@@ -66,7 +66,7 @@ void setup()
   Wire.begin();
   Serial.begin (115200);
   Sensor_Init();
-  BLE_Init(); //TOF_1_Characteristic TOF_2_Characteristic Accel_Characteristic Pitch_Characteristic Yaw_Characteristic
+  BLE_Init();
   SD_Init();
 }
 
@@ -74,6 +74,21 @@ void loop()
 {
   GetSensor();
   BLE_Notify();
+  //  Serial.print("TOF ");
+  //  for ( int i = 0 ; i < 2 ; i++) {
+  //    Serial.print (i);
+  //    Serial.print(": ");
+  //    Serial.print(TOF_byte[i]);
+  //    Serial.print("\t");
+  //  }
+  //  Serial.println(" ");
+  //  Serial.print("Rotation ");
+  //  for ( int i = 0 ; i < 3 ; i++) {
+  //    Serial.print (i);
+  //    Serial.print(": ");
+  //    Serial.print (rotation_byte[i]);
+  //    Serial.print("\t");
+  //  }
 }
 
 void GetSensor() {
@@ -88,12 +103,6 @@ void GetSensor() {
     }
   }
   getICM20948();
-  for (int i = 0 ; i <= 1 ; i ++) {
-    Serial.print("TOF_");
-    Serial.print(i);
-    Serial.print (TOF_byte[i]);
-    Serial.print ("\t");
-  }
 }
 void getICM20948() {
   IMU.readSensor();
@@ -109,7 +118,10 @@ void getICM20948() {
   // Calculating Roll and Pitch from the accelerometer data
   float accAngleX = (atan(acc_float[1] / sqrt(pow(acc_float[0], 2) + pow(acc_float[2], 2))) * 180 / PI);
   float accAngleY = (atan(-1 * acc_float[0] / sqrt(pow(acc_float[1], 2) + pow(acc_float[2], 2))) * 180 / PI);
-
+  Serial.print("Roll");
+  Serial.println (accAngleX);
+  Serial.print("Pitch");
+  Serial.println(accAngleY);
   previousTime = currentTime;
   currentTime = millis();
   elapsedTime = (currentTime - previousTime) / 1000; //seconds elapsed
@@ -129,10 +141,10 @@ void getICM20948() {
   // Complementary filter - combine acceleromter and gyro angle values
   rotation[1] = 0.96 * gyro_float[0] + 0.04 * accAngleX; //roll
   rotation[0] = 0.96 * gyro_float[1] + 0.04 * accAngleY; //pitch
-  
-  for ( int i = 0 ; i <3 ; i++){
-    if (rotation[i] <0){
-      rotation[i] +=90; //angle is 0 to 180
+
+  for ( int i = 0 ; i < 3 ; i++) {
+    if (rotation[i] < 0) {
+      rotation[i] += 90; //angle is 0 to 180
     }
     rotation_byte[i] = uint8_t(rotation[i]);
   }
@@ -167,7 +179,7 @@ void BLE_Notify() {
   if (deviceConnected) {
     TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
     TOF_Characteristic->notify();
-    ROTATION_Characteristic->setValue(rotation_byte,3);
+    ROTATION_Characteristic->setValue(rotation_byte, 3);
     ROTATION_Characteristic->notify();
     delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
@@ -272,12 +284,12 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
 
   // Create a GYROX Characteristic
   ROTATION_Characteristic = MovementService->createCharacteristic(
-                          ROTATION_UUID,
-                          BLECharacteristic::PROPERTY_READ   |
-                          BLECharacteristic::PROPERTY_WRITE  |
-                          BLECharacteristic::PROPERTY_NOTIFY |
-                          BLECharacteristic::PROPERTY_INDICATE
-                        );
+                              ROTATION_UUID,
+                              BLECharacteristic::PROPERTY_READ   |
+                              BLECharacteristic::PROPERTY_WRITE  |
+                              BLECharacteristic::PROPERTY_NOTIFY |
+                              BLECharacteristic::PROPERTY_INDICATE
+                            );
   ROTATION_Characteristic->addDescriptor(new BLE2902());
 
   // Start the service
