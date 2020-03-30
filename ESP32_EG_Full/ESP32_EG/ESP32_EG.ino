@@ -14,9 +14,7 @@
 #define TOF_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
 
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
-#define GYRO_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
-#define PITCH_UUID        "75fca86d-0174-4f94-89b7-1b5957d066ae" //up down
-#define YAW_UUID        "3f59044f-4fe7-472c-9812-7051f0f35177" // left right
+#define ROTATION_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
 
 //XSHUT OF TOF
 #define TOF_1 25
@@ -29,18 +27,17 @@ byte TOF_byte[3] = {0, 0, 0}; // 1 byte each data limited to 255cm range
 VL53L1X sensor2;
 //ICM20948 Private Variables
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
-float AcX, AcY, AcZ;
-float gyro_float[3];
-long gyro_int[3];
-byte gyro_byte[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //3 bytes each: 1 byte sign 2 byte data
+float gyro_float[3] = {0, 0, 0};
+float gyro_cal[3] = {0, 0, 0};
+float acc_cal[3] = {0, 0, 0} ;
+byte rotation_byte[3] = {0,0,0};
+float elapsedTime, currentTime, previousTime;
 int status;
-int Pitch, Yaw;
+
 //BLE Private Variables
 BLEServer* pServer = NULL;
 BLECharacteristic* TOF_Characteristic = NULL;
-BLECharacteristic* Pitch_Characteristic = NULL;
-BLECharacteristic* Yaw_Characteristic = NULL;
-BLECharacteristic* GYRO_Characteristic = NULL;
+BLECharacteristic* ROTATION_Characteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
@@ -82,69 +79,84 @@ void loop()
 void GetSensor() {
   TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
-  int i;
   for (int i = 0 ; i < 3 ; i++) {
     if ( TOF_cm[i] > 255 ) {
-      TOF_byte[i] = 0;
+      TOF_byte[i] = 0; // if value greater than 255cm
     }
     else {
       TOF_byte[i] = TOF_cm[i];
     }
   }
   getICM20948();
-  for ( i = 0 ; i <= 1 ; i ++) {
+  for (int i = 0 ; i <= 1 ; i ++) {
     Serial.print("TOF_");
     Serial.print(i);
     Serial.print (TOF_byte[i]);
     Serial.print ("\t");
   }
-  Serial.print ("Pitch & Yaw : ");
-  Serial.print ( Pitch);
-  Serial.print ("\t");
-  Serial.println (Yaw);
 }
 void getICM20948() {
   IMU.readSensor();
   // display the data
-  AcX = IMU.getAccelX_mss();
-  AcY = IMU.getAccelY_mss();
-  AcZ = IMU.getAccelZ_mss();
-  Pitch = atan(-1 * AcX / sqrt(pow(AcY, 2) + pow(AcZ, 2))) * 180 / PI;
-  Yaw = atan(-1 * AcZ / sqrt(pow(AcX, 2) + pow(AcZ, 2))) * 180 / PI;
-  Pitch = Pitch + 90; // convert data from -90 < a < 90 to 0 < a < 180
-  Yaw = Yaw + 90;
-
-  gyro_float[1] = IMU.getGyroX_rads();
-  gyro_float[2] = IMU.getGyroY_rads();
-  gyro_float[3] = IMU.getGyroZ_rads();
-
-  for ( int i = 0 ; i < 3 ; i++) {
-    gyro_int[i] = gyro_float[i] * 1000;
-    if (abs( gyro_int[i] ) > 65535) { // if mod > 65535 set value = 0
-      gyro_int[i] = 0;
-    }
-    else if (gyro_int[i] < 0 ) { //-ve value
-      gyro_byte [i * 3 ] = 0; //1 ,4 ,7 are sign bytes
-    }
-    else {
-      gyro_byte [i * 3 ] = 1;
-    }
-    Serial.print("gyro sign : ");
-    Serial.println ( gyro_byte[i * 3]);
-    byte arr[2];
-    LongByteConverter.value = gyro_int[i];
-    for ( int j = 1 ; j >= 0 ; j--) {
-      arr[j] = LongByteConverter.split[j];
-    }
-    gyro_byte[i * 3 + 1] = arr [1]; // 1, 4, 7
-    gyro_byte[i * 3 + 2] = arr[0]; // 2 , 5, 8
+  float acc_float[3];
+  acc_float[0] = IMU.getAccelX_mss();
+  acc_float[1] = IMU.getAccelY_mss();
+  acc_float[2] = IMU.getAccelZ_mss();
+  for ( int i = 0 ; i < 3  ; i++) {
+    acc_float[i] -= acc_cal[i]; // calibration
   }
-  for ( int j = 0 ; j < 9 ; j ++) {
-    Serial.print (gyro_byte[j]);
-    if ( j == 2 || j == 5 || j == 8 ) {
-      Serial.println (" ");
-    }
+
+  // Calculating Roll and Pitch from the accelerometer data
+  float accAngleX = (atan(acc_float[1] / sqrt(pow(acc_float[0], 2) + pow(acc_float[2], 2))) * 180 / PI);
+  float accAngleY = (atan(-1 * acc_float[0] / sqrt(pow(acc_float[1], 2) + pow(acc_float[2], 2))) * 180 / PI);
+
+  previousTime = currentTime;
+  currentTime = millis();
+  elapsedTime = (currentTime - previousTime) / 1000; //seconds elapsed
+  float gyro[3];
+  gyro[0] = IMU.getGyroX_rads();
+  gyro[1] = IMU.getGyroY_rads();
+  gyro[2] = IMU.getGyroZ_rads();
+
+  for ( int i = 0 ; i < 3 ; i ++) {
+    gyro[i] -= gyro_cal[i]; //calibration
+    gyro_float[i] = gyro_float[i] + gyro[i] * elapsedTime;
+    gyro_float[i] *= 57.2958; // convert to degrees
   }
+
+  float rotation [3]; // pitch roll yaw
+  rotation[2] = rotation[2] + gyro[2] * elapsedTime; //yaw
+  // Complementary filter - combine acceleromter and gyro angle values
+  rotation[1] = 0.96 * gyro_float[0] + 0.04 * accAngleX; //roll
+  rotation[0] = 0.96 * gyro_float[1] + 0.04 * accAngleY; //pitch
+  
+  for ( int i = 0 ; i <3 ; i++){
+    if (rotation[i] <0){
+      rotation[i] +=90; //angle is 0 to 180
+    }
+    rotation_byte[i] = uint8_t(rotation[i]);
+  }
+  //  for ( int i = 0 ; i < 3 ; i++) {
+  //    gyro_int[i] = gyro_float[i] * 1000;
+  //    if (abs( gyro_int[i] ) > 65535) { // if mod > 65535 set value = 0
+  //      gyro_int[i] = 0;
+  //    }
+  //    else if (gyro_int[i] < 0 ) { //-ve value
+  //      gyro_byte [i * 3 ] = 0; //1 ,4 ,7 are sign bytes
+  //    }
+  //    else {
+  //      gyro_byte [i * 3 ] = 1;
+  //    }
+  //    Serial.print("gyro sign : ");
+  //    Serial.println ( gyro_byte[i * 3]);
+  //    byte arr[2];
+  //    LongByteConverter.value = gyro_int[i];
+  //    for ( int j = 1 ; j >= 0 ; j--) {
+  //      arr[j] = LongByteConverter.split[j];
+  //    }
+  //    gyro_byte[i * 3 + 1] = arr [1]; // 1, 4, 7
+  //    gyro_byte[i * 3 + 2] = arr[0]; // 2 , 5, 8
+  //  }
   //  Serial.print(IMU.getMagX_uT(),6);
   //  Serial.print("\t");
   //  Serial.println(IMU.getTemperature_C(),6);
@@ -152,16 +164,11 @@ void getICM20948() {
 
 void BLE_Notify() {
   //   notify changed value
-  unsigned int TOF_NULL = 0;
   if (deviceConnected) {
     TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
     TOF_Characteristic->notify();
-    GYRO_Characteristic->setValue(gyro_byte , 9);
-    GYRO_Characteristic->notify();
-    Pitch_Characteristic->setValue((uint8_t*)&Pitch, 1);
-    Pitch_Characteristic->notify();
-    Yaw_Characteristic->setValue((uint8_t*)&Yaw, 1);
-    Yaw_Characteristic->notify();
+    ROTATION_Characteristic->setValue(rotation_byte,3);
+    ROTATION_Characteristic->notify();
     delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
   // disconnecting
@@ -217,11 +224,31 @@ void initICM20948() {
   Serial.println(status);
   if (status < 0) {
     Serial.println("IMU initialization unsuccessful");
-    Serial.println("Check IMU wiring or try cycling power");
     Serial.print("Status: ");
     Serial.println(status);
     while (1) {}
   }
+
+  //  IMU.configAccel(ICM20948::ACCEL_RANGE_2G, ICM20948::ACCEL_DLPF_BANDWIDTH_50HZ);
+  //  IMU.configGyro(ICM20948::GYRO_RANGE_2000DPS, ICM20948::GYRO_DLPF_BANDWIDTH_51HZ);
+  //  IMU.setGyroSrd(113); // Output data rate is 1125/(1 + srd) Hz
+  //  IMU.setAccelSrd(113);
+
+  for (int cal_int = 0; cal_int < 1000 ; cal_int ++) {//Run this code 2000 times
+    IMU.readSensor();
+    gyro_cal[0] += IMU.getGyroX_rads();  //Add the gyro x-axis offset to the gyro_x_cal variable
+    gyro_cal[1] += IMU.getGyroY_rads();
+    gyro_cal[2] += IMU.getGyroZ_rads();
+    acc_cal[0] += IMU.getAccelX_mss();
+    acc_cal[1] += IMU.getAccelX_mss();
+    acc_cal[2] += IMU.getAccelX_mss();
+    delay(3);    //Delay 3us to simulate the 250Hz program loop
+  }
+  for (int i = 0 ; i < 3 ; i++) {
+    gyro_cal[i] /= 2000;
+    acc_cal[i] /= 2000;
+  }
+  Serial.println("Calibration DONE");
 }
 
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
@@ -244,34 +271,15 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   TOF_Characteristic->addDescriptor(new BLE2902());
 
   // Create a GYROX Characteristic
-  GYRO_Characteristic = MovementService->createCharacteristic(
-                          GYRO_UUID,
+  ROTATION_Characteristic = MovementService->createCharacteristic(
+                          ROTATION_UUID,
                           BLECharacteristic::PROPERTY_READ   |
                           BLECharacteristic::PROPERTY_WRITE  |
                           BLECharacteristic::PROPERTY_NOTIFY |
                           BLECharacteristic::PROPERTY_INDICATE
                         );
-  GYRO_Characteristic->addDescriptor(new BLE2902());
+  ROTATION_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE PITCH Characteristic
-  Pitch_Characteristic = MovementService->createCharacteristic(
-                           PITCH_UUID,
-                           BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_WRITE  |
-                           BLECharacteristic::PROPERTY_NOTIFY |
-                           BLECharacteristic::PROPERTY_INDICATE
-                         );
-  Pitch_Characteristic->addDescriptor(new BLE2902());
-
-  // Create a BLE YAW Characteristic
-  Yaw_Characteristic = MovementService->createCharacteristic(
-                         YAW_UUID,
-                         BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_WRITE  |
-                         BLECharacteristic::PROPERTY_NOTIFY |
-                         BLECharacteristic::PROPERTY_INDICATE
-                       );
-  Yaw_Characteristic->addDescriptor(new BLE2902());
   // Start the service
   TOFService->start();
   MovementService->start();
