@@ -25,7 +25,7 @@
 //TOF Private Variables
 VL53L1X sensor1;
 unsigned int TOF_cm[3] = {0, 0, 0};
-byte TOF_byte[3] = {0, 0, 0};
+byte TOF_byte[3] = {0, 0, 0}; // 1 byte each data limited to 255cm range
 VL53L1X sensor2;
 //ICM20948 Private Variables
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
@@ -55,7 +55,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
-struct splitLong { //split long into 4 byte sized packets
+struct splitLong { //split long into 2 byte sized packets
   union {
     long value;
     char split[2];
@@ -75,10 +75,8 @@ void setup()
 
 void loop()
 {
-  //  GetSensor();
-  //  BLE_Notify();
-
-
+  GetSensor();
+  BLE_Notify();
 }
 
 void GetSensor() {
@@ -93,13 +91,17 @@ void GetSensor() {
       TOF_byte[i] = TOF_cm[i];
     }
   }
+  getICM20948();
   for ( i = 0 ; i <= 1 ; i ++) {
     Serial.print("TOF_");
     Serial.print(i);
-    Serial.println (TOF_byte[i]);
+    Serial.print (TOF_byte[i]);
+    Serial.print ("\t");
   }
-  //  getICM20948();
-
+  Serial.print ("Pitch & Yaw : ");
+  Serial.print ( Pitch);
+  Serial.print ("\t");
+  Serial.println (Yaw);
 }
 void getICM20948() {
   IMU.readSensor();
@@ -107,24 +109,10 @@ void getICM20948() {
   AcX = IMU.getAccelX_mss();
   AcY = IMU.getAccelY_mss();
   AcZ = IMU.getAccelZ_mss();
-  //Rotation around Y
   Pitch = atan(-1 * AcX / sqrt(pow(AcY, 2) + pow(AcZ, 2))) * 180 / PI;
-  //Rotation around X
-  Yaw = atan(-1 * AcY / sqrt(pow(AcX, 2) + pow(AcZ, 2))) * 180 / PI;
-  //  Serial.print ("Pitch: ");
-  //  Serial.print(Pitch);
-  //  Serial.print ("\t");
-  //  Serial.print ("Yaw: ");
-  //  Serial.print(Yaw);
-  //  Serial.println  ("\t");
+  Yaw = atan(-1 * AcZ / sqrt(pow(AcX, 2) + pow(AcZ, 2))) * 180 / PI;
   Pitch = Pitch + 90; // convert data from -90 < a < 90 to 0 < a < 180
   Yaw = Yaw + 90;
-  //  Serial.print ("Pitch: ");
-  //  Serial.print(Pitch);
-  //  Serial.print ("\t");
-  //  Serial.print ("Yaw: ");
-  //  Serial.print(Yaw);
-  //  Serial.println  ("\t");
 
   gyro_float[1] = IMU.getGyroX_rads();
   gyro_float[2] = IMU.getGyroY_rads();
@@ -157,51 +145,9 @@ void getICM20948() {
       Serial.println (" ");
     }
   }
-
-  //  Serial.print (" GYROX: ");
-  //  Serial.print(gyroX);
-  //  Serial.print (":");
-  //  Serial.print (gyroX_int);
-
   //  Serial.print(IMU.getMagX_uT(),6);
   //  Serial.print("\t");
   //  Serial.println(IMU.getTemperature_C(),6);
-}
-void Sensor_Init() {
-  pinMode(TOF_1, OUTPUT);
-  pinMode(TOF_2, OUTPUT);
-  digitalWrite(TOF_1, LOW);
-  digitalWrite(TOF_2, LOW);
-  delay(500);
-  pinMode(TOF_1, INPUT);
-  delay(150);
-  sensor1.init(true);
-  delay(100);
-  sensor1.setAddress((uint8_t)23); //Set add at 0x23
-  pinMode(TOF_2, INPUT);
-  delay(150);
-  sensor2.init(true);
-  delay(100);
-  sensor2.setAddress((uint8_t)24); //Set add at 0x24
-  sensor1.setTimeout(500);
-  sensor2.setTimeout(500);
-  sensor1.startContinuous(33);
-  sensor2.startContinuous(33);
-  //  initICM20948();
-}
-void initICM20948() {
-  while (!Serial) {}
-  // start communication with IMU
-  status = IMU.begin();
-  Serial.print("status = ");
-  Serial.println(status);
-  if (status < 0) {
-    Serial.println("IMU initialization unsuccessful");
-    Serial.println("Check IMU wiring or try cycling power");
-    Serial.print("Status: ");
-    Serial.println(status);
-    while (1) {}
-  }
 }
 
 void BLE_Notify() {
@@ -233,6 +179,51 @@ void BLE_Notify() {
     delay(600);
   }
 }
+
+void LogtoSD(String Data) { //convert data to char array and log into sd card
+  char copy[50];
+  Data = Data + "\n";
+  Data.toCharArray(copy, 50);
+  appendFile(SD, "/data.txt", copy);
+}
+
+void Sensor_Init() {
+  pinMode(TOF_1, OUTPUT);
+  pinMode(TOF_2, OUTPUT);
+  digitalWrite(TOF_1, LOW);
+  digitalWrite(TOF_2, LOW);
+  delay(500);
+  pinMode(TOF_1, INPUT);
+  delay(150);
+  sensor1.init(true);
+  delay(100);
+  sensor1.setAddress((uint8_t)23); //Set add at 0x23
+  pinMode(TOF_2, INPUT);
+  delay(150);
+  sensor2.init(true);
+  delay(100);
+  sensor2.setAddress((uint8_t)24); //Set add at 0x24
+  sensor1.setTimeout(500);
+  sensor2.setTimeout(500);
+  sensor1.startContinuous(33);
+  sensor2.startContinuous(33);
+  initICM20948();
+}
+void initICM20948() {
+  while (!Serial) {}
+  // start communication with IMU
+  status = IMU.begin();
+  Serial.print("status = ");
+  Serial.println(status);
+  if (status < 0) {
+    Serial.println("IMU initialization unsuccessful");
+    Serial.println("Check IMU wiring or try cycling power");
+    Serial.print("Status: ");
+    Serial.println(status);
+    while (1) {}
+  }
+}
+
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
@@ -295,12 +286,6 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
 }
 
 /* SD Card functions */
-void LogtoSD(String Data) { //convert data to char array and log into sd card
-  char copy[50];
-  Data = Data + "\n";
-  Data.toCharArray(copy, 50);
-  appendFile(SD, "/data.txt", copy);
-}
 
 void SD_Init() {
   if (!SD.begin()) {
