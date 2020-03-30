@@ -15,7 +15,9 @@
 #define TOF_2_UUID        "d8286de8-a471-447a-a0af-3e122df5c817"
 
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
-#define ACCELEROMETER_UUID        "5c80e46f-5c75-4bd9-bccc-e7f014664620"
+#define GYROX_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
+#define GYROY_UUID  "90694b00-7941-4734-a674-c893256ed3b4"
+#define GYROZ_UUID "a5fe0deb-b6ad-47d0-8e69-b41b9449da07"
 #define PITCH_UUID        "75fca86d-0174-4f94-89b7-1b5957d066ae" //up down
 #define YAW_UUID        "3f59044f-4fe7-472c-9812-7051f0f35177" // left right
 
@@ -32,6 +34,7 @@ VL53L1X sensor2;
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
 float AcX, AcY, AcZ;
 float gyroX, gyroY, gyroZ;
+unsigned int gyroX_int, gyroY_int, gyroZ_int;
 int status;
 int Pitch, Yaw;
 //BLE Private Variables
@@ -41,6 +44,9 @@ BLECharacteristic* TOF_2_Characteristic = NULL;
 BLECharacteristic* Accel_Characteristic = NULL;
 BLECharacteristic* Pitch_Characteristic = NULL;
 BLECharacteristic* Yaw_Characteristic = NULL;
+BLECharacteristic* GYROX_Characteristic = NULL;
+BLECharacteristic* GYROY_Characteristic = NULL;
+BLECharacteristic* GYROZ_Characteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
@@ -67,17 +73,17 @@ void setup()
 void loop()
 {
   GetSensor();
-//  BLE_Notify();
+  BLE_Notify();
 }
 
 void GetSensor() {
   TOF_1_cm = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_2_cm = (sensor2.readRangeContinuousMillimeters()) / 10;
-  Serial.print("TOF: [");
-  Serial.print(TOF_1_cm);
-  Serial.print(',');
-  Serial.print(TOF_2_cm);
-  Serial.println("]");
+  //  Serial.print("TOF: [");
+  //  Serial.print(TOF_1_cm);
+  //  Serial.print(',');
+  //  Serial.print(TOF_2_cm);
+  //  Serial.println("]");
   IMU.readSensor();
   // display the data
   AcX = IMU.getAccelX_mss();
@@ -85,18 +91,16 @@ void GetSensor() {
   AcZ = IMU.getAccelZ_mss();
   //Rotation around Y
   Pitch = atan(-1 * AcX / sqrt(pow(AcY, 2) + pow(AcZ, 2))) * 180 / PI;
-  if (Pitch < 0) { // if looking down, i.e. -ve
-    Pitch = 90 - Pitch;
-  } else {
-    Pitch = 90 + Pitch;
-  }
-  //Rotation Around X
+  //Rotation around X
   Yaw = atan(-1 * AcY / sqrt(pow(AcX, 2) + pow(AcZ, 2))) * 180 / PI;
-  if ( Yaw < 0) {
-    Yaw = 90 - Yaw;
-  } else {
-    Yaw = 90 + Yaw;
-  }
+  Serial.print ("Pitch: ");
+  Serial.print(Pitch);
+  Serial.print ("\t");
+  Serial.print ("Yaw: ");
+  Serial.print(Yaw);
+  Serial.println  ("\t");
+  Pitch = Pitch + 90; // convert data from -90 < a < 90 to 0 < a < 180
+  Yaw = Yaw + 90;
   Serial.print ("Pitch: ");
   Serial.print(Pitch);
   Serial.print ("\t");
@@ -108,12 +112,31 @@ void GetSensor() {
   gyroY = IMU.getGyroY_rads();
   gyroZ = IMU.getGyroZ_rads();
 
-  Serial.print("gyroX: ");
-  Serial.print(gyroY, 2);
-  Serial.print("gyroY: ");
-  Serial.print(gyroY, 2);
-  Serial.print("gyroZ: ");
-  Serial.println(gyroZ, 2);
+  gyroX_int = int ( gyroX * 1000); //  cast into 2 bytes == 0 to 65535 and -32768 < a < 32767
+  gyroY_int = int (gyroY * 1000); // if value == - 32767, change to 0
+  gyroZ_int = int (gyroZ * 1000);// if value == 32768, change to 65535
+
+  gyroX_int = gyroX_int + 32767;
+  gyroY_int = gyroX_int + 32767;
+  gyroZ_int = gyroX_int + 32767;
+
+  Serial.print (" GYROX: ");
+  Serial.print(gyroX);
+  Serial.print (":");
+  Serial.print (gyroX_int);
+  Serial.print (" GYROY: ");
+  Serial.print(gyroY);
+  Serial.print (":");
+  Serial.print (gyroY_int);
+  Serial.print (" GYROY: ");
+  Serial.print(gyroY);
+  Serial.print (":");
+  Serial.print (gyroY_int);
+  Serial.print (" GYROZ: ");
+  Serial.print(gyroZ);
+  Serial.print (":");
+  Serial.print (gyroZ_int);
+
   //  Serial.print(IMU.getMagX_uT(),6);
   //  Serial.print("\t");
   //  Serial.print(IMU.getMagY_uT(),6);
@@ -121,7 +144,6 @@ void GetSensor() {
   //  Serial.print(IMU.getMagZ_uT(),6);
   //  Serial.print("\t");
   //  Serial.println(IMU.getTemperature_C(),6);
-
 }
 
 void Sensor_Init() {
@@ -177,6 +199,27 @@ void BLE_Notify() {
       TOF_2_Characteristic->notify();
     }
 
+    //    if ( gyroX_int > 65535) {
+    //      GYROX_Characteristic->setValue((uint8_t*)&gyroX_int, 2); // 1 = 1 byte = 8 bits
+    //      GYROX_Characteristic->notify();
+    //    } else {
+    //      GYROX_Characteristic->setValue((uint8_t*)&TOF_NULL, 2);
+    //      GYROX_Characteristic->notify();
+    //    }
+    //    if ( gyroY_int > 65535) {
+    //      GYROY_Characteristic->setValue((uint8_t*)&gyroY_int, 2); // 1 = 1 byte = 8 bits
+    //      GYROY_Characteristic->notify();
+    //    } else {
+    //      GYROY_Characteristic->setValue((uint8_t*)&TOF_NULL, 2);
+    //      GYROY_Characteristic->notify();
+    //    }
+    //    if ( gyroZ_int > 65535) {
+    //      TOF_1_Characteristic->setValue((uint16_t*)&gyroZ_int, 2); // 1 = 1 byte = 8 bits
+    //      TOF_1_Characteristic->notify();
+    //    } else {
+    //      GYROZ_Characteristic->setValue((uint8_t*)&TOF_NULL, 2);
+    //      GYROZ_Characteristic->notify();
+    //    }
     Pitch_Characteristic->setValue((uint8_t*)&Pitch, 1);
     Pitch_Characteristic->notify();
     Yaw_Characteristic->setValue((uint8_t*)&Yaw, 1);
@@ -228,15 +271,33 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                          );
   TOF_2_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE ACCELL Characteristic
-  Accel_Characteristic = MovementService->createCharacteristic(
-                           ACCELEROMETER_UUID,
+  // Create a GYROX Characteristic
+  GYROX_Characteristic = MovementService->createCharacteristic(
+                           GYROX_UUID,
                            BLECharacteristic::PROPERTY_READ   |
                            BLECharacteristic::PROPERTY_WRITE  |
                            BLECharacteristic::PROPERTY_NOTIFY |
                            BLECharacteristic::PROPERTY_INDICATE
                          );
-  Accel_Characteristic->addDescriptor(new BLE2902());
+  GYROX_Characteristic->addDescriptor(new BLE2902());
+  // Create a GYROY Characteristic
+  GYROY_Characteristic = MovementService->createCharacteristic(
+                           GYROY_UUID,
+                           BLECharacteristic::PROPERTY_READ   |
+                           BLECharacteristic::PROPERTY_WRITE  |
+                           BLECharacteristic::PROPERTY_NOTIFY |
+                           BLECharacteristic::PROPERTY_INDICATE
+                         );
+  GYROY_Characteristic->addDescriptor(new BLE2902());
+  // Create a GYROZ Characteristic
+  GYROZ_Characteristic = MovementService->createCharacteristic(
+                           GYROZ_UUID,
+                           BLECharacteristic::PROPERTY_READ   |
+                           BLECharacteristic::PROPERTY_WRITE  |
+                           BLECharacteristic::PROPERTY_NOTIFY |
+                           BLECharacteristic::PROPERTY_INDICATE
+                         );
+  GYROZ_Characteristic->addDescriptor(new BLE2902());
 
   // Create a BLE PITCH Characteristic
   Pitch_Characteristic = MovementService->createCharacteristic(
@@ -302,7 +363,7 @@ void SD_Init() {
 
 }
 
-void readFile(fs::FS &fs, const char * path) {
+void readFile(fs::FS & fs, const char * path) {
   Serial.printf("Reading file: %s\n", path);
 
   File file = fs.open(path);
@@ -318,7 +379,7 @@ void readFile(fs::FS &fs, const char * path) {
   file.close();
 }
 
-void writeFile(fs::FS &fs, const char * path, const char * message) {
+void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file: %s\n", path);
 
   File file = fs.open(path, FILE_WRITE);
@@ -334,7 +395,7 @@ void writeFile(fs::FS &fs, const char * path, const char * message) {
   file.close();
 }
 
-void appendFile(fs::FS &fs, const char * path, const char * message) {
+void appendFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Appending to file: %s\n", path);
 
   File file = fs.open(path, FILE_APPEND);
@@ -350,7 +411,7 @@ void appendFile(fs::FS &fs, const char * path, const char * message) {
   file.close();
 }
 
-void deleteFile(fs::FS &fs, const char * path) {
+void deleteFile(fs::FS & fs, const char * path) {
   Serial.printf("Deleting file: %s\n", path);
   if (fs.remove(path)) {
     Serial.println("File deleted");
