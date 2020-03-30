@@ -14,9 +14,7 @@
 #define TOF_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
 
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
-#define GYROX_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
-#define GYROY_UUID  "90694b00-7941-4734-a674-c893256ed3b4"
-#define GYROZ_UUID "a5fe0deb-b6ad-47d0-8e69-b41b9449da07"
+#define GYRO_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
 #define PITCH_UUID        "75fca86d-0174-4f94-89b7-1b5957d066ae" //up down
 #define YAW_UUID        "3f59044f-4fe7-472c-9812-7051f0f35177" // left right
 
@@ -32,9 +30,9 @@ VL53L1X sensor2;
 //ICM20948 Private Variables
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
 float AcX, AcY, AcZ;
-float gyroX, gyroY, gyroZ;
-byte gyrobyte[3] = {0, 0, 0};
-unsigned int gyroX_int, gyroY_int, gyroZ_int;
+float gyro_float[3];
+long gyro_int[3];
+byte gyro_byte[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //3 bytes each: 1 byte sign 2 byte data
 int status;
 int Pitch, Yaw;
 //BLE Private Variables
@@ -42,9 +40,7 @@ BLEServer* pServer = NULL;
 BLECharacteristic* TOF_Characteristic = NULL;
 BLECharacteristic* Pitch_Characteristic = NULL;
 BLECharacteristic* Yaw_Characteristic = NULL;
-BLECharacteristic* GYROX_Characteristic = NULL;
-BLECharacteristic* GYROY_Characteristic = NULL;
-BLECharacteristic* GYROZ_Characteristic = NULL;
+BLECharacteristic* GYRO_Characteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
@@ -62,7 +58,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
 struct splitLong { //split long into 4 byte sized packets
   union {
     long value;
-    char split[4];
+    char split[2];
   } __attribute__((packed));
 };
 
@@ -81,20 +77,8 @@ void loop()
 {
   //  GetSensor();
   //  BLE_Notify();
-  unsigned long value = 12345678;
-  unsigned long val2;
-  byte arr[4];
 
-  LongByteConverter.value = value;
 
-  int i ;
-  for ( i = 3 ; i >= 0 ; i--) {
-    Serial.print(LongByteConverter.split[i], HEX);
-    arr[i] = LongByteConverter.split[i];
-  }
-  Serial.println(" ");
-  val2 = * ((unsigned long *) arr ) ;
-  Serial.println(val2);
 }
 
 void GetSensor() {
@@ -142,17 +126,37 @@ void getICM20948() {
   //  Serial.print(Yaw);
   //  Serial.println  ("\t");
 
-  gyroX = IMU.getGyroX_rads();
-  gyroY = IMU.getGyroY_rads();
-  gyroZ = IMU.getGyroZ_rads();
+  gyro_float[1] = IMU.getGyroX_rads();
+  gyro_float[2] = IMU.getGyroY_rads();
+  gyro_float[3] = IMU.getGyroZ_rads();
 
-  gyroX_int = int ( gyroX * 1000); //  cast into 2 bytes == 0 to 65535 and -32768 < a < 32767
-  gyroY_int = int (gyroY * 1000); // if value == - 32767, change to 0
-  gyroZ_int = int (gyroZ * 1000);// if value == 32768, change to 65535
-
-  gyroX_int = gyroX_int + 32767;
-  gyroY_int = gyroX_int + 32767;
-  gyroZ_int = gyroX_int + 32767;
+  for ( int i = 0 ; i < 3 ; i++) {
+    gyro_int[i] = gyro_float[i] * 1000;
+    if (abs( gyro_int[i] ) > 65535) { // if mod > 65535 set value = 0
+      gyro_int[i] = 0;
+    }
+    else if (gyro_int[i] < 0 ) { //-ve value
+      gyro_byte [i * 3 ] = 0; //1 ,4 ,7 are sign bytes
+    }
+    else {
+      gyro_byte [i * 3 ] = 1;
+    }
+    Serial.print("gyro sign : ");
+    Serial.println ( gyro_byte[i * 3]);
+    byte arr[2];
+    LongByteConverter.value = gyro_int[i];
+    for ( int j = 1 ; j >= 0 ; j--) {
+      arr[j] = LongByteConverter.split[j];
+    }
+    gyro_byte[i * 3 + 1] = arr [1]; // 1, 4, 7
+    gyro_byte[i * 3 + 2] = arr[0]; // 2 , 5, 8
+  }
+  for ( int j = 0 ; j < 9 ; j ++) {
+    Serial.print (gyro_byte[j]);
+    if ( j == 2 || j == 5 || j == 8 ) {
+      Serial.println (" ");
+    }
+  }
 
   //  Serial.print (" GYROX: ");
   //  Serial.print(gyroX);
@@ -206,33 +210,12 @@ void BLE_Notify() {
   if (deviceConnected) {
     TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
     TOF_Characteristic->notify();
-
-    //    if ( gyroX_int > 65535) {
-    //      GYROX_Characteristic->setValue((uint8_t*)&gyroX_int, 2); // 1 = 1 byte = 8 bits
-    //      GYROX_Characteristic->notify();
-    //    } else {
-    //      GYROX_Characteristic->setValue((uint8_t*)&TOF_NULL, 2);
-    //      GYROX_Characteristic->notify();
-    //    }
-    //    if ( gyroY_int > 65535) {
-    //      GYROY_Characteristic->setValue((uint8_t*)&gyroY_int, 2); // 1 = 1 byte = 8 bits
-    //      GYROY_Characteristic->notify();
-    //    } else {
-    //      GYROY_Characteristic->setValue((uint8_t*)&TOF_NULL, 2);
-    //      GYROY_Characteristic->notify();
-    //    }
-    //    if ( gyroZ_int > 65535) {
-    //      TOF_1_Characteristic->setValue((uint16_t*)&gyroZ_int, 2); // 1 = 1 byte = 8 bits
-    //      TOF_1_Characteristic->notify();
-    //    } else {
-    //      GYROZ_Characteristic->setValue((uint8_t*)&TOF_NULL, 2);
-    //      GYROZ_Characteristic->notify();
-    //    }
+    GYRO_Characteristic->setValue(gyro_byte , 9);
+    GYRO_Characteristic->notify();
     Pitch_Characteristic->setValue((uint8_t*)&Pitch, 1);
     Pitch_Characteristic->notify();
     Yaw_Characteristic->setValue((uint8_t*)&Yaw, 1);
     Yaw_Characteristic->notify();
-
     delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
   // disconnecting
@@ -270,32 +253,14 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   TOF_Characteristic->addDescriptor(new BLE2902());
 
   // Create a GYROX Characteristic
-  GYROX_Characteristic = MovementService->createCharacteristic(
-                           GYROX_UUID,
-                           BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_WRITE  |
-                           BLECharacteristic::PROPERTY_NOTIFY |
-                           BLECharacteristic::PROPERTY_INDICATE
-                         );
-  GYROX_Characteristic->addDescriptor(new BLE2902());
-  // Create a GYROY Characteristic
-  GYROY_Characteristic = MovementService->createCharacteristic(
-                           GYROY_UUID,
-                           BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_WRITE  |
-                           BLECharacteristic::PROPERTY_NOTIFY |
-                           BLECharacteristic::PROPERTY_INDICATE
-                         );
-  GYROY_Characteristic->addDescriptor(new BLE2902());
-  // Create a GYROZ Characteristic
-  GYROZ_Characteristic = MovementService->createCharacteristic(
-                           GYROZ_UUID,
-                           BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_WRITE  |
-                           BLECharacteristic::PROPERTY_NOTIFY |
-                           BLECharacteristic::PROPERTY_INDICATE
-                         );
-  GYROZ_Characteristic->addDescriptor(new BLE2902());
+  GYRO_Characteristic = MovementService->createCharacteristic(
+                          GYRO_UUID,
+                          BLECharacteristic::PROPERTY_READ   |
+                          BLECharacteristic::PROPERTY_WRITE  |
+                          BLECharacteristic::PROPERTY_NOTIFY |
+                          BLECharacteristic::PROPERTY_INDICATE
+                        );
+  GYRO_Characteristic->addDescriptor(new BLE2902());
 
   // Create a BLE PITCH Characteristic
   Pitch_Characteristic = MovementService->createCharacteristic(
