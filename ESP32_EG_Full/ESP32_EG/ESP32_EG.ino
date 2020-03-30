@@ -67,11 +67,13 @@ void setup()
   Serial.begin (115200);
   Sensor_Init();
   BLE_Init();
+  delay(1000);
   SD_Init();
 }
 
 void loop()
 {
+  //  Connect_wifi();
   GetSensor();
   BLE_Notify();
   //  Serial.print("TOF ");
@@ -102,7 +104,7 @@ void GetSensor() {
       TOF_byte[i] = TOF_cm[i];
     }
   }
-  getICM20948();
+  //  getICM20948();
 }
 void getICM20948() {
   IMU.readSensor();
@@ -226,7 +228,7 @@ void Sensor_Init() {
   sensor2.setTimeout(500);
   sensor1.startContinuous(33);
   sensor2.startContinuous(33);
-  initICM20948();
+  //  initICM20948();
 }
 void initICM20948() {
   while (!Serial) {}
@@ -263,6 +265,58 @@ void initICM20948() {
   Serial.println("Calibration DONE");
 }
 
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  //if you used auto generated SSID, print it
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+}
+
+void Connect_wifi() {
+  if ( digitalRead(TRIGGER_PIN) == LOW ) {
+    // poor mans debounce/press-hold, code not ideal for production
+    delay(50);
+    if ( digitalRead(TRIGGER_PIN) == LOW ) {
+      Serial.println("Button Pressed");
+      // still holding button for 3000 ms, reset settings, code not ideaa for production
+      delay(3000); // reset delay hold
+      if ( digitalRead(TRIGGER_PIN) == LOW ) {
+        Serial.println("Button Held");
+        Serial.println("Erasing Config, restarting");
+        wm.resetSettings();
+        ESP.restart();
+      }
+
+      // start portal w delay
+      Serial.println("Starting config portal");
+      wm.setConfigPortalTimeout(120);
+
+      if (!wm.startConfigPortal("OnDemandAP", "password")) {
+        Serial.println("failed to connect or hit timeout");
+        delay(3000);
+        // ESP.restart();
+      } else {
+        //if you get here you have connected to the WiFi
+        Serial.println("connected...yeey :)");
+      }
+    }
+  }
+}
+void WIFI_Init() {
+  WiFi.mode(WIFI_STA);
+  //WiFiManager
+  //Local intialization. Once its business is done, there is no need to keep it around
+  WiFiManager wm;
+  //reset settings - for testing
+  // wm.resetSettings();
+  //set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
+  wm.setAPCallback(configModeCallback);
+
+  //fetches ssid and pass and tries to connect
+  //if it does not connect it starts an access point with the specified name
+  //here  "AutoConnectAP"
+  //and goes into a blocking loop awaiting configuration
+}
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
