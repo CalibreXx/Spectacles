@@ -9,23 +9,34 @@
 #include "SD.h"
 #include "SPI.h"
 #include <WiFiManager.h>
+#include "time.h"
 
 // SERVICE and CHARACTERISTICS UUID for BLE
 #define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
 #define TOF_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
+#define LDR_UUID "e9ff40d9-21da-44dd-b125-ad2d8ef6b026"
 
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
 #define ROTATION_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
 
 //XSHUT OF TOF
-#define TOF_1 25
-#define TOF_2 26
+#define TOF_1 25 //0x23
+#define TOF_2 26 //0x24
+#define TOF_3 27 //0x25
+
+#define TRIGGER_PIN 14
+const int LDR_PIN = 34;
+// LDR
+int lightVal;
+byte light_byte[2] = { 0 , 0 };
 
 //TOF Private Variables
 VL53L1X sensor1;
+VL53L1X sensor2;
+VL53L1X sensor3;
 unsigned int TOF_cm[3] = {0, 0, 0};
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each data limited to 255cm range
-VL53L1X sensor2;
+
 //ICM20948 Private Variables
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
 float gyro_float[3] = {0, 0, 0};
@@ -34,10 +45,12 @@ float acc_cal[3] = {0, 0, 0} ;
 byte rotation_byte[3] = {0, 0, 0};
 float elapsedTime, currentTime, previousTime;
 int status;
+
 //BLE Private Variables
 BLEServer* pServer = NULL;
 BLECharacteristic* TOF_Characteristic = NULL;
 BLECharacteristic* ROTATION_Characteristic = NULL;
+BLECharacteristic* LDR_Characteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
@@ -67,7 +80,6 @@ void setup()
   Serial.begin (115200);
   Sensor_Init();
   BLE_Init();
-  delay(1000);
   SD_Init();
 }
 
@@ -76,14 +88,18 @@ void loop()
   //  Connect_wifi();
   GetSensor();
   BLE_Notify();
-  //  Serial.print("TOF ");
-  //  for ( int i = 0 ; i < 2 ; i++) {
-  //    Serial.print (i);
-  //    Serial.print(": ");
-  //    Serial.print(TOF_byte[i]);
-  //    Serial.print("\t");
-  //  }
-  //  Serial.println(" ");
+  Serial.print("TOF ");
+  for ( int i = 0 ; i < 3 ; i++) {
+    Serial.print (i);
+    Serial.print(": ");
+    Serial.print(TOF_byte[i]);
+    Serial.print("\t");
+  }
+
+  Serial.println(" ");
+  Serial.print("LDR: ");
+  Serial.println(lightVal);
+
   //  Serial.print("Rotation ");
   //  for ( int i = 0 ; i < 3 ; i++) {
   //    Serial.print (i);
@@ -96,6 +112,7 @@ void loop()
 void GetSensor() {
   TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
+  TOF_cm[2] = (sensor3.readRangeContinuousMillimeters()) / 10;
   for (int i = 0 ; i < 3 ; i++) {
     if ( TOF_cm[i] > 255 ) {
       TOF_byte[i] = 0; // if value greater than 255cm
@@ -104,6 +121,10 @@ void GetSensor() {
       TOF_byte[i] = TOF_cm[i];
     }
   }
+  lightVal = analogRead(LDR_PIN);
+  LongByteConverter.value = lightVal;
+  light_byte[0] = LongByteConverter.split[1];
+  light_byte[1] = LongByteConverter.split[0];
   //  getICM20948();
 }
 void getICM20948() {
@@ -183,6 +204,8 @@ void BLE_Notify() {
     TOF_Characteristic->notify();
     ROTATION_Characteristic->setValue(rotation_byte, 3);
     ROTATION_Characteristic->notify();
+    LDR_Characteristic->setValue(light_byte, 2);
+    LDR_Characteristic->notify();
     delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
   // disconnecting
@@ -211,8 +234,10 @@ void LogtoSD(String Data) { //convert data to char array and log into sd card
 void Sensor_Init() {
   pinMode(TOF_1, OUTPUT);
   pinMode(TOF_2, OUTPUT);
+  pinMode(TOF_3, OUTPUT);
   digitalWrite(TOF_1, LOW);
   digitalWrite(TOF_2, LOW);
+  digitalWrite(TOF_3, LOW);
   delay(500);
   pinMode(TOF_1, INPUT);
   delay(150);
@@ -224,11 +249,19 @@ void Sensor_Init() {
   sensor2.init(true);
   delay(100);
   sensor2.setAddress((uint8_t)24); //Set add at 0x24
+  pinMode(TOF_3, INPUT);
+  delay(150);
+  sensor3.init(true);
+  delay(100);
+  sensor3.setAddress((uint8_t)25); //Set add at 0x25
   sensor1.setTimeout(500);
   sensor2.setTimeout(500);
+  sensor3.setTimeout(500);
   sensor1.startContinuous(33);
   sensor2.startContinuous(33);
+  sensor3.startContinuous(33);
   //  initICM20948();
+
 }
 void initICM20948() {
   while (!Serial) {}
@@ -273,49 +306,23 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 }
 
 void Connect_wifi() {
-  if ( digitalRead(TRIGGER_PIN) == LOW ) {
-    // poor mans debounce/press-hold, code not ideal for production
-    delay(50);
-    if ( digitalRead(TRIGGER_PIN) == LOW ) {
-      Serial.println("Button Pressed");
-      // still holding button for 3000 ms, reset settings, code not ideaa for production
-      delay(3000); // reset delay hold
-      if ( digitalRead(TRIGGER_PIN) == LOW ) {
-        Serial.println("Button Held");
-        Serial.println("Erasing Config, restarting");
-        wm.resetSettings();
-        ESP.restart();
-      }
-
-      // start portal w delay
-      Serial.println("Starting config portal");
-      wm.setConfigPortalTimeout(120);
-
-      if (!wm.startConfigPortal("OnDemandAP", "password")) {
-        Serial.println("failed to connect or hit timeout");
-        delay(3000);
-        // ESP.restart();
-      } else {
-        //if you get here you have connected to the WiFi
-        Serial.println("connected...yeey :)");
-      }
+  if ( digitalRead(TRIGGER_PIN) == LOW){
+    WiFi.mode(WIFI_STA);
+    WiFiManager wm;
+    //reset settings - for testing
+    //wifiManager.resetSettings();
+    // set configportal timeout
+    wm.setConfigPortalTimeout(200);
+    if (!wm.startConfigPortal("OnDemandAP")) {
+      Serial.println("failed to connect and hit timeout");
+      delay(3000);
+      //reset and try again, or maybe put it to deep sleep
+      ESP.restart();
+      delay(5000);
     }
+    //if you get here you have connected to the WiFi
+    Serial.println("connected...yeey :)");
   }
-}
-void WIFI_Init() {
-  WiFi.mode(WIFI_STA);
-  //WiFiManager
-  //Local intialization. Once its business is done, there is no need to keep it around
-  WiFiManager wm;
-  //reset settings - for testing
-  // wm.resetSettings();
-  //set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
-  wm.setAPCallback(configModeCallback);
-
-  //fetches ssid and pass and tries to connect
-  //if it does not connect it starts an access point with the specified name
-  //here  "AutoConnectAP"
-  //and goes into a blocking loop awaiting configuration
 }
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
@@ -345,6 +352,16 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                               BLECharacteristic::PROPERTY_INDICATE
                             );
   ROTATION_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a LDR Characteristic
+  LDR_Characteristic = TOFService->createCharacteristic(
+                         LDR_UUID,
+                         BLECharacteristic::PROPERTY_READ   |
+                         BLECharacteristic::PROPERTY_WRITE  |
+                         BLECharacteristic::PROPERTY_NOTIFY |
+                         BLECharacteristic::PROPERTY_INDICATE
+                       );
+  LDR_Characteristic->addDescriptor(new BLE2902());
 
   // Start the service
   TOFService->start();
