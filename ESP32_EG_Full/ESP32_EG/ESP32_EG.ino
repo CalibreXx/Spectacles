@@ -8,8 +8,7 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
-#include <WiFiManager.h>
-#include "time.h"
+#include <FreeSixIMU.h>
 
 // SERVICE and CHARACTERISTICS UUID for BLE
 #define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
@@ -24,27 +23,28 @@
 #define TOF_2 26 //0x24
 #define TOF_3 27 //0x25
 
-#define TRIGGER_PIN 14
-const int LDR_PIN = 34;
+const int LDR_PIN = 34; // analog pins
 // LDR
 int lightVal;
-byte light_byte[2] = { 0 , 0 };
+byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //TOF Private Variables
 VL53L1X sensor1;
 VL53L1X sensor2;
 VL53L1X sensor3;
 unsigned int TOF_cm[3] = {0, 0, 0};
-byte TOF_byte[3] = {0, 0, 0}; // 1 byte each data limited to 255cm range
+byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 //ICM20948 Private Variables
 ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
 float gyro_float[3] = {0, 0, 0};
 float gyro_cal[3] = {0, 0, 0};
 float acc_cal[3] = {0, 0, 0} ;
-byte rotation_byte[3] = {0, 0, 0};
+byte rotation_byte[3] = {0, 0, 0}; // 1: Pitch , 2: Yaw 3: Roll
 float elapsedTime, currentTime, previousTime;
 int status;
+
+FreeSixIMU imu;
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
@@ -81,11 +81,11 @@ void setup()
   Sensor_Init();
   BLE_Init();
   SD_Init();
+  imu.init();
 }
 
 void loop()
 {
-  //  Connect_wifi();
   GetSensor();
   BLE_Notify();
   Serial.print("TOF ");
@@ -126,76 +126,68 @@ void GetSensor() {
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
   //  getICM20948();
+  getSIXDOF();
 }
-void getICM20948() {
-  IMU.readSensor();
-  // display the data
-  float acc_float[3];
-  acc_float[0] = IMU.getAccelX_mss();
-  acc_float[1] = IMU.getAccelY_mss();
-  acc_float[2] = IMU.getAccelZ_mss();
-  for ( int i = 0 ; i < 3  ; i++) {
-    acc_float[i] -= acc_cal[i]; // calibration
-  }
 
-  // Calculating Roll and Pitch from the accelerometer data
-  float accAngleX = (atan(acc_float[1] / sqrt(pow(acc_float[0], 2) + pow(acc_float[2], 2))) * 180 / PI);
-  float accAngleY = (atan(-1 * acc_float[0] / sqrt(pow(acc_float[1], 2) + pow(acc_float[2], 2))) * 180 / PI);
-  Serial.print("Roll");
-  Serial.println (accAngleX);
-  Serial.print("Pitch");
-  Serial.println(accAngleY);
-  previousTime = currentTime;
-  currentTime = millis();
-  elapsedTime = (currentTime - previousTime) / 1000; //seconds elapsed
-  float gyro[3];
-  gyro[0] = IMU.getGyroX_rads();
-  gyro[1] = IMU.getGyroY_rads();
-  gyro[2] = IMU.getGyroZ_rads();
-
-  for ( int i = 0 ; i < 3 ; i ++) {
-    gyro[i] -= gyro_cal[i]; //calibration
-    gyro_float[i] = gyro_float[i] + gyro[i] * elapsedTime;
-    gyro_float[i] *= 57.2958; // convert to degrees
-  }
-
-  float rotation [3]; // pitch roll yaw
-  rotation[2] = rotation[2] + gyro[2] * elapsedTime; //yaw
-  // Complementary filter - combine acceleromter and gyro angle values
-  rotation[1] = 0.96 * gyro_float[0] + 0.04 * accAngleX; //roll
-  rotation[0] = 0.96 * gyro_float[1] + 0.04 * accAngleY; //pitch
-
-  for ( int i = 0 ; i < 3 ; i++) {
-    if (rotation[i] < 0) {
-      rotation[i] += 90; //angle is 0 to 180
-    }
-    rotation_byte[i] = uint8_t(rotation[i]);
-  }
-  //  for ( int i = 0 ; i < 3 ; i++) {
-  //    gyro_int[i] = gyro_float[i] * 1000;
-  //    if (abs( gyro_int[i] ) > 65535) { // if mod > 65535 set value = 0
-  //      gyro_int[i] = 0;
-  //    }
-  //    else if (gyro_int[i] < 0 ) { //-ve value
-  //      gyro_byte [i * 3 ] = 0; //1 ,4 ,7 are sign bytes
-  //    }
-  //    else {
-  //      gyro_byte [i * 3 ] = 1;
-  //    }
-  //    Serial.print("gyro sign : ");
-  //    Serial.println ( gyro_byte[i * 3]);
-  //    byte arr[2];
-  //    LongByteConverter.value = gyro_int[i];
-  //    for ( int j = 1 ; j >= 0 ; j--) {
-  //      arr[j] = LongByteConverter.split[j];
-  //    }
-  //    gyro_byte[i * 3 + 1] = arr [1]; // 1, 4, 7
-  //    gyro_byte[i * 3 + 2] = arr[0]; // 2 , 5, 8
-  //  }
-  //  Serial.print(IMU.getMagX_uT(),6);
-  //  Serial.print("\t");
-  //  Serial.println(IMU.getTemperature_C(),6);
+void getSIXDOF() {
+  float angles[3];
+  imu.getYawPitchRoll(angles);
+  Serial.print("Yaw: ");
+  Serial.print(angles[0]);
+  Serial.print("    Pitch: ");
+  Serial.print(angles[1]);
+  Serial.print("    Roll: ");
+  Serial.println(angles[2]);
 }
+
+//void getICM20948() {
+//  IMU.readSensor();
+//  // display the data
+//  float acc_float[3];
+//  acc_float[0] = IMU.getAccelX_mss();
+//  acc_float[1] = IMU.getAccelY_mss();
+//  acc_float[2] = IMU.getAccelZ_mss();
+//  for ( int i = 0 ; i < 3  ; i++) {
+//    acc_float[i] -= acc_cal[i]; // calibration
+//  }
+//
+//  // Calculating Roll and Pitch from the accelerometer data
+//  float accAngleX = (atan(acc_float[1] / sqrt(pow(acc_float[0], 2) + pow(acc_float[2], 2))) * 180 / PI);
+//  float accAngleY = (atan(-1 * acc_float[0] / sqrt(pow(acc_float[1], 2) + pow(acc_float[2], 2))) * 180 / PI);
+//  Serial.print("Roll");
+//  Serial.println (accAngleX);
+//  Serial.print("Pitch");
+//  Serial.println(accAngleY);
+//  previousTime = currentTime;
+//  currentTime = millis();
+//  elapsedTime = (currentTime - previousTime) / 1000; //seconds elapsed
+//  float gyro[3];
+//  gyro[0] = IMU.getGyroX_rads();
+//  gyro[1] = IMU.getGyroY_rads();
+//  gyro[2] = IMU.getGyroZ_rads();
+//
+//  for ( int i = 0 ; i < 3 ; i ++) {
+//    gyro[i] -= gyro_cal[i]; //calibration
+//    gyro_float[i] = gyro_float[i] + gyro[i] * elapsedTime;
+//    gyro_float[i] *= 57.2958; // convert to degrees
+//  }
+//
+//  float rotation [3]; // pitch roll yaw
+//  rotation[2] = rotation[2] + gyro[2] * elapsedTime; //yaw
+//  // Complementary filter - combine acceleromter and gyro angle values
+//  rotation[1] = 0.96 * gyro_float[0] + 0.04 * accAngleX; //roll
+//  rotation[0] = 0.96 * gyro_float[1] + 0.04 * accAngleY; //pitch
+//
+//  for ( int i = 0 ; i < 3 ; i++) {
+//    if (rotation[i] < 0) {
+//      rotation[i] += 90; //angle is 0 to 180
+//    }
+//    rotation_byte[i] = uint8_t(rotation[i]);
+//  }
+//  //  Serial.print(IMU.getMagX_uT(),6);
+//  //  Serial.print("\t");
+//  //  Serial.println(IMU.getTemperature_C(),6);
+//}
 
 void BLE_Notify() {
   //   notify changed value
@@ -296,33 +288,7 @@ void initICM20948() {
     acc_cal[i] /= 2000;
   }
   Serial.println("Calibration DONE");
-}
 
-void configModeCallback (WiFiManager *myWiFiManager) {
-  Serial.println("Entered config mode");
-  Serial.println(WiFi.softAPIP());
-  //if you used auto generated SSID, print it
-  Serial.println(myWiFiManager->getConfigPortalSSID());
-}
-
-void Connect_wifi() {
-  if ( digitalRead(TRIGGER_PIN) == LOW){
-    WiFi.mode(WIFI_STA);
-    WiFiManager wm;
-    //reset settings - for testing
-    //wifiManager.resetSettings();
-    // set configportal timeout
-    wm.setConfigPortalTimeout(200);
-    if (!wm.startConfigPortal("OnDemandAP")) {
-      Serial.println("failed to connect and hit timeout");
-      delay(3000);
-      //reset and try again, or maybe put it to deep sleep
-      ESP.restart();
-      delay(5000);
-    }
-    //if you get here you have connected to the WiFi
-    Serial.println("connected...yeey :)");
-  }
 }
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
