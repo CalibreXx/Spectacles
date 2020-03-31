@@ -1,6 +1,5 @@
 #include <Wire.h>
 #include <VL53L1X.h>
-#include "ICM20948.h"
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
@@ -9,6 +8,8 @@
 #include "SD.h"
 #include "SPI.h"
 #include <FreeSixIMU.h>
+#include <ErriezDS3231.h>
+
 
 // SERVICE and CHARACTERISTICS UUID for BLE
 #define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
@@ -18,10 +19,13 @@
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
 #define ROTATION_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
 
+#define TIME_SERVICE_UUID "57675859-a6f4-4445-9492-051aa8514552"
+#define TIME_UUID "10ccece5-e44b-4502-8b69-09646d4072e1"
+
 //XSHUT OF TOF
-#define TOF_1 25 //0x23
-#define TOF_2 26 //0x24
-#define TOF_3 27 //0x25
+#define TOF_1 25 //0x23 LEFT
+#define TOF_2 26 //0x24 CENTRE
+#define TOF_3 27 //0x25 RIGHT
 
 const int LDR_PIN = 34; // analog pins
 // LDR
@@ -36,24 +40,26 @@ unsigned int TOF_cm[3] = {0, 0, 0};
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 //ICM20948 Private Variables
-ICM20948 IMU(Wire, 0x68); // an ICM20948 object with the ICM-20948 sensor on I2C bus 0 with address 0x68
-float gyro_float[3] = {0, 0, 0};
-float gyro_cal[3] = {0, 0, 0};
-float acc_cal[3] = {0, 0, 0} ;
-byte rotation_byte[3] = {0, 0, 0}; // 1: Pitch , 2: Yaw 3: Roll
-float elapsedTime, currentTime, previousTime;
-int status;
-
 FreeSixIMU imu;
+float IMU_cal[3] = {0, 0, 0};
+byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
 BLECharacteristic* TOF_Characteristic = NULL;
 BLECharacteristic* ROTATION_Characteristic = NULL;
 BLECharacteristic* LDR_Characteristic = NULL;
+BLECharacteristic* TIME_Characteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
+
+//RTC
+static DS3231 rtc;
+static DS3231_DateTime dt;
+long unsigned int epoch;
+
+static void setDateTime(int variable[7]) ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -62,6 +68,34 @@ class MyServerCallbacks: public BLEServerCallbacks {
 
     void onDisconnect(BLEServer* pServer) {
       deviceConnected = false;
+    }
+};
+
+class MyCallbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *TIME_Characteristic) {
+      std::string value = TIME_Characteristic->getValue();
+      int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
+      int variable[7]; //day month hour, min, sec , yyyy dayof the week
+      int j = 0;
+      if (value.length() == 15 ) {
+        for ( int i = 0 ; i < value.length() ; i++) {
+          if ( value[i] >= '0' && value[i] <= '9') {
+            BLETime[j] = value[i] - '0';
+            j++;
+          }
+        }
+        for ( int i = 0 ; i < 5; i++) { //DD MM HH SS MM
+          variable[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
+        }
+        variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13];
+        variable[6] = BLETime[14];
+        setDateTime(variable);
+        for ( int i = 0 ; i < 7 ; i++) {
+          Serial.println(variable[i]);
+        }
+        Serial.print("Set new time completed");
+      }
+
     }
 };
 
@@ -81,25 +115,28 @@ void setup()
   Sensor_Init();
   BLE_Init();
   SD_Init();
-  imu.init();
+
 }
 
 void loop()
 {
+  GetEpoch();
   GetSensor();
   BLE_Notify();
-  Serial.print("TOF ");
-  for ( int i = 0 ; i < 3 ; i++) {
-    Serial.print (i);
-    Serial.print(": ");
-    Serial.print(TOF_byte[i]);
-    Serial.print("\t");
-  }
-
-  Serial.println(" ");
-  Serial.print("LDR: ");
-  Serial.println(lightVal);
-
+  delay(1000);
+  Serial.println(epoch);
+  //  Serial.print("TOF ");
+  //  for ( int i = 0 ; i < 3 ; i++) {
+  //    Serial.print (i);
+  //    Serial.print(": ");
+  //    Serial.print(TOF_byte[i]);
+  //    Serial.print("\t");
+  //  }
+  //
+  //  Serial.println(" ");
+  //  Serial.print("LDR: ");
+  //  Serial.println(lightVal);
+  //
   //  Serial.print("Rotation ");
   //  for ( int i = 0 ; i < 3 ; i++) {
   //    Serial.print (i);
@@ -109,6 +146,29 @@ void loop()
   //  }
 }
 
+static void GetEpoch() {
+  DS3231_DateTime dt;
+  if (rtc.getDateTime(&dt)) {
+    Serial.println(F("Error: Read date/time failed"));
+    return;
+  }
+
+  // Print 32-bit epoch time
+  epoch = rtc.getEpochTime(&dt);
+}
+static void setDateTime(int variable[]) {
+  DS3231_DateTime dt = {
+    .second = variable[4],
+    .minute = variable[3],
+    .hour = variable[2],
+    .dayWeek = variable[6],  // 1 = Monday
+    .dayMonth = variable[0],
+    .month = variable[1],
+    .year = variable[5]
+  };
+  // Set new RTC date/time
+  rtc.setDateTime(&dt);
+}
 void GetSensor() {
   TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
@@ -125,69 +185,8 @@ void GetSensor() {
   LongByteConverter.value = lightVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
-  //  getICM20948();
   getSIXDOF();
 }
-
-void getSIXDOF() {
-  float angles[3];
-  imu.getYawPitchRoll(angles);
-  Serial.print("Yaw: ");
-  Serial.print(angles[0]);
-  Serial.print("    Pitch: ");
-  Serial.print(angles[1]);
-  Serial.print("    Roll: ");
-  Serial.println(angles[2]);
-}
-
-//void getICM20948() {
-//  IMU.readSensor();
-//  // display the data
-//  float acc_float[3];
-//  acc_float[0] = IMU.getAccelX_mss();
-//  acc_float[1] = IMU.getAccelY_mss();
-//  acc_float[2] = IMU.getAccelZ_mss();
-//  for ( int i = 0 ; i < 3  ; i++) {
-//    acc_float[i] -= acc_cal[i]; // calibration
-//  }
-//
-//  // Calculating Roll and Pitch from the accelerometer data
-//  float accAngleX = (atan(acc_float[1] / sqrt(pow(acc_float[0], 2) + pow(acc_float[2], 2))) * 180 / PI);
-//  float accAngleY = (atan(-1 * acc_float[0] / sqrt(pow(acc_float[1], 2) + pow(acc_float[2], 2))) * 180 / PI);
-//  Serial.print("Roll");
-//  Serial.println (accAngleX);
-//  Serial.print("Pitch");
-//  Serial.println(accAngleY);
-//  previousTime = currentTime;
-//  currentTime = millis();
-//  elapsedTime = (currentTime - previousTime) / 1000; //seconds elapsed
-//  float gyro[3];
-//  gyro[0] = IMU.getGyroX_rads();
-//  gyro[1] = IMU.getGyroY_rads();
-//  gyro[2] = IMU.getGyroZ_rads();
-//
-//  for ( int i = 0 ; i < 3 ; i ++) {
-//    gyro[i] -= gyro_cal[i]; //calibration
-//    gyro_float[i] = gyro_float[i] + gyro[i] * elapsedTime;
-//    gyro_float[i] *= 57.2958; // convert to degrees
-//  }
-//
-//  float rotation [3]; // pitch roll yaw
-//  rotation[2] = rotation[2] + gyro[2] * elapsedTime; //yaw
-//  // Complementary filter - combine acceleromter and gyro angle values
-//  rotation[1] = 0.96 * gyro_float[0] + 0.04 * accAngleX; //roll
-//  rotation[0] = 0.96 * gyro_float[1] + 0.04 * accAngleY; //pitch
-//
-//  for ( int i = 0 ; i < 3 ; i++) {
-//    if (rotation[i] < 0) {
-//      rotation[i] += 90; //angle is 0 to 180
-//    }
-//    rotation_byte[i] = uint8_t(rotation[i]);
-//  }
-//  //  Serial.print(IMU.getMagX_uT(),6);
-//  //  Serial.print("\t");
-//  //  Serial.println(IMU.getTemperature_C(),6);
-//}
 
 void BLE_Notify() {
   //   notify changed value
@@ -198,7 +197,7 @@ void BLE_Notify() {
     ROTATION_Characteristic->notify();
     LDR_Characteristic->setValue(light_byte, 2);
     LDR_Characteristic->notify();
-    delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
+    delay(3); // bluetooth stack wi3ll go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
   // disconnecting
   if (!deviceConnected && oldDeviceConnected) {
@@ -223,6 +222,37 @@ void LogtoSD(String Data) { //convert data to char array and log into sd card
   appendFile(SD, "/data.txt", copy);
 }
 
+void getSIXDOF() {
+  float angles[3];
+  imu.getYawPitchRoll(angles);
+  for (int i = 0 ; i < 3 ; i++) {
+    angles[i] -= IMU_cal[i];
+    angles[i] += 90; //0-180 range
+    if ( angles[i] > 180 ) {
+      angles[i] = 180 - (angles[i] - 180 );
+    }
+    else if (angles[i] < 0) {
+      angles[i] = abs (angles[i]);
+    }
+    rotation_byte[i] = angles[i];
+  }
+}
+
+void initIMU_6DOF() {
+  imu.init();
+  float angles[3];
+  for (int cal_int = 0; cal_int < 1000 ; cal_int ++) {//Run this code 2000 times
+    imu.getYawPitchRoll(angles);
+    IMU_cal[0] += angles[0];
+    IMU_cal[1] += angles[1];
+    IMU_cal[2] += angles[2];
+    delay(3);    //Delay 3us to simulate the 250Hz program loop
+  }
+  for (int i = 0 ; i < 3 ; i++) {
+    IMU_cal[i] /= 1000;
+  }
+  Serial.println("IMU Calibration DONE");
+}
 void Sensor_Init() {
   pinMode(TOF_1, OUTPUT);
   pinMode(TOF_2, OUTPUT);
@@ -252,44 +282,9 @@ void Sensor_Init() {
   sensor1.startContinuous(33);
   sensor2.startContinuous(33);
   sensor3.startContinuous(33);
-  //  initICM20948();
-
+  initIMU_6DOF();
 }
-void initICM20948() {
-  while (!Serial) {}
-  // start communication with IMU
-  status = IMU.begin();
-  Serial.print("status = ");
-  Serial.println(status);
-  if (status < 0) {
-    Serial.println("IMU initialization unsuccessful");
-    Serial.print("Status: ");
-    Serial.println(status);
-    while (1) {}
-  }
 
-  //  IMU.configAccel(ICM20948::ACCEL_RANGE_2G, ICM20948::ACCEL_DLPF_BANDWIDTH_50HZ);
-  //  IMU.configGyro(ICM20948::GYRO_RANGE_2000DPS, ICM20948::GYRO_DLPF_BANDWIDTH_51HZ);
-  //  IMU.setGyroSrd(113); // Output data rate is 1125/(1 + srd) Hz
-  //  IMU.setAccelSrd(113);
-
-  for (int cal_int = 0; cal_int < 1000 ; cal_int ++) {//Run this code 2000 times
-    IMU.readSensor();
-    gyro_cal[0] += IMU.getGyroX_rads();  //Add the gyro x-axis offset to the gyro_x_cal variable
-    gyro_cal[1] += IMU.getGyroY_rads();
-    gyro_cal[2] += IMU.getGyroZ_rads();
-    acc_cal[0] += IMU.getAccelX_mss();
-    acc_cal[1] += IMU.getAccelX_mss();
-    acc_cal[2] += IMU.getAccelX_mss();
-    delay(3);    //Delay 3us to simulate the 250Hz program loop
-  }
-  for (int i = 0 ; i < 3 ; i++) {
-    gyro_cal[i] /= 2000;
-    acc_cal[i] /= 2000;
-  }
-  Serial.println("Calibration DONE");
-
-}
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
@@ -299,6 +294,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Service
   BLEService *TOFService = pServer->createService(TOF_SERVICE_UUID);
   BLEService *MovementService = pServer->createService(MOVEMENT_SERVICE_UUID);
+  BLEService *TIMEService = pServer->createService(TIME_SERVICE_UUID);
   // Create a BLE TOF_1 Characteristic
   TOF_Characteristic = TOFService->createCharacteristic(
                          TOF_UUID,
@@ -329,13 +325,25 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
+  // Create a BLE TOF_1 Characteristic
+  TIME_Characteristic = TIMEService->createCharacteristic(
+                          TIME_UUID,
+                          BLECharacteristic::PROPERTY_WRITE
+                        );
+  TIME_Characteristic->setCallbacks(new MyCallbacks());
+  TIME_Characteristic->addDescriptor(new BLE2902());
+
   // Start the service
   TOFService->start();
   MovementService->start();
+  TIMEService->start();
   // Start advertising
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+
   pAdvertising->addServiceUUID(TOF_SERVICE_UUID);
   pAdvertising->addServiceUUID(MOVEMENT_SERVICE_UUID);
+  pAdvertising->addServiceUUID(TIME_SERVICE_UUID);
+
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
   BLEDevice::startAdvertising();
