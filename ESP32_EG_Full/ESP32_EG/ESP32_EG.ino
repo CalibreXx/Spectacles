@@ -43,6 +43,7 @@ byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 FreeSixIMU imu;
 float IMU_cal[3] = {0, 0, 0};
 byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
+byte acceleration;
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
@@ -58,8 +59,10 @@ uint32_t value = 0;
 static DS3231 rtc;
 static DS3231_DateTime dt;
 long unsigned int epoch;
-
 static void setDateTime(int variable[7]) ;
+
+const unsigned long loopInterval = 1000;
+unsigned long previousTime = 0 ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -120,30 +123,35 @@ void setup()
 
 void loop()
 {
-  GetEpoch();
-  GetSensor();
-  BLE_Notify();
-  delay(1000);
-  Serial.println(epoch);
-  //  Serial.print("TOF ");
-  //  for ( int i = 0 ; i < 3 ; i++) {
-  //    Serial.print (i);
-  //    Serial.print(": ");
-  //    Serial.print(TOF_byte[i]);
-  //    Serial.print("\t");
-  //  }
-  //
-  //  Serial.println(" ");
-  //  Serial.print("LDR: ");
-  //  Serial.println(lightVal);
-  //
-  //  Serial.print("Rotation ");
-  //  for ( int i = 0 ; i < 3 ; i++) {
-  //    Serial.print (i);
-  //    Serial.print(": ");
-  //    Serial.print (rotation_byte[i]);
-  //    Serial.print("\t");
-  //  }
+  unsigned long currentTime = millis();
+  if (currentTime - previousTime >= loopInterval) {
+    GetEpoch();
+    GetSensor();
+    BLE_Notify();
+    Serial.print("Epoch: ");
+    Serial.println(epoch);
+    Serial.print("TOF ");
+    for ( int i = 0 ; i < 3 ; i++) {
+      Serial.print (i);
+      Serial.print(": ");
+      Serial.print(TOF_byte[i]);
+      Serial.print("\t");
+    }
+    //
+    //  Serial.println(" ");
+    //  Serial.print("LDR: ");
+    //  Serial.println(lightVal);
+    //
+    //  Serial.print("Rotation ");
+    //  for ( int i = 0 ; i < 3 ; i++) {
+    //    Serial.print (i);
+    //    Serial.print(": ");
+    //    Serial.print (rotation_byte[i]);
+    //    Serial.print("\t");
+    //  }
+    //  Serial.println(" ");
+    previousTime = currentTime;
+  }
 }
 
 static void GetEpoch() {
@@ -224,6 +232,7 @@ void LogtoSD(String Data) { //convert data to char array and log into sd card
 
 void getSIXDOF() {
   float angles[3];
+  short rawvalues[6];
   imu.getYawPitchRoll(angles);
   for (int i = 0 ; i < 3 ; i++) {
     angles[i] -= IMU_cal[i];
@@ -236,12 +245,14 @@ void getSIXDOF() {
     }
     rotation_byte[i] = angles[i];
   }
+  imu.getRawValues(rawvalues);
+  acceleration = (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
 }
 
 void initIMU_6DOF() {
   imu.init();
   float angles[3];
-  for (int cal_int = 0; cal_int < 1000 ; cal_int ++) {//Run this code 2000 times
+  for (int cal_int = 0; cal_int < 500 ; cal_int ++) {//Run this code 500 times
     imu.getYawPitchRoll(angles);
     IMU_cal[0] += angles[0];
     IMU_cal[1] += angles[1];
@@ -249,7 +260,7 @@ void initIMU_6DOF() {
     delay(3);    //Delay 3us to simulate the 250Hz program loop
   }
   for (int i = 0 ; i < 3 ; i++) {
-    IMU_cal[i] /= 1000;
+    IMU_cal[i] /= 500;
   }
   Serial.println("IMU Calibration DONE");
 }
