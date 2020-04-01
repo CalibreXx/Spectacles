@@ -8,7 +8,7 @@
 #include "SD.h"
 #include "SPI.h"
 #include <FreeSixIMU.h>
-#include <ErriezDS3231.h>
+#include "RTClib.h"
 
 
 // SERVICE and CHARACTERISTICS UUID for BLE
@@ -19,7 +19,7 @@
 
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
 #define ROTATION_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
-#define ACC_UUID "28a246cb-1abb-4965-bd05-9d79f16dd24"
+#define ACCEL_UUID "d0b5f187-ac23-459f-b44b-e20d50bcf656"
 
 #define TIME_SERVICE_UUID "57675859-a6f4-4445-9492-051aa8514552"
 #define TIME_UUID "10ccece5-e44b-4502-8b69-09646d4072e1" // Write Date time etc to this uuid to update time on ESP32
@@ -55,7 +55,7 @@ byte acceleration;
 BLEServer* pServer = NULL;
 BLECharacteristic* TOF_Characteristic = NULL;
 BLECharacteristic* ROTATION_Characteristic = NULL;
-BLECharacteristic* ACC_Characteristic = NULL;
+BLECharacteristic* ACCEL_Characteristic = NULL;
 BLECharacteristic* LDR_Characteristic = NULL;
 BLECharacteristic* TIME_Characteristic = NULL;
 BLECharacteristic* DATA_CALL_Characteristic = NULL;
@@ -66,8 +66,7 @@ bool oldDeviceConnected = false;
 uint32_t value = 0;
 
 //RTC
-static DS3231 rtc;
-static DS3231_DateTime dt;
+RTC_DS3231 rtc;
 long unsigned int epoch;
 static void setDateTime(int variable[7]) ;
 
@@ -105,9 +104,9 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
         }
         variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13];
         variable[6] = BLETime[14];
-        setDateTime(variable);
+        rtc.adjust(DateTime(variable[5], variable[1], variable[0] , variable[2], variable[3], variable[4]));
         for ( int i = 0 ; i < 7 ; i++) {
-          Serial.println(variable[i]);
+        Serial.println(variable[i]);
         }
         Serial.print("Set new time completed");
       }
@@ -143,61 +142,60 @@ void setup()
 
 void loop()
 {
+  //  "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR
+  DateTime now = rtc.now();
+  Serial.print(now.unixtime());
+
   unsigned long currentTime = millis();
+
   if (currentTime - previousTime >= loopInterval) {
-    GetEpoch();
     GetSensor();
     BLE_Notify();
+
+    Serial.print("Epoch: ");
+    Serial.println(epoch);
+    Serial.print("TOF ");
+    for ( int i = 0 ; i < 3 ; i++) {
+      Serial.print (i);
+      Serial.print(": ");
+      Serial.print(TOF_byte[i]);
+      Serial.print("\t");
+    }
+    Serial.print ( "Acceleration: ");
     Serial.println(acceleration);
-    //    Serial.print("Epoch: ");
-    //    Serial.println(epoch);
-    //    Serial.print("TOF ");
-    //    for ( int i = 0 ; i < 3 ; i++) {
-    //      Serial.print (i);
-    //      Serial.print(": ");
-    //      Serial.print(TOF_byte[i]);
-    //      Serial.print("\t");
-    //    }
-    //
-    //  Serial.println(" ");
-    //  Serial.print("LDR: ");
-    //  Serial.println(lightVal);
-    //
-    //  Serial.print("Rotation ");
-    //  for ( int i = 0 ; i < 3 ; i++) {
-    //    Serial.print (i);
-    //    Serial.print(": ");
-    //    Serial.print (rotation_byte[i]);
-    //    Serial.print("\t");
-    //  }
-    //  Serial.println(" ");
-    previousTime = currentTime;
+    Serial.print("Rotation ");
+    for ( int i = 0 ; i < 3 ; i++) {
+      Serial.print (i);
+      Serial.print(": ");
+      Serial.print (rotation_byte[i]);
+      Serial.print("\t");
+    }
+    Serial.print("LDR: ");
+    Serial.println(lightVal);
+
+    String SDdata;
+    SDdata += epoch;
+    SDdata += ",";
+    for ( int i = 0 ; i < 3 ; i++) {
+      SDdata += TOF_byte[i];
+      SDdata += ",";
+    }
+    SDdata += acceleration;
+    SDdata += ",";
+    for ( int i = 0 ; i < 3 ; i++) {
+      SDdata += rotation_byte[i];
+      SDdata += ",";
+    }
+    SDdata += lightVal;
+    SDdata += "\r\n";
+    char buff[SDdata.length()];
+    SDdata.toCharArray(buff, SDdata.length());
+    Serial.print ( buff);
+    appendFile(SD, "/data.txt", buff);
   }
 }
 
-static void GetEpoch() {
-  DS3231_DateTime dt;
-  if (rtc.getDateTime(&dt)) {
-    Serial.println(F("Error: Read date/time failed"));
-    return;
-  }
 
-  // Print 32-bit epoch time
-  epoch = rtc.getEpochTime(&dt);
-}
-static void setDateTime(int variable[]) {
-  DS3231_DateTime dt = {
-    .second = variable[4],
-    .minute = variable[3],
-    .hour = variable[2],
-    .dayWeek = variable[6],  // 1 = Monday
-    .dayMonth = variable[0],
-    .month = variable[1],
-    .year = variable[5]
-  };
-  // Set new RTC date/time
-  rtc.setDateTime(&dt);
-}
 void GetSensor() {
   TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
@@ -327,6 +325,8 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   BLEService *TOFService = pServer->createService(TOF_SERVICE_UUID);
   BLEService *MovementService = pServer->createService(MOVEMENT_SERVICE_UUID);
   BLEService *TIMEService = pServer->createService(TIME_SERVICE_UUID);
+  BLEService *DATAService = pServer->createService(DATA_SERVICE_UUID);
+
   // Create a BLE TOF_1 Characteristic
   TOF_Characteristic = TOFService->createCharacteristic(
                          TOF_UUID,
@@ -336,6 +336,26 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                          BLECharacteristic::PROPERTY_INDICATE
                        );
   TOF_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a GYROX Characteristic
+  ROTATION_Characteristic = MovementService->createCharacteristic(
+                              ROTATION_UUID,
+                              BLECharacteristic::PROPERTY_READ   |
+                              BLECharacteristic::PROPERTY_WRITE  |
+                              BLECharacteristic::PROPERTY_NOTIFY |
+                              BLECharacteristic::PROPERTY_INDICATE
+                            );
+  ROTATION_Characteristic->addDescriptor(new BLE2902());
+
+  //Create a acceleration characteristic
+  ACCEL_Characteristic = MovementService->createCharacteristic(
+                           ACCEL_UUID,
+                           BLECharacteristic::PROPERTY_READ   |
+                           BLECharacteristic::PROPERTY_WRITE  |
+                           BLECharacteristic::PROPERTY_NOTIFY |
+                           BLECharacteristic::PROPERTY_INDICATE
+                         );
+  ACCEL_Characteristic->addDescriptor(new BLE2902());
 
   // Create a LDR Characteristic
   LDR_Characteristic = TOFService->createCharacteristic(
@@ -347,25 +367,6 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a GYROX Characteristic
-  ROTATION_Characteristic = MovementService->createCharacteristic(
-                              ROTATION_UUID,
-                              BLECharacteristic::PROPERTY_READ   |
-                              BLECharacteristic::PROPERTY_WRITE  |
-                              BLECharacteristic::PROPERTY_NOTIFY |
-                              BLECharacteristic::PROPERTY_INDICATE
-                            );
-  ROTATION_Characteristic->addDescriptor(new BLE2902());
-  // Create a GYROX Characteristic
-  ACC_Characteristic = MovementService->createCharacteristic(
-                         ACC_UUID,
-                         BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_WRITE  |
-                         BLECharacteristic::PROPERTY_NOTIFY |
-                         BLECharacteristic::PROPERTY_INDICATE
-                       );
-  ACC_Characteristic->addDescriptor(new BLE2902());
-
   // Create a BLE TOF_1 Characteristic
   TIME_Characteristic = TIMEService->createCharacteristic(
                           TIME_UUID,
@@ -374,16 +375,36 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   TIME_Characteristic->setCallbacks(new TimeCallbacks());
   TIME_Characteristic->addDescriptor(new BLE2902());
 
+  // Create a DATA CALL BACK
+  DATA_CALL_Characteristic = DATAService->createCharacteristic(
+                               DATA_CALL_UUID,
+                               BLECharacteristic::PROPERTY_WRITE
+                             );
+  DATA_CALL_Characteristic->setCallbacks(new DataCallbacks());
+  DATA_CALL_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a DATA SEND
+  DATA_SEND_Characteristic = TOFService->createCharacteristic(
+                               LDR_UUID,
+                               BLECharacteristic::PROPERTY_READ   |
+                               BLECharacteristic::PROPERTY_WRITE  |
+                               BLECharacteristic::PROPERTY_NOTIFY |
+                               BLECharacteristic::PROPERTY_INDICATE
+                             );
+  DATA_SEND_Characteristic->addDescriptor(new BLE2902());
+
   // Start the service
   TOFService->start();
   MovementService->start();
   TIMEService->start();
+  DATAService->start();
   // Start advertising
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
 
   pAdvertising->addServiceUUID(TOF_SERVICE_UUID);
   pAdvertising->addServiceUUID(MOVEMENT_SERVICE_UUID);
   pAdvertising->addServiceUUID(TIME_SERVICE_UUID);
+  pAdvertising->addServiceUUID(DATA_SERVICE_UUID);
 
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
