@@ -16,21 +16,22 @@
 #define TOF_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
 #define LDR_UUID "e9ff40d9-21da-44dd-b125-ad2d8ef6b026"
 
+
 #define MOVEMENT_SERVICE_UUID        "739157ab-dfe6-4dc1-84df-6cd801769d7d"
 #define ROTATION_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
+#define ACC_UUID "28a246cb-1abb-4965-bd05-9d79f16dd24"
 
 #define TIME_SERVICE_UUID "57675859-a6f4-4445-9492-051aa8514552"
-#define TIME_UUID "10ccece5-e44b-4502-8b69-09646d4072e1"
+#define TIME_UUID "10ccece5-e44b-4502-8b69-09646d4072e1" // Write Date time etc to this uuid to update time on ESP32
+
+#define DATA_SERVICE_UUID "b8ec9f13-81e2-489f-b736-f4e440c86e03"
+#define DATA_CALL_UUID "5022e570-0f19-4357-848a-fc74234b1348" // Write to this uuid to req for data xfer
+#define DATA_SEND_UUID "38ca7184-8eeb-481f-9197-2c106f076031"
 
 //XSHUT OF TOF
 #define TOF_1 25 //0x23 LEFT
 #define TOF_2 26 //0x24 CENTRE
 #define TOF_3 27 //0x25 RIGHT
-
-const int LDR_PIN = 34; // analog pins
-// LDR
-int lightVal;
-byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //TOF Private Variables
 VL53L1X sensor1;
@@ -38,6 +39,11 @@ VL53L1X sensor2;
 VL53L1X sensor3;
 unsigned int TOF_cm[3] = {0, 0, 0};
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
+
+// LDR
+const int LDR_PIN = 34; // analog pins
+int lightVal;
+byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
 FreeSixIMU imu;
@@ -49,8 +55,12 @@ byte acceleration;
 BLEServer* pServer = NULL;
 BLECharacteristic* TOF_Characteristic = NULL;
 BLECharacteristic* ROTATION_Characteristic = NULL;
+BLECharacteristic* ACC_Characteristic = NULL;
 BLECharacteristic* LDR_Characteristic = NULL;
 BLECharacteristic* TIME_Characteristic = NULL;
+BLECharacteristic* DATA_CALL_Characteristic = NULL;
+BLECharacteristic* DATA_SEND_Characteristic = NULL;
+
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
@@ -64,6 +74,9 @@ static void setDateTime(int variable[7]) ;
 const unsigned long loopInterval = 1000;
 unsigned long previousTime = 0 ;
 
+unsigned long FileNum = 0;
+const String FileName = "Data";
+
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
@@ -74,7 +87,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
-class MyCallbacks: public BLECharacteristicCallbacks {
+class TimeCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *TIME_Characteristic) {
       std::string value = TIME_Characteristic->getValue();
       int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
@@ -98,7 +111,15 @@ class MyCallbacks: public BLECharacteristicCallbacks {
         }
         Serial.print("Set new time completed");
       }
+    }
+};
 
+class DataCallbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *DATA_CALL_Characteristic) {
+      std::string value = TIME_Characteristic->getValue();
+      if (value == "1" ) {
+        //send massive load of data
+      }
     }
 };
 
@@ -118,7 +139,6 @@ void setup()
   Sensor_Init();
   BLE_Init();
   SD_Init();
-
 }
 
 void loop()
@@ -316,16 +336,6 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                        );
   TOF_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a GYROX Characteristic
-  ROTATION_Characteristic = MovementService->createCharacteristic(
-                              ROTATION_UUID,
-                              BLECharacteristic::PROPERTY_READ   |
-                              BLECharacteristic::PROPERTY_WRITE  |
-                              BLECharacteristic::PROPERTY_NOTIFY |
-                              BLECharacteristic::PROPERTY_INDICATE
-                            );
-  ROTATION_Characteristic->addDescriptor(new BLE2902());
-
   // Create a LDR Characteristic
   LDR_Characteristic = TOFService->createCharacteristic(
                          LDR_UUID,
@@ -336,12 +346,31 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
+  // Create a GYROX Characteristic
+  ROTATION_Characteristic = MovementService->createCharacteristic(
+                              ROTATION_UUID,
+                              BLECharacteristic::PROPERTY_READ   |
+                              BLECharacteristic::PROPERTY_WRITE  |
+                              BLECharacteristic::PROPERTY_NOTIFY |
+                              BLECharacteristic::PROPERTY_INDICATE
+                            );
+  ROTATION_Characteristic->addDescriptor(new BLE2902());
+  // Create a GYROX Characteristic
+  ACC_Characteristic = MovementService->createCharacteristic(
+                         ACC_UUID,
+                         BLECharacteristic::PROPERTY_READ   |
+                         BLECharacteristic::PROPERTY_WRITE  |
+                         BLECharacteristic::PROPERTY_NOTIFY |
+                         BLECharacteristic::PROPERTY_INDICATE
+                       );
+  ACC_Characteristic->addDescriptor(new BLE2902());
+
   // Create a BLE TOF_1 Characteristic
   TIME_Characteristic = TIMEService->createCharacteristic(
                           TIME_UUID,
                           BLECharacteristic::PROPERTY_WRITE
                         );
-  TIME_Characteristic->setCallbacks(new MyCallbacks());
+  TIME_Characteristic->setCallbacks(new TimeCallbacks());
   TIME_Characteristic->addDescriptor(new BLE2902());
 
   // Start the service
@@ -378,7 +407,7 @@ void SD_Init() {
   if (!file) {
     Serial.println("File doens't exist");
     Serial.println("Creating file...");
-    writeFile(SD, "/data.txt", "Date, Time, TOF_1, TOF_2, Accel, Pitch,Yaw \r\n");
+    writeFile(SD, "/data.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
   }
   else {
     Serial.println("File already exists");
