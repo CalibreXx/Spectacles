@@ -128,15 +128,16 @@ void loop()
     GetEpoch();
     GetSensor();
     BLE_Notify();
-    Serial.print("Epoch: ");
-    Serial.println(epoch);
-    Serial.print("TOF ");
-    for ( int i = 0 ; i < 3 ; i++) {
-      Serial.print (i);
-      Serial.print(": ");
-      Serial.print(TOF_byte[i]);
-      Serial.print("\t");
-    }
+    Serial.println(acceleration);
+    //    Serial.print("Epoch: ");
+    //    Serial.println(epoch);
+    //    Serial.print("TOF ");
+    //    for ( int i = 0 ; i < 3 ; i++) {
+    //      Serial.print (i);
+    //      Serial.print(": ");
+    //      Serial.print(TOF_byte[i]);
+    //      Serial.print("\t");
+    //    }
     //
     //  Serial.println(" ");
     //  Serial.print("LDR: ");
