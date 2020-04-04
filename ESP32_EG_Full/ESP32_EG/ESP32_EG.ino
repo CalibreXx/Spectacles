@@ -45,7 +45,7 @@ byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 FreeSixIMU imu;
 float IMU_cal[3] = {0, 0, 0};
 byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
-byte acceleration;
+byte acceleration[1] = {0};
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
@@ -145,7 +145,7 @@ void loop()
       Serial.print (i); Serial.print(": ");
       Serial.print(TOF_byte[i]); Serial.print("\t");
     }
-    Serial.print ( "Acceleration: "); Serial.println(acceleration);
+    Serial.print ( "Acceleration: "); Serial.println(acceleration[0]);
     Serial.print("Rotation ");
     for ( int i = 0 ; i < 3 ; i++) {
       Serial.print (i); Serial.print(": ");
@@ -162,7 +162,7 @@ void AddFile() {
   for ( int i = 0 ; i < 3 ; i++) {
     SDdata += TOF_byte[i]; SDdata += ",";
   }
-  SDdata += acceleration; SDdata += ",";
+  SDdata += acceleration[0]; SDdata += ",";
   for ( int i = 0 ; i < 3 ; i++) {
     SDdata += rotation_byte[i]; SDdata += ",";
   }
@@ -200,6 +200,8 @@ void BLE_Notify() {
     ROTATION_Characteristic->notify();
     LDR_Characteristic->setValue(light_byte, 2);
     LDR_Characteristic->notify();
+    ACCEL_Characteristic->setValue(acceleration ,1 );
+    ACCEL_Characteristic->notify();
     delay(3); // bluetooth stack wi3ll go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
   // disconnecting
@@ -218,13 +220,6 @@ void BLE_Notify() {
   }
 }
 
-void LogtoSD(String Data) { //convert data to char array and log into sd card
-  char copy[50];
-  Data = Data + "\n";
-  Data.toCharArray(copy, 50);
-  appendFile(SD, "/data.txt", copy);
-}
-
 void getSIXDOF() {
   float angles[3];
   short rawvalues[6];
@@ -240,7 +235,7 @@ void getSIXDOF() {
     rotation_byte[i] = angles[i];
   }
   imu.getRawValues(rawvalues);
-  acceleration = (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
+  acceleration[0] = (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
 }
 
 void initIMU_6DOF() {
