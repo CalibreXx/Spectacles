@@ -371,13 +371,11 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
 /* SD Card functions */
 
 void SD_Init() {
-  if (!SD.begin()) {
-    Serial.println("Card Mount Failed");
+  if (!SD.begin()) { Serial.println("Card Mount Failed");
     return;
   }
   uint8_t cardType = SD.cardType();
-  if (cardType == CARD_NONE) {
-    Serial.println("No SD card attached");
+  if (cardType == CARD_NONE) { Serial.println("No SD card attached");
     return;
   }
   // If the data.txt file doesn't exist, Create a file on the SD card and write the data labels
@@ -387,8 +385,7 @@ void SD_Init() {
     Serial.println("Creating file...");
     writeFile(SD, "/data.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
   }
-  else {
-    Serial.println("File already exists");
+  else { Serial.println("File already exists");
   }
   file.close();
 }
@@ -396,13 +393,10 @@ void SD_Init() {
 void readFile(fs::FS & fs, const char * path) {
   Serial.printf("Reading file: %s\n", path);
   File file = fs.open(path);
-  if (!file) {
-    Serial.println("Failed to open file for reading");
+  if (!file) { Serial.println("Failed to open file for reading");
     return;
-  }
-  Serial.print("Read from file: ");
-  while (file.available()) {
-    Serial.write(file.read());
+  } Serial.print("Read from file: ");
+  while (file.available()) { Serial.write(file.read());
   }
   file.close();
 }
@@ -410,14 +404,11 @@ void readFile(fs::FS & fs, const char * path) {
 void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file: %s\n", path);
   File file = fs.open(path, FILE_WRITE);
-  if (!file) {
-    Serial.println("Failed to open file for writing");
+  if (!file) { Serial.println("Failed to open file for writing");
     return;
   }
-  if (file.print(message)) {
-    Serial.println("File written");
-  } else {
-    Serial.println("Write failed");
+  if (file.print(message)) { Serial.println("File written");
+  } else { Serial.println("Write failed");
   }
   file.close();
 }
@@ -425,23 +416,18 @@ void writeFile(fs::FS & fs, const char * path, const char * message) {
 void appendFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Appending to file: %s\n", path);
   File file = fs.open(path, FILE_APPEND);
-  if (!file) {
-    Serial.println("Failed to open file for appending");
+  if (!file) { Serial.println("Failed to open file for appending");
     return;
   }
-  if (file.print(message)) {
-    Serial.println("Message appended");
-  } else {
-    Serial.println("Append failed");
+  if (file.print(message)) { Serial.println("Message appended");
+  } else { Serial.println("Append failed");
   }
   file.close();
 }
 
 void deleteFile(fs::FS & fs, const char * path) {
   Serial.printf("Deleting file: %s\n", path);
-  if (fs.remove(path)) {
-    Serial.println("File deleted");
-  } else {
-    Serial.println("Delete failed");
+  if (fs.remove(path)) { Serial.println("File deleted");
+  } else { Serial.println("Delete failed");
   }
 }
