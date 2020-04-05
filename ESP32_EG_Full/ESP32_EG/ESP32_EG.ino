@@ -42,7 +42,6 @@ int lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
-FreeSixIMU imu;
 float IMU_cal[3] = {0, 0, 0};
 byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
 byte acceleration[1] = {0};
@@ -62,7 +61,6 @@ bool oldDeviceConnected = false;
 uint32_t value = 0;
 
 //RTC
-RTC_DS3231 rtc;
 long unsigned int epoch;
 
 const unsigned long loopInterval = 1000;
@@ -82,9 +80,9 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *TIME_Characteristic) {
       std::string value = TIME_Characteristic->getValue();
       int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
-      int variable[7]; //day month hour, min, sec , yyyy dayof the week
+      int variable[6]; //day month hour, min, sec , yyyy dayof the week
       int j = 0;
-      if (value.length() == 15 ) {
+      if (value.length() == 14 ) {
         for ( int i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
             BLETime[j] = value[i] - '0';
@@ -95,9 +93,9 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
           variable[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
         }
         variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13];
-        variable[6] = BLETime[14];
-        rtc.adjust(DateTime(variable[5], variable[1], variable[0] , variable[2], variable[3], variable[4]));
-        for ( int i = 0 ; i < 7 ; i++) {
+        RTC_DS3231 rtc;
+        rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+        for ( int i = 0 ; i < 6 ; i++) {
           Serial.println(variable[i]);
         }
         Serial.print("Set new time completed");
@@ -124,19 +122,25 @@ struct splitLong LongByteConverter;
 
 void setup()
 {
+  RTC_DS3231 rtc;
   Wire.begin();
   Serial.begin (115200);
   Sensor_Init();
   BLE_Init();
   SD_Init();
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
 }
 
 void loop()
 {
+  RTC_DS3231 rtc;
   DateTime now = rtc.now();
-  Serial.print(now.unixtime());
   unsigned long currentTime = millis();
   if (currentTime - previousTime >= loopInterval) {
+    epoch = now.unixtime();
     GetSensor();
     BLE_Notify();
     Serial.print("Epoch: "); Serial.println(epoch);
@@ -153,6 +157,8 @@ void loop()
     }
     Serial.print("LDR: "); Serial.println(lightVal);
     AddFile();
+    previousTime = currentTime;
+    Serial.println(" ");
   }
 }
 
@@ -170,7 +176,7 @@ void AddFile() {
   char buff[SDdata.length()];
   SDdata.toCharArray(buff, SDdata.length());
   Serial.print ( buff);
-  appendFile(SD, "/data.txt", buff);
+//  appendFile(SD, "/data.txt", buff);
 }
 
 void GetSensor() {
@@ -200,7 +206,7 @@ void BLE_Notify() {
     ROTATION_Characteristic->notify();
     LDR_Characteristic->setValue(light_byte, 2);
     LDR_Characteristic->notify();
-    ACCEL_Characteristic->setValue(acceleration ,1 );
+    ACCEL_Characteristic->setValue(acceleration , 1 );
     ACCEL_Characteristic->notify();
     delay(3); // bluetooth stack wi3ll go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
@@ -221,8 +227,8 @@ void BLE_Notify() {
 }
 
 void getSIXDOF() {
+  FreeSixIMU imu;
   float angles[3];
-  short rawvalues[6];
   imu.getYawPitchRoll(angles);
   for (int i = 0 ; i < 3 ; i++) {
     angles[i] -= IMU_cal[i];
@@ -234,11 +240,13 @@ void getSIXDOF() {
     }
     rotation_byte[i] = angles[i];
   }
+  short rawvalues[6];
   imu.getRawValues(rawvalues);
   acceleration[0] = (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
 }
 
 void initIMU_6DOF() {
+  FreeSixIMU imu;
   imu.init();
   float angles[3];
   for (int cal_int = 0; cal_int < 500 ; cal_int ++) {//Run this code 500 times
@@ -371,11 +379,13 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
 /* SD Card functions */
 
 void SD_Init() {
-  if (!SD.begin()) { Serial.println("Card Mount Failed");
+  if (!SD.begin()) {
+    Serial.println("Card Mount Failed");
     return;
   }
   uint8_t cardType = SD.cardType();
-  if (cardType == CARD_NONE) { Serial.println("No SD card attached");
+  if (cardType == CARD_NONE) {
+    Serial.println("No SD card attached");
     return;
   }
   // If the data.txt file doesn't exist, Create a file on the SD card and write the data labels
@@ -385,7 +395,8 @@ void SD_Init() {
     Serial.println("Creating file...");
     writeFile(SD, "/data.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
   }
-  else { Serial.println("File already exists");
+  else {
+    Serial.println("File already exists");
   }
   file.close();
 }
@@ -393,10 +404,12 @@ void SD_Init() {
 void readFile(fs::FS & fs, const char * path) {
   Serial.printf("Reading file: %s\n", path);
   File file = fs.open(path);
-  if (!file) { Serial.println("Failed to open file for reading");
+  if (!file) {
+    Serial.println("Failed to open file for reading");
     return;
   } Serial.print("Read from file: ");
-  while (file.available()) { Serial.write(file.read());
+  while (file.available()) {
+    Serial.write(file.read());
   }
   file.close();
 }
@@ -404,11 +417,14 @@ void readFile(fs::FS & fs, const char * path) {
 void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file: %s\n", path);
   File file = fs.open(path, FILE_WRITE);
-  if (!file) { Serial.println("Failed to open file for writing");
+  if (!file) {
+    Serial.println("Failed to open file for writing");
     return;
   }
-  if (file.print(message)) { Serial.println("File written");
-  } else { Serial.println("Write failed");
+  if (file.print(message)) {
+    Serial.println("File written");
+  } else {
+    Serial.println("Write failed");
   }
   file.close();
 }
@@ -416,18 +432,23 @@ void writeFile(fs::FS & fs, const char * path, const char * message) {
 void appendFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Appending to file: %s\n", path);
   File file = fs.open(path, FILE_APPEND);
-  if (!file) { Serial.println("Failed to open file for appending");
+  if (!file) {
+    Serial.println("Failed to open file for appending");
     return;
   }
-  if (file.print(message)) { Serial.println("Message appended");
-  } else { Serial.println("Append failed");
+  if (file.print(message)) {
+    Serial.println("Message appended");
+  } else {
+    Serial.println("Append failed");
   }
   file.close();
 }
 
 void deleteFile(fs::FS & fs, const char * path) {
   Serial.printf("Deleting file: %s\n", path);
-  if (fs.remove(path)) { Serial.println("File deleted");
-  } else { Serial.println("Delete failed");
+  if (fs.remove(path)) {
+    Serial.println("File deleted");
+  } else {
+    Serial.println("Delete failed");
   }
 }
