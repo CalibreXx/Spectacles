@@ -38,13 +38,14 @@ byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 // LDR
 const int LDR_PIN = 34; // analog pins
-int lightVal;
+unsigned short lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
 float IMU_cal[3] = {0, 0, 0};
 byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
 byte acceleration[1] = {0};
+FreeSixIMU imu;
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
@@ -61,9 +62,10 @@ bool oldDeviceConnected = false;
 uint32_t value = 0;
 
 //RTC
-long unsigned int epoch;
+unsigned long epoch;
+RTC_DS3231 rtc;
 
-const unsigned long loopInterval = 1000;
+const unsigned short loopInterval = 1000;
 unsigned long previousTime = 0 ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
@@ -81,24 +83,23 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
       std::string value = TIME_Characteristic->getValue();
       int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
       int variable[6]; //day month hour, min, sec , yyyy dayof the week
-      int j = 0;
+      uint8_t j = 0;
       if (value.length() == 14 ) {
-        for ( int i = 0 ; i < value.length() ; i++) {
+        for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
             BLETime[j] = value[i] - '0';
             j++;
           }
         }
-        for ( int i = 0 ; i < 5; i++) { //DD MM HH SS MM
+        for ( uint8_t i = 0 ; i < 5; i++) { //DD MM HH SS MM
           variable[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
         }
-        variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13];
-        RTC_DS3231 rtc;
-        rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-        for ( int i = 0 ; i < 6 ; i++) {
+        variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13]; //year
+        rtc.adjust(DateTime(variable[5], variable[1], variable[0], variable[2], variable[3], variable[4])); //yy month date time
+        for ( uint8_t i = 0 ; i < 6 ; i++) {
           Serial.println(variable[i]);
         }
-        Serial.print("Set new time completed");
+        Serial.print(F("Set new time completed"));
       }
     }
 };
@@ -122,68 +123,59 @@ struct splitLong LongByteConverter;
 
 void setup()
 {
-  RTC_DS3231 rtc;
   Wire.begin();
   Serial.begin (115200);
   Sensor_Init();
   BLE_Init();
   SD_Init();
   if (! rtc.begin()) {
-    Serial.println("Couldn't find RTC");
+    Serial.println(F("Couldn't find RTC"));
     while (1);
   }
+  
 }
 
 void loop()
 {
-  RTC_DS3231 rtc;
   DateTime now = rtc.now();
-  unsigned long currentTime = millis();
-  if (currentTime - previousTime >= loopInterval) {
+  if (millis() - previousTime >= loopInterval) {
+    previousTime = millis();
     epoch = now.unixtime();
     GetSensor();
     BLE_Notify();
-    Serial.print("Epoch: "); Serial.println(epoch);
-    Serial.print("TOF ");
-    for ( int i = 0 ; i < 3 ; i++) {
-      Serial.print (i); Serial.print(": ");
-      Serial.print(TOF_byte[i]); Serial.print("\t");
-    }
-    Serial.print ( "Acceleration: "); Serial.println(acceleration[0]);
-    Serial.print("Rotation ");
-    for ( int i = 0 ; i < 3 ; i++) {
-      Serial.print (i); Serial.print(": ");
-      Serial.print (rotation_byte[i]); Serial.print("\t");
-    }
-    Serial.print("LDR: "); Serial.println(lightVal);
-    AddFile();
-    previousTime = currentTime;
-    Serial.println(" ");
+        Serial.print("Epoch: "); Serial.println(epoch);
+    //    Serial.print("TOF ");
+    //    for ( uint8_t i = 0 ; i < 3 ; i++) {
+    //      Serial.print (i); Serial.print(": ");
+    //      Serial.print(TOF_byte[i]); Serial.print("\t");
+    //    }
+    //    Serial.print ( "Acceleration: "); Serial.println(acceleration[0]);
+    //    Serial.print("Rotation ");
+    //    for ( uint8_t i = 0 ; i < 3 ; i++) {
+    //      Serial.print (i); Serial.print(": ");
+    //      Serial.print (rotation_byte[i]); Serial.print("\t");
+    //    }
+    //    Serial.print("LDR: "); Serial.println(lightVal);
+    //AddFile();
+    //    Serial.println(" ");
   }
 }
 
 void AddFile() {
-  String SDdata;
-  SDdata += epoch; SDdata += ",";
-  for ( int i = 0 ; i < 3 ; i++) {
-    SDdata += TOF_byte[i]; SDdata += ",";
-  }
-  SDdata += acceleration[0]; SDdata += ",";
-  for ( int i = 0 ; i < 3 ; i++) {
-    SDdata += rotation_byte[i]; SDdata += ",";
-  }
-  SDdata += lightVal; SDdata += "\r\n";
-  char buff[SDdata.length()];
-  SDdata.toCharArray(buff, SDdata.length());
-  Serial.print ( buff);
-//  appendFile(SD, "/data.txt", buff);
+  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
+                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + "," + String(rotation_byte[2]) + ","
+                       + String(lightVal) + "\r\n";
+  Serial.print(F("Save data: "));
+  Serial.println(dataMessage);
+  appendFile(SD, "/data.txt", dataMessage.c_str());
+  delay(200);
 }
 
 void GetSensor() {
   TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
   TOF_cm[2] = (sensor3.readRangeContinuousMillimeters()) / 10;
-  for (int i = 0 ; i < 3 ; i++) {
+  for (uint8_t i = 0 ; i < 3 ; i++) {
     if ( TOF_cm[i] > 255 ) {
       TOF_byte[i] = 0; // if value greater than 255cm
     } else {
@@ -227,10 +219,9 @@ void BLE_Notify() {
 }
 
 void getSIXDOF() {
-  FreeSixIMU imu;
   float angles[3];
   imu.getYawPitchRoll(angles);
-  for (int i = 0 ; i < 3 ; i++) {
+  for (uint8_t i = 0 ; i < 3 ; i++) {
     angles[i] -= IMU_cal[i];
     angles[i] += 90; //0-180 range
     if ( angles[i] > 180 ) {
@@ -246,7 +237,6 @@ void getSIXDOF() {
 }
 
 void initIMU_6DOF() {
-  FreeSixIMU imu;
   imu.init();
   float angles[3];
   for (int cal_int = 0; cal_int < 500 ; cal_int ++) {//Run this code 500 times
@@ -256,10 +246,10 @@ void initIMU_6DOF() {
     IMU_cal[2] += angles[2];
     delay(3);    //Delay 3us to simulate the 250Hz program loop
   }
-  for (int i = 0 ; i < 3 ; i++) {
+  for (uint8_t i = 0 ; i < 3 ; i++) {
     IMU_cal[i] /= 500;
   }
-  Serial.println("IMU Calibration DONE");
+  Serial.println(F("IMU Calibration DONE"));
 }
 void Sensor_Init() {
   pinMode(TOF_1, OUTPUT); pinMode(TOF_2, OUTPUT); pinMode(TOF_3, OUTPUT);
@@ -373,30 +363,30 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
   BLEDevice::startAdvertising();
-  Serial.println("Waiting a client connection to notify...");
+  Serial.println(F("Waiting a client connection to notify..."));
 }
 
 /* SD Card functions */
 
 void SD_Init() {
   if (!SD.begin()) {
-    Serial.println("Card Mount Failed");
+    Serial.println(F("Card Mount Failed"));
     return;
   }
   uint8_t cardType = SD.cardType();
   if (cardType == CARD_NONE) {
-    Serial.println("No SD card attached");
+    Serial.println(F("No SD card attached"));
     return;
   }
   // If the data.txt file doesn't exist, Create a file on the SD card and write the data labels
   File file = SD.open("/data.txt");
   if (!file) {
-    Serial.println("File doens't exist");
-    Serial.println("Creating file...");
+    Serial.println(F("File doens't exist"));
+    Serial.println(F("Creating file..."));
     writeFile(SD, "/data.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
   }
   else {
-    Serial.println("File already exists");
+    Serial.println(F("File already exists"));
   }
   file.close();
 }
@@ -405,9 +395,9 @@ void readFile(fs::FS & fs, const char * path) {
   Serial.printf("Reading file: %s\n", path);
   File file = fs.open(path);
   if (!file) {
-    Serial.println("Failed to open file for reading");
+    Serial.println(F("Failed to open file for reading"));
     return;
-  } Serial.print("Read from file: ");
+  } Serial.print(F("Read from file: "));
   while (file.available()) {
     Serial.write(file.read());
   }
@@ -418,13 +408,13 @@ void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file: %s\n", path);
   File file = fs.open(path, FILE_WRITE);
   if (!file) {
-    Serial.println("Failed to open file for writing");
+    Serial.println(F("Failed to open file for writing"));
     return;
   }
   if (file.print(message)) {
-    Serial.println("File written");
+    Serial.println(F("File written"));
   } else {
-    Serial.println("Write failed");
+    Serial.println(F("Write failed"));
   }
   file.close();
 }
@@ -433,13 +423,13 @@ void appendFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Appending to file: %s\n", path);
   File file = fs.open(path, FILE_APPEND);
   if (!file) {
-    Serial.println("Failed to open file for appending");
+    Serial.println(F("Failed to open file for appending"));
     return;
   }
   if (file.print(message)) {
-    Serial.println("Message appended");
+    Serial.println(F("Message appended"));
   } else {
-    Serial.println("Append failed");
+    Serial.println(F("Append failed"));
   }
   file.close();
 }
@@ -447,8 +437,8 @@ void appendFile(fs::FS & fs, const char * path, const char * message) {
 void deleteFile(fs::FS & fs, const char * path) {
   Serial.printf("Deleting file: %s\n", path);
   if (fs.remove(path)) {
-    Serial.println("File deleted");
+    Serial.println(F("File deleted"));
   } else {
-    Serial.println("Delete failed");
+    Serial.println(F("Delete failed"));
   }
 }
