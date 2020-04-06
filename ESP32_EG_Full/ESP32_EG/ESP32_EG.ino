@@ -95,7 +95,8 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
           variable[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
         }
         variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13]; //year
-        rtc.adjust(DateTime(variable[5], variable[1], variable[0], variable[2], variable[3], variable[4])); //yy month date time
+            rtc.adjust(DateTime(variable[5], variable[1], variable[0], variable[2], variable[3], variable[4])); //yy month date time
+//        rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
         for ( uint8_t i = 0 ; i < 6 ; i++) {
           Serial.println(variable[i]);
         }
@@ -132,7 +133,7 @@ void setup()
     Serial.println(F("Couldn't find RTC"));
     while (1);
   }
-  
+
 }
 
 void loop()
@@ -143,7 +144,7 @@ void loop()
     epoch = now.unixtime();
     GetSensor();
     BLE_Notify();
-        Serial.print("Epoch: "); Serial.println(epoch);
+    Serial.print("Epoch: "); Serial.println(epoch);
     //    Serial.print("TOF ");
     //    for ( uint8_t i = 0 ; i < 3 ; i++) {
     //      Serial.print (i); Serial.print(": ");
@@ -156,7 +157,7 @@ void loop()
     //      Serial.print (rotation_byte[i]); Serial.print("\t");
     //    }
     //    Serial.print("LDR: "); Serial.println(lightVal);
-    //AddFile();
+    AddFile();
     //    Serial.println(" ");
   }
 }
