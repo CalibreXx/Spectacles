@@ -95,8 +95,8 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
           variable[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
         }
         variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13]; //year
-            rtc.adjust(DateTime(variable[5], variable[1], variable[0], variable[2], variable[3], variable[4])); //yy month date time
-//        rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+        rtc.adjust(DateTime(variable[5], variable[1], variable[0], variable[2], variable[3], variable[4])); //yy month date time
+        //        rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
         for ( uint8_t i = 0 ; i < 6 ; i++) {
           Serial.println(variable[i]);
         }
