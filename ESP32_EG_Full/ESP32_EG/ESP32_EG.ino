@@ -474,7 +474,7 @@ void readFile(fs::FS &fs, const char * path) {
           delay(5);
         }
         if (!deviceConnected && oldDeviceConnected) {
-          delay(500); // give the bluetooth stack the chance to get things ready
+          delay(100); // give the bluetooth stack the chance to get things ready
           pServer->startAdvertising(); // restart advertising
           Serial.println("start advertising");
           oldDeviceConnected = deviceConnected;
