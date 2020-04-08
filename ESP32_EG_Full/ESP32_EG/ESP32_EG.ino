@@ -89,7 +89,6 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
       int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
       uint8_t j = 0;
       if (value.length() == 14 ) {
-
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
             BLETime[j] = value[i] - '0';
