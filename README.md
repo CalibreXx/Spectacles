@@ -59,8 +59,15 @@
 
 ## BOM
 
-- 
-- Images of what it should look like
+| Item                    | Purpose                                               | Qty | Remarks |
+|-------------------------|-------------------------------------------------------|-----|---------|
+| Heltec ESP32 Wifi Kit   | Microcontroller Unit                                  | 1   |         |
+| VL53L1X Sparkfun Sensor | Measurement of distance between user's eye and object | 3   |         |
+| IMU 6 DOF Sensor        | Measurement of acceleration and gyrometer values      | 1   |         |
+| Photodiode              | Measurement of ambient lighting conditions            | 1   |         |
+| DS3231 RTC Module       | Timestamp for each individual sensor reading          | 1   |         |
+| SD Card Module          | Logging of sensor readings                            | 1   |         |
+
 
 ### Clone
 
