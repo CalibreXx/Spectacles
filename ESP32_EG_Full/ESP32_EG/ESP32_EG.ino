@@ -59,9 +59,10 @@ BLECharacteristic* DATA_SEND_Characteristic = NULL;
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
+
+bool TimeUpdate = false;
 bool SDsend = false;
 int newTime[6]; //DD MM HH MM SS YYYY
-bool TimeUpdate = false;
 uint32_t value = 0;
 
 //RTC
@@ -88,16 +89,19 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
       int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
       uint8_t j = 0;
       if (value.length() == 14 ) {
+
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
             BLETime[j] = value[i] - '0';
             j++;
           }
         }
-        for ( uint8_t i = 0 ; i < 5; i++) { //DD MM HH SS MM
-          newTime[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
-        }
-        newTime[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13]; //year
+        newTime[0] = BLETime[0] * 10 + BLETime[1]; //dd
+        newTime[1] = BLETime[2] * 10 + BLETime[3]; //mm
+        newTime[5] = BLETime[4] * 1000 + BLETime[5] * 100 + BLETime[6] * 10 + BLETime[7]; //year
+        newTime[2] = BLETime[8] * 10 + BLETime[9]; //hh
+        newTime[3] = BLETime[10] * 10 + BLETime[11]; //mm
+        newTime[4] = BLETime[12] * 10 + BLETime[13]; //ss
         for ( uint8_t i = 0 ; i < 6 ; i++) {
           Serial.print(newTime[i]);
         }
@@ -217,21 +221,6 @@ void getSIXDOF() {
   imu.getRawValues(rawvalues);
   acceleration[0] = (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
 }
-void initIMU_6DOF() {
-  imu.init();
-  float angles[3];
-  for (int cal_int = 0; cal_int < 500 ; cal_int ++) {//Run this code 500 times
-    imu.getYawPitchRoll(angles);
-    IMU_cal[0] += angles[0];
-    IMU_cal[1] += angles[1];
-    IMU_cal[2] += angles[2];
-    delay(3);    //Delay 3us to simulate the 250Hz program loop
-  }
-  for (uint8_t i = 0 ; i < 3 ; i++) {
-    IMU_cal[i] /= 500;
-  }
-  Serial.println(F("IMU Calibration DONE"));
-}
 void Sensor_Init() {
   pinMode(TOF_1, OUTPUT); pinMode(TOF_2, OUTPUT); pinMode(TOF_3, OUTPUT);
   digitalWrite(TOF_1, LOW); digitalWrite(TOF_2, LOW); digitalWrite(TOF_3, LOW);
@@ -248,6 +237,21 @@ void Sensor_Init() {
   sensor1.setTimeout(500); sensor2.setTimeout(500); sensor3.setTimeout(500);
   sensor1.startContinuous(33); sensor2.startContinuous(33); sensor3.startContinuous(33);
   initIMU_6DOF();
+}
+void initIMU_6DOF() {
+  imu.init();
+  float angles[3];
+  for (int cal_int = 0; cal_int < 500 ; cal_int ++) {//Run this code 500 times
+    imu.getYawPitchRoll(angles);
+    IMU_cal[0] += angles[0];
+    IMU_cal[1] += angles[1];
+    IMU_cal[2] += angles[2];
+    delay(3);    //Delay 3us to simulate the 250Hz program loop
+  }
+  for (uint8_t i = 0 ; i < 3 ; i++) {
+    IMU_cal[i] /= 500;
+  }
+  Serial.println(F("IMU Calibration DONE"));
 }
 
 /* BLE FUNCTIONS */
@@ -476,8 +480,8 @@ void readFile(fs::FS &fs, const char * path) {
         currChar = file.read();
         sentence = currChar;
       }
-      else { //compile full sentence
-        sentence += currChar;
+      else {
+        sentence += currChar; //compile full sentence
       }
     }
     i++;
