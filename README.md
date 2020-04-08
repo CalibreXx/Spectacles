@@ -49,7 +49,7 @@
 
 > If your `README` has a lot of info, section headers might be nice.
 
-- [Build Parts](#Build Parts)
+- [BOM](#BOM)
 - [Features](#features)
 - [Team](#team)
 - [FAQ](#faq)
@@ -57,7 +57,7 @@
 - [License](#license)
 
 
-## Build Parts
+## BOM
 
 - 
 - Images of what it should look like
