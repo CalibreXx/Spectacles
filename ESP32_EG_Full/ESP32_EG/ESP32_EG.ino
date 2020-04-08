@@ -59,6 +59,9 @@ BLECharacteristic* DATA_SEND_Characteristic = NULL;
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
+bool SDsend = false;
+int newTime[6]; //DD MM HH MM SS YYYY
+bool TimeUpdate = false;
 uint32_t value = 0;
 
 //RTC
@@ -68,23 +71,21 @@ RTC_DS3231 rtc;
 const unsigned short loopInterval = 1000;
 unsigned long previousTime = 0 ;
 
-void readFile(fs::FS &fs, const char * path) ;
-
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
+      Serial.print(F("Device Connected:"));
     };
-
     void onDisconnect(BLEServer* pServer) {
       deviceConnected = false;
+      SDsend = false;
+      Serial.print(F("Device Disconnected"));
     }
 };
-
 class TimeCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *TIME_Characteristic) {
       std::string value = TIME_Characteristic->getValue();
       int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
-      int variable[6]; //day month hour, min, sec , yyyy dayof the week
       uint8_t j = 0;
       if (value.length() == 14 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
@@ -94,28 +95,20 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
           }
         }
         for ( uint8_t i = 0 ; i < 5; i++) { //DD MM HH SS MM
-          variable[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
+          newTime[i] = BLETime[i * 2] * 10 + BLETime[i * 2 + 1];
         }
-        variable[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13]; //year
-        rtc.adjust(DateTime(variable[5], variable[1], variable[0], variable[2], variable[3], variable[4])); //yy month date time
-        //        rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+        newTime[5] = BLETime[10] * 1000 + BLETime[11] * 100 + BLETime[12] * 10 + BLETime[13]; //year
         for ( uint8_t i = 0 ; i < 6 ; i++) {
-          Serial.println(variable[i]);
+          Serial.print(newTime[i]);
         }
-        Serial.print(F("Set new time completed"));
+        TimeUpdate = true;
       }
     }
 };
-
-
 class DataCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *DATA_CALL_Characteristic) {
       std::string value = TIME_Characteristic->getValue();
-      Serial.println("HERE:");
-
-      Serial.println(F("Reading file"));
-      readFile(SD, "/data.txt");
-
+      SDsend = true;
     }
 };
 
@@ -127,7 +120,7 @@ struct splitLong { //split long into 2 byte sized packets
 };
 struct splitLong LongByteConverter;
 
-struct splitFiveLong { //split long into 5 byte sized packets
+struct splitFiveLong { //split long into 5 byte sized packets for epoch time
   union {
     long value;
     char split[5];
@@ -150,40 +143,46 @@ void setup()
 
 void loop()
 {
-  //  DateTime now = rtc.now();
-  //  if (millis() - previousTime >= loopInterval) {
-  //    previousTime = millis();
-  //    epoch = now.unixtime();
-  //    GetSensor();
-  //    BLE_Notify();
-  //    Serial.print("Epoch: "); Serial.println(epoch);
-  //    //    Serial.print("TOF ");
-  //    //    for ( uint8_t i = 0 ; i < 3 ; i++) {
-  //    //      Serial.print (i); Serial.print(": ");
-  //    //      Serial.print(TOF_byte[i]); Serial.print("\t");
-  //    //    }
-  //    //    Serial.print ( "Acceleration: "); Serial.println(acceleration[0]);
-  //    //    Serial.print("Rotation ");
-  //    //    for ( uint8_t i = 0 ; i < 3 ; i++) {
-  //    //      Serial.print (i); Serial.print(": ");
-  //    //      Serial.print (rotation_byte[i]); Serial.print("\t");
-  //    //    }
-  //    //    Serial.print("LDR: "); Serial.println(lightVal);
-  //    AddFile();
-  //    //    Serial.println(" ");
-  //  }
+  if (SDsend == true) {
+    Serial.println(millis());
+    Serial.println("HERE:");
+    Serial.println(F("Reading file"));
+    readFile(SD, "/data.txt");
+    SDsend = false;
+    Serial.println(millis());
+  }
+  else if (TimeUpdate == true) {
+    rtc.adjust(DateTime(newTime[5], newTime[1], newTime[0], //yy month dd
+                        newTime[2], newTime[3], newTime[4])); //hh mm ss
+    Serial.println(F("Adjust Time completed"));
+    TimeUpdate = false;
+  }
+  else if (millis() - previousTime >= loopInterval) {
+    previousTime = millis();
+    DateTime now = rtc.now();
+    epoch = now.unixtime();
+    Serial.println(epoch);
+    GetSensor();
+    BLE_Notify();
+    AddFile();
+    //    Serial.print("Epoch: "); Serial.println(epoch);
+    //    Serial.print("TOF ");
+    //    for ( uint8_t i = 0 ; i < 3 ; i++) {
+    //      Serial.print (i); Serial.print(": ");
+    //      Serial.print(TOF_byte[i]); Serial.print("\t");
+    //    }
+    //    Serial.print ( "Acceleration: "); Serial.println(acceleration[0]);
+    //    Serial.print("Rotation ");
+    //    for ( uint8_t i = 0 ; i < 3 ; i++) {
+    //      Serial.print (i); Serial.print(": ");
+    //      Serial.print (rotation_byte[i]); Serial.print("\t");
+    //    }
+    //    Serial.print("LDR: "); Serial.println(lightVal);
+    //    Serial.println(" ");
+  }
 }
 
-void AddFile() {
-  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
-                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + "," + String(rotation_byte[2]) + ","
-                       + String(lightVal) + "\r\n";
-  Serial.print(F("Save data: "));
-  Serial.println(dataMessage);
-  appendFile(SD, "/data.txt", dataMessage.c_str());
-  delay(200);
-}
-
+/* Sensor FUNCTIONS */
 void GetSensor() {
   TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
   TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
@@ -201,36 +200,6 @@ void GetSensor() {
   light_byte[1] = LongByteConverter.split[0];
   getSIXDOF();
 }
-
-void BLE_Notify() {
-  //   notify changed value
-  if (deviceConnected) {
-    TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
-    TOF_Characteristic->notify();
-    ROTATION_Characteristic->setValue(rotation_byte, 3);
-    ROTATION_Characteristic->notify();
-    LDR_Characteristic->setValue(light_byte, 2);
-    LDR_Characteristic->notify();
-    ACCEL_Characteristic->setValue(acceleration , 1 );
-    ACCEL_Characteristic->notify();
-    delay(3); // bluetooth stack wi3ll go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-  }
-  // disconnecting
-  if (!deviceConnected && oldDeviceConnected) {
-    delay(500); // give the bluetooth stack the chance to get things ready
-    pServer->startAdvertising(); // restart advertising
-    Serial.println("start advertising");
-    oldDeviceConnected = deviceConnected;
-  }
-  // connecting
-  if (deviceConnected && !oldDeviceConnected) {
-    // do stuff here on connecting
-    oldDeviceConnected = deviceConnected;
-    //  }
-    delay(600);
-  }
-}
-
 void getSIXDOF() {
   float angles[3];
   imu.getYawPitchRoll(angles);
@@ -248,7 +217,6 @@ void getSIXDOF() {
   imu.getRawValues(rawvalues);
   acceleration[0] = (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
 }
-
 void initIMU_6DOF() {
   imu.init();
   float angles[3];
@@ -282,9 +250,39 @@ void Sensor_Init() {
   initIMU_6DOF();
 }
 
+/* BLE FUNCTIONS */
+void BLE_Notify() {
+  //   notify changed value
+  if (deviceConnected) {
+    TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
+    TOF_Characteristic->notify();
+    ROTATION_Characteristic->setValue(rotation_byte, 3);
+    ROTATION_Characteristic->notify();
+    LDR_Characteristic->setValue(light_byte, 2);
+    LDR_Characteristic->notify();
+    ACCEL_Characteristic->setValue(acceleration , 1 );
+    ACCEL_Characteristic->notify();
+    delay(3); // bluetooth stack wi3ll go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
+  }
+  // disconnecting
+  if (!deviceConnected && oldDeviceConnected) {
+    delay(500); // give the bluetooth stack the chance to get things ready
+    pServer->startAdvertising(); // restart advertising
+    Serial.println("start advertising");
+    oldDeviceConnected = deviceConnected;
+  }
+  // connecting
+  if (deviceConnected && !oldDeviceConnected) {
+    // do stuff here on connecting
+    oldDeviceConnected = deviceConnected;
+    //  }
+    delay(600);
+  }
+}
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
+  BLEDevice::setMTU(23);
   // Create the BLE Server
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
@@ -354,9 +352,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   DATA_SEND_Characteristic = DATAService->createCharacteristic(
                                DATA_SEND_UUID,
                                BLECharacteristic::PROPERTY_READ   |
-                               BLECharacteristic::PROPERTY_WRITE  |
-                               BLECharacteristic::PROPERTY_NOTIFY |
-                               BLECharacteristic::PROPERTY_INDICATE
+                               BLECharacteristic::PROPERTY_NOTIFY
                              );
   DATA_SEND_Characteristic->addDescriptor(new BLE2902());
 
@@ -380,7 +376,6 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
 }
 
 /* SD Card functions */
-
 void SD_Init() {
   if (!SD.begin()) {
     Serial.println(F("Card Mount Failed"));
@@ -394,30 +389,30 @@ void SD_Init() {
   // If the data.txt file doesn't exist, Create a file on the SD card and write the data labels
   File file = SD.open("/data.txt");
   if (!file) {
-    Serial.println(F("File doens't exist"));
     Serial.println(F("Creating file..."));
     writeFile(SD, "/data.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
   }
-  else {
-    Serial.println(F("File already exists"));
-  }
   file.close();
 }
-
+void AddFile() {
+  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
+                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + "," + String(rotation_byte[2]) + ","
+                       + String(lightVal) + "\r\n";
+  Serial.print(F("Save data: "));
+  Serial.println(dataMessage);
+  appendFile(SD, "/data.txt", dataMessage.c_str());
+  delay(200);
+}
 void readFile(fs::FS &fs, const char * path) {
-  Serial.println(millis());
-  Serial.printf("Reading file: %s\n", path);
-
   File file = fs.open(path);
   if (!file) {
     Serial.println("Failed to open file for reading");
     return;
   }
-
-  Serial.print("Read from file: ");
   int i = 0;
   String sentence;
-  while (file.available()) {
+  SDsend = true;
+  while (file.available() && SDsend == true && deviceConnected) {
     char currChar = file.read();
     if ( i > 50 ) { // remove header
       if (currChar == '\r') {
@@ -443,7 +438,6 @@ void readFile(fs::FS &fs, const char * path) {
         for ( uint8_t j = noCommas[7] + 1 ; j < sentence.length() - 1 ; j++) { //TOF3
           SensorSDData[8] += (sentence[j] - '0') * pow (10, ( sentence.length() - 1  - j   - 1 ) );
         }
-
         byte SDData_Byte[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0};
         FiveByteConverter.value = SensorSDData[0];
         SDData_Byte[0] = FiveByteConverter.split[4];
@@ -462,35 +456,36 @@ void readFile(fs::FS &fs, const char * path) {
         SDData_Byte[9] = SensorSDData[5];
         SDData_Byte[10] = SensorSDData[6];
         SDData_Byte[11] = SensorSDData[7];
-
         LongByteConverter.value = SensorSDData[8];
         SDData_Byte[12] = LongByteConverter.split[1];
         SDData_Byte[13] = LongByteConverter.split[0];
-
         if (deviceConnected) {
-          Serial.println("sending data");
+          delay(3);
           DATA_SEND_Characteristic->setValue(SDData_Byte, 14); // 1 = 1 byte = 8 bits
           DATA_SEND_Characteristic->notify();
-          delay(5);
+
         }
-        if (!deviceConnected && oldDeviceConnected) {
+        if (!deviceConnected) {
           delay(100); // give the bluetooth stack the chance to get things ready
           pServer->startAdvertising(); // restart advertising
           Serial.println("start advertising");
           oldDeviceConnected = deviceConnected;
+          SDsend = false;
+          break;
         }
         currChar = file.read();
         sentence = currChar;
       }
-      else {
+      else { //compile full sentence
         sentence += currChar;
       }
     }
     i++;
   }
-  Serial.println(i);
+  SDsend = false;
   file.close();
-  Serial.println(millis());
+  deleteFile (SD , "/data.txt");
+  SD_Init();
 }
 
 void writeFile(fs::FS & fs, const char * path, const char * message) {
