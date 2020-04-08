@@ -1,16 +1,8 @@
-<a href="http://fvcproductions.com"><img src="https://raw.githubusercontent.com/CalibreXx/Spectacles/EG3301R_Interim01.jpg" title="FVCproductions" alt="FVCproductions"></a>
+# EIM-328 Wearables for Opthamology Research (Jan 2020 - Present)
 
-<!-- [![FVCproductions](https://avatars1.githubusercontent.com/u/4284691?v=3&s=200)](http://fvcproductions.com) -->
-
-***INSERT GRAPHIC HERE (include hyperlink in image)***
-
-# Repository Title Goes Here
-
-> Subtitle or Short Description Goes Here
-
-> ideally one sentence
-
-> include terms/tags that can be searched
+> Building a research tool for researchers to predict myopia
+> A device for consumers to understand their daily eye habits
+> #IOTWearable
 
 **Badges will go here**
 
