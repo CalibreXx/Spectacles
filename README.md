@@ -10,19 +10,8 @@
 
 - build status
 - issues (waffle.io maybe)
-- devDependencies
-- npm package
-- coverage
-- slack
-- downloads
-- gitter chat
-- license
-- etc.
 
 [![INSERT YOUR GRAPHIC HERE](http://i.imgur.com/dt8AUb6.png)]()
-
-- Most people will glance at your `README`, *maybe* star it, and leave
-- Ergo, people should understand instantly what your project is about based on your repo
 
 > Tips
 
@@ -68,6 +57,15 @@
 | DS3231 RTC Module       | Timestamp for each individual sensor reading          | 1   |         |
 | SD Card Module          | Logging of sensor readings                            | 1   |         |
 
+## Features
+## Team
+## FAQ
+## Support
+
+Reach out to me at the following places:
+
+
+## License
 
 ### Clone
 
@@ -138,13 +136,6 @@ $ bower install
 
 - You can just grab their GitHub profile image URL
 - You should probably resize their picture using `?s=200` at the end of the image URL.
-
----
-
-## FAQ
-
-- **How do I do *specifically* so and so?**
-    - No problem! Just do this.
 
 ---
 
