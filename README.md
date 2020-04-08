@@ -11,14 +11,6 @@
 - build status
 - issues (waffle.io maybe)
 
-[![INSERT YOUR GRAPHIC HERE](http://i.imgur.com/dt8AUb6.png)]()
-
-> Tips
-
-- HAVE WHITE SPACE
-- MAKE IT PRETTY
-- GIFS ARE REALLY COOL
-
 > GIF Tools
 
 - Use <a href="http://recordit.co/" target="_blank">**Recordit**</a> to create quicks screencasts of your desktop and export them as `GIF`s.
@@ -58,7 +50,6 @@
 | SD Card Module          | Logging of sensor readings                            | 1   |         |
 
 ## Features
-## Team
 ## FAQ
 ## Support
 
@@ -79,21 +70,6 @@ Reach out to me at the following places:
 
 - You can just grab their GitHub profile image URL
 - You should probably resize their picture using `?s=200` at the end of the image URL.
-
----
-
-## Support
-
-Reach out to me at one of the following places!
-
-
-
-## Donations (Optional)
-
-- You could include a <a href="https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png" target="_blank">Gratipay</a> link as well.
-
-[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.png)](https://gratipay.com/fvcproductions/)
-
 
 ---
 
