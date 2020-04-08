@@ -65,7 +65,7 @@
 Reach out to me at the following places:
 
 - Instagram at <a href="http://instagram.com/bryanlmk" target="_blank">`@bryanlmk`</a>
-- Gmail at <a href=mailto:<nowiki>e0310111@u.nus.edu?subject="CalibreXx/Spectacles">@e0310111@u.nus.edu?subject</a>
+- Gmail at <a href=mailto:e0310111@u.nus.edu>@e0310111@u.nus.edu</a>
 
 ---
 
