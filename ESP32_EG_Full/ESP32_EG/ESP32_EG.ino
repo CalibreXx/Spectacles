@@ -238,7 +238,7 @@ void Sensor_Init() {
   initIMU_6DOF();
 }
 void initIMU_6DOF() {
-  imu.init();
+  imu.init(true);
   float angles[3];
   for (int cal_int = 0; cal_int < 500 ; cal_int ++) {//Run this code 500 times
     imu.getYawPitchRoll(angles);
