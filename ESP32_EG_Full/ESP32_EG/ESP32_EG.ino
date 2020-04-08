@@ -269,7 +269,7 @@ void BLE_Notify() {
   }
   // disconnecting
   if (!deviceConnected && oldDeviceConnected) {
-    delay(500); // give the bluetooth stack the chance to get things ready
+    delay(250); // give the bluetooth stack the chance to get things ready
     pServer->startAdvertising(); // restart advertising
     Serial.println("start advertising");
     oldDeviceConnected = deviceConnected;
@@ -279,7 +279,7 @@ void BLE_Notify() {
     // do stuff here on connecting
     oldDeviceConnected = deviceConnected;
     //  }
-    delay(600);
+    delay(200);
   }
 }
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
