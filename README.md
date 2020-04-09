@@ -11,7 +11,7 @@
 > If your `README` has a lot of info, section headers might be nice.
 
 - [BOM](#BOM)
-- [ESP32_Arduino_Setup](#ESP32_Arduino_Setup)
+- [ESP32_Setup](#ESP32_Setup)
 - [Team](#team)
 - [FAQ](#faq)
 - [Support](#support)
@@ -28,7 +28,9 @@
 | DS3231 RTC Module       | Timestamp for each individual sensor reading          | 1   |         |
 | SD Card Module          | Logging of sensor readings                            | 1   |         |
 
-## ESP32_Arduino_Setup
+## ESP32_Setup
+
+> Arduino Setup
 1. Go to File -> Preferences in Arduino IDE.
       * Enter https://dl.espressif.com/dl/package_esp32_index.json into the “Additional Board Manager URLs” field as shown in the figure below.
       * Note: if you already have the ESP8266 boards URL, you can separate the URLs with a comma.
