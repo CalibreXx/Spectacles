@@ -1,4 +1,5 @@
-# EIM-328 Wearables for Opthamology Research (Jan 2020 - Present)
+# EIM-328 Wearables for Opthamology Research 
+>(Jan 2020 - Present)
 
 > Building a research tool for researchers to predict myopia
 
