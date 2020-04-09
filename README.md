@@ -44,7 +44,7 @@
 Reach out to me at the following places:
 
 - Instagram at <a href="http://instagram.com/bryanlmk" target="_blank">`@bryanlmk`</a>
-- Gmail at <a href=mailto:e0310111@u.nus.edu>@e0310111@u.nus.edu</a>
+- Email at <a href=mailto:e0310111@u.nus.edu>NUSmail</a>
 
 ---
 ## Team
