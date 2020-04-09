@@ -5,7 +5,7 @@
 - A device for consumers to understand their daily eye habits
 #IOTWearable
 
-## Table of Contents 
+# Table of Contents 
 
 - [BOM](#BOM)
 - [ESP32_Setup](#ESP32_Setup)
