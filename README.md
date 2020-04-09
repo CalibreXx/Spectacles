@@ -6,9 +6,7 @@
 
 > #IOTWearable
 
-## Table of Contents (Optional)
-
-> If your `README` has a lot of info, section headers might be nice.
+## Table of Contents 
 
 - [BOM](#BOM)
 - [ESP32_Setup](#ESP32_Setup)
