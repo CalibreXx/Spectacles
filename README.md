@@ -1,11 +1,9 @@
 # EIM-328 Wearables for Opthamology Research 
 >(Jan 2020 - Present)
 
-> Building a research tool for researchers to predict myopia
-
-> A device for consumers to understand their daily eye habits
-
-> #IOTWearable
+- Building a research tool for researchers to predict myopia
+- A device for consumers to understand their daily eye habits
+#IOTWearable
 
 ## Table of Contents 
 
