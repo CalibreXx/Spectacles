@@ -39,13 +39,6 @@
 
 ## Features
 ## FAQ
-## Support
-
-Reach out to me at the following places:
-
-- Instagram at <a href="http://instagram.com/bryanlmk" target="_blank">`@bryanlmk`</a>
-- Email at <a href=mailto:e0310111@u.nus.edu>NUSmail</a>
-
 ---
 ## Team
 
@@ -58,6 +51,13 @@ Reach out to me at the following places:
 
 - You can just grab their GitHub profile image URL
 - You should probably resize their picture using `?s=200` at the end of the image URL.
+
+## Support
+
+Reach out to me at the following places:
+
+- Instagram at <a href="http://instagram.com/bryanlmk" target="_blank">`@bryanlmk`</a>
+- Email at <a href=mailto:e0310111@u.nus.edu>NUSmail</a>
 
 ---
 
