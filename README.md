@@ -17,7 +17,6 @@
 - [Support](#support)
 - [License](#license)
 
-
 ## BOM
 
 | Item                    | Purpose                                               | Qty | Remarks |
@@ -32,10 +31,11 @@
 ## ESP32_Arduino_Setup
 1. Go to File -> Preferences in Arduino IDE.
       * Enter https://dl.espressif.com/dl/package_esp32_index.json into the “Additional Board Manager URLs” field as shown in the figure below.
-Note: if you already have the ESP8266 boards URL, you can separate the URLs with a comma.
-Go to Tools > Board > Boards Manager…
-Search for ESP32 and press install button for the “ESP32 by Espressif Systems“:
-Select your Board in Tools > Board menu 
+      * Note: if you already have the ESP8266 boards URL, you can separate the URLs with a comma.
+2. Go to Tools > Board > Boards Manager…
+      * Search for ESP32 and press install button for the “ESP32 by Espressif Systems“:
+      * Select your Board in Tools > Board menu 
+3. Test out example codes to check if your board is working, otherwise install usb drivers for your board.
 
 ## Features
 ## FAQ
