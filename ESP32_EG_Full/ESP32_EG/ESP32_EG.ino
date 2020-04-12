@@ -433,10 +433,28 @@ void readFile(fs::FS &fs, const char * path) {
         for ( uint8_t j = 0 ; j < noCommas[0] ; j++) { // first commma
           SensorSDData[0] += (sentence[j] - '0') * pow(10, noCommas[0] - (j + 1)) ;
         }
-        for ( uint8_t p = 1 ; p < 8 ; p++) {
-          for ( uint8_t j = noCommas[p - 1] + 1 ; j < noCommas [p] ; j++) {
-            SensorSDData [p] += (sentence[j] - '0' ) * pow (10, (noCommas[p]  - j  - 1));
-          }
+        for ( uint8_t j = noCommas[0] + 1  ; j < noCommas[1] ; j++) { // first commma
+          SensorSDData[1] += (sentence[j] - '0') * pow(10, noCommas[1] - (j + 1)) ;
+        }
+
+        for ( uint8_t j = noCommas[1] + 1  ; j < noCommas[2] ; j++) { // first commma
+          SensorSDData[2] += (sentence[j] - '0') * pow(10, noCommas[2] - (j + 1)) ;
+        }
+        for ( uint8_t j = noCommas[2] + 1  ; j < noCommas[3] ; j++) { // first commma
+          SensorSDData[3] += (sentence[j] - '0') * pow(10, noCommas[3] - (j + 1)) ;
+        }
+        for ( uint8_t j = noCommas[3] + 1  ; j < noCommas[4] ; j++) { // first commma
+          SensorSDData[4] += (sentence[j] - '0') * pow(10, noCommas[4] - (j + 1)) ;
+        }
+        for ( uint8_t j = noCommas[4] + 1  ; j < noCommas[5] ; j++) { // first commma
+          SensorSDData[5] += (sentence[j] - '0') * pow(10, noCommas[5] - (j + 1)) ;
+        }
+        for ( uint8_t j = noCommas[5] + 1  ; j < noCommas[6] ; j++) { // first commma
+          SensorSDData[6] += (sentence[j] - '0') * pow(10, noCommas[6] - (j + 1)) ;
+        }
+
+        for ( uint8_t j = noCommas[6] + 1  ; j < noCommas[7] ; j++) { // first commma
+          SensorSDData[7] += (sentence[j] - '0') * pow(10, noCommas[1] - (j + 1)) ;
         }
         for ( uint8_t j = noCommas[7] + 1 ; j < sentence.length() - 1 ; j++) { //TOF3
           SensorSDData[8] += (sentence[j] - '0') * pow (10, ( sentence.length() - 1  - j   - 1 ) );
