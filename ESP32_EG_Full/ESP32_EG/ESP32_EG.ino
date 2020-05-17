@@ -20,7 +20,12 @@
 #define ACCEL_UUID "d0b5f187-ac23-459f-b44b-e20d50bcf656"
 
 #define TIME_SERVICE_UUID "57675859-a6f4-4445-9492-051aa8514552"
-#define TIME_UUID "10ccece5-e44b-4502-8b69-09646d4072e1" // Write Date time etc to this uuid to update time on ESP32
+#define DD_UUID "10ccece5-e44b-4502-8b69-09646d4072e1"
+#define MonMon_UUID "839a1c7a-d528-4001-a1f0-2e1409acbe3b"
+#define YY_UUID "e8e6995b-7035-44cb-9aa4-6c4e12d0d65b"
+#define HH_UUID "1d584eb9-ab30-43ae-a83f-a9b62241bbd2"
+#define MinMin_UUID "944cd4a5-03a8-42d2-a347-3047f2ff3a83"
+#define SS_UUID "8c14ac64-1f27-4268-b108-40d138fd22d4"
 
 #define DATA_SERVICE_UUID "b8ec9f13-81e2-489f-b736-f4e440c86e03"
 #define DATA_CALL_UUID "5022e570-0f19-4357-848a-fc74234b1348" // Write to this uuid to req for data xfer
@@ -53,14 +58,21 @@ BLECharacteristic* TOF_Characteristic = NULL;
 BLECharacteristic* ROTATION_Characteristic = NULL;
 BLECharacteristic* ACCEL_Characteristic = NULL;
 BLECharacteristic* LDR_Characteristic = NULL;
-BLECharacteristic* TIME_Characteristic = NULL;
+
+BLECharacteristic* DD_Characteristic = NULL;
+BLECharacteristic* MonMon_Characteristic = NULL;
+BLECharacteristic* YY_Characteristic = NULL;
+BLECharacteristic* HH_Characteristic = NULL;
+BLECharacteristic* MinMin_Characteristic = NULL;
+BLECharacteristic* SS_Characteristic = NULL;
+
 BLECharacteristic* DATA_CALL_Characteristic = NULL;
 BLECharacteristic* DATA_SEND_Characteristic = NULL;
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 
-bool TimeUpdate = false;
+int TimeUpdate = 0; // 0 == nth, 1 == receiving, 2 == all packets in
 bool SDsend = false;
 int newTime[6]; //DD MM HH MM SS YYYY
 uint32_t value = 0;
@@ -83,12 +95,12 @@ class MyServerCallbacks: public BLEServerCallbacks {
       Serial.print(F("Device Disconnected"));
     }
 };
-class TimeCallbacks: public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *TIME_Characteristic) {
-      std::string value = TIME_Characteristic->getValue();
-      int BLETime[15]; //day month hour, min, sec , yyyy dayof the week
+class DD_Callbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *DD_Characteristic) {
+      std::string value = DD_Characteristic->getValue();
+      int BLETime[15]; 
       uint8_t j = 0;
-      if (value.length() == 14 ) {
+      if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
             BLETime[j] = value[i] - '0';
@@ -96,21 +108,100 @@ class TimeCallbacks: public BLECharacteristicCallbacks {
           }
         }
         newTime[0] = BLETime[0] * 10 + BLETime[1]; //dd
-        newTime[1] = BLETime[2] * 10 + BLETime[3]; //mm
-        newTime[5] = BLETime[4] * 1000 + BLETime[5] * 100 + BLETime[6] * 10 + BLETime[7]; //year
-        newTime[2] = BLETime[8] * 10 + BLETime[9]; //hh
-        newTime[3] = BLETime[10] * 10 + BLETime[11]; //mm
-        newTime[4] = BLETime[12] * 10 + BLETime[13]; //ss
-        for ( uint8_t i = 0 ; i < 6 ; i++) {
-          Serial.print(newTime[i]);
-        }
-        TimeUpdate = true;
+        TimeUpdate = 1;
       }
     }
 };
+
+class MonMon_Callbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *MonMon_Characteristic) {
+      std::string value = MonMon_Characteristic->getValue();
+      int BLETime[15]; 
+      uint8_t j = 0;
+      if (value.length() > 0 ) {
+        for ( uint8_t i = 0 ; i < value.length() ; i++) {
+          if ( value[i] >= '0' && value[i] <= '9') {
+            BLETime[j] = value[i] - '0';
+            j++;
+          }
+        }
+        newTime[1] = BLETime[0] * 10 + BLETime[1]; //dd
+        TimeUpdate = 1;
+      }
+    }
+};
+class YY_Callbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *YY_Characteristic) {
+      std::string value = YY_Characteristic->getValue();
+      int BLETime[15];
+      uint8_t j = 0;
+      if (value.length() > 0 ) {
+        for ( uint8_t i = 0 ; i < value.length() ; i++) {
+          if ( value[i] >= '0' && value[i] <= '9') {
+            BLETime[j] = value[i] - '0';
+            j++;
+          }
+        }
+        newTime[2] = BLETime[0] * 10 + BLETime[1]; //dd
+        TimeUpdate = 1;
+      }
+    }
+};
+class HH_Callbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *HH_Characteristic) {
+      std::string value = HH_Characteristic->getValue();
+      int BLETime[15];
+      uint8_t j = 0;
+      if (value.length() > 0 ) {
+        for ( uint8_t i = 0 ; i < value.length() ; i++) {
+          if ( value[i] >= '0' && value[i] <= '9') {
+            BLETime[j] = value[i] - '0';
+            j++;
+          }
+        }
+        newTime[3] = BLETime[0] * 10 + BLETime[1]; //dd
+        TimeUpdate = 1;
+      }
+    }
+};
+class MinMin_Callbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *MinMin_Characteristic) {
+      std::string value = MinMin_Characteristic->getValue();
+      int BLETime[15]; 
+      uint8_t j = 0;
+      if (value.length() > 0 ) {
+        for ( uint8_t i = 0 ; i < value.length() ; i++) {
+          if ( value[i] >= '0' && value[i] <= '9') {
+            BLETime[j] = value[i] - '0';
+            j++;
+          }
+        }
+        newTime[4] = BLETime[0] * 10 + BLETime[1]; //dd
+        TimeUpdate = 1;
+      }
+    }
+};
+class SS_Callbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *SS_Characteristic) {
+      std::string value = SS_Characteristic->getValue();
+      int BLETime[15]; 
+      uint8_t j = 0;
+      if (value.length() > 0 ) {
+        for ( uint8_t i = 0 ; i < value.length() ; i++) {
+          if ( value[i] >= '0' && value[i] <= '9') {
+            BLETime[j] = value[i] - '0';
+            j++;
+          }
+        }
+        newTime[4] = BLETime[0] * 10 + BLETime[1];
+        TimeUpdate = 1;
+      }
+    }
+};
+
 class DataCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *DATA_CALL_Characteristic) {
-      std::string value = TIME_Characteristic->getValue();
+      std::string value = DATA_CALL_Characteristic->getValue();
       SDsend = true;
     }
 };
@@ -335,13 +426,53 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE TOF_1 Characteristic
-  TIME_Characteristic = TIMEService->createCharacteristic(
-                          TIME_UUID,
-                          BLECharacteristic::PROPERTY_WRITE
-                        );
-  TIME_Characteristic->setCallbacks(new TimeCallbacks());
-  TIME_Characteristic->addDescriptor(new BLE2902());
+  // Create a BLE Time Characteristic
+  DD_Characteristic = TIMEService->createCharacteristic(
+                        DD_UUID,
+                        BLECharacteristic::PROPERTY_WRITE
+                      );
+  DD_Characteristic->setCallbacks(new TimeCallbacks());
+  DD_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a BLE Time Characteristic
+  MonMon_Characteristic = TIMEService->createCharacteristic(
+                            MonMon_UUID,
+                            BLECharacteristic::PROPERTY_WRITE
+                          );
+  MonMon_Characteristic->setCallbacks(new TimeCallbacks());
+  MonMon_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a BLE Time Characteristic
+  YY_Characteristic = TIMEService->createCharacteristic(
+                        YY_UUID,
+                        BLECharacteristic::PROPERTY_WRITE
+                      );
+  YY_Characteristic->setCallbacks(new TimeCallbacks());
+  YY_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a BLE Time Characteristic
+  HH_Characteristic = TIMEService->createCharacteristic(
+                        HH_UUID,
+                        BLECharacteristic::PROPERTY_WRITE
+                      );
+  HH_Characteristic->setCallbacks(new TimeCallbacks());
+  HH_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a BLE Time Characteristic
+  MinMin_Characteristic = TIMEService->createCharacteristic(
+                            MinMin_UUID,
+                            BLECharacteristic::PROPERTY_WRITE
+                          );
+  MinMin_Characteristic->setCallbacks(new TimeCallbacks());
+  MinMin_Characteristic->addDescriptor(new BLE2902());
+
+  // Create a BLE Time Characteristic
+  SS_Characteristic = TIMEService->createCharacteristic(
+                        SS_UUID,
+                        BLECharacteristic::PROPERTY_WRITE
+                      );
+  SS_Characteristic->setCallbacks(new TimeCallbacks());
+  SS_Characteristic->addDescriptor(new BLE2902());
 
   // Create a DATA CALL BACK
   DATA_CALL_Characteristic = DATAService->createCharacteristic(
