@@ -95,10 +95,11 @@ class MyServerCallbacks: public BLEServerCallbacks {
       Serial.print(F("Device Disconnected"));
     }
 };
+
 class DD_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *DD_Characteristic) {
       std::string value = DD_Characteristic->getValue();
-      int BLETime[15]; 
+      int BLETime[15];
       uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
@@ -116,7 +117,7 @@ class DD_Callbacks: public BLECharacteristicCallbacks {
 class MonMon_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *MonMon_Characteristic) {
       std::string value = MonMon_Characteristic->getValue();
-      int BLETime[15]; 
+      int BLETime[15];
       uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
@@ -142,7 +143,7 @@ class YY_Callbacks: public BLECharacteristicCallbacks {
             j++;
           }
         }
-        newTime[2] = BLETime[0] * 10 + BLETime[1]; //dd
+        newTime[2] = BLETime[0] * 1000 + BLETime[1] * 100 + BLETime[2] * 10 +  BLETime[3]; //dd
         TimeUpdate = 1;
       }
     }
@@ -167,7 +168,7 @@ class HH_Callbacks: public BLECharacteristicCallbacks {
 class MinMin_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *MinMin_Characteristic) {
       std::string value = MinMin_Characteristic->getValue();
-      int BLETime[15]; 
+      int BLETime[15];
       uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
@@ -184,7 +185,7 @@ class MinMin_Callbacks: public BLECharacteristicCallbacks {
 class SS_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *SS_Characteristic) {
       std::string value = SS_Characteristic->getValue();
-      int BLETime[15]; 
+      int BLETime[15];
       uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
@@ -193,8 +194,8 @@ class SS_Callbacks: public BLECharacteristicCallbacks {
             j++;
           }
         }
-        newTime[4] = BLETime[0] * 10 + BLETime[1];
-        TimeUpdate = 1;
+        newTime[5] = BLETime[0] * 10 + BLETime[1];
+        TimeUpdate = 2;
       }
     }
 };
@@ -245,20 +246,21 @@ void loop()
     SDsend = false;
     Serial.println(millis());
   }
-  else if (TimeUpdate == true) {
-    rtc.adjust(DateTime(newTime[5], newTime[1], newTime[0], //yy month dd
-                        newTime[2], newTime[3], newTime[4])); //hh mm ss
+  else if (TimeUpdate == 2) {
+    rtc.adjust(DateTime(newTime[2], newTime[1], newTime[0], //yy month dd
+                        newTime[3], newTime[4], newTime[5])); //hh mm ss
     Serial.println(F("Adjust Time completed"));
-    TimeUpdate = false;
+    TimeUpdate = 0;
   }
   else if (millis() - previousTime >= loopInterval) {
-    previousTime = millis();
-    DateTime now = rtc.now();
-    epoch = now.unixtime();
-    Serial.println(epoch);
-    GetSensor();
-    BLE_Notify();
-    AddFile();
+//    previousTime = millis();
+//    DateTime now = rtc.now();
+//    epoch = now.unixtime();
+//    Serial.println(epoch);
+//    GetSensor();
+//    BLE_Notify();
+//    AddFile();
+
     //    Serial.print("Epoch: "); Serial.println(epoch);
     //    Serial.print("TOF ");
     //    for ( uint8_t i = 0 ; i < 3 ; i++) {
@@ -431,47 +433,43 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                         DD_UUID,
                         BLECharacteristic::PROPERTY_WRITE
                       );
-  DD_Characteristic->setCallbacks(new TimeCallbacks());
+  DD_Characteristic->setCallbacks(new DD_Callbacks());
   DD_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE Time Characteristic
+  // Create a BLE Time Characteristic****************** TIME ****************************
   MonMon_Characteristic = TIMEService->createCharacteristic(
                             MonMon_UUID,
                             BLECharacteristic::PROPERTY_WRITE
                           );
-  MonMon_Characteristic->setCallbacks(new TimeCallbacks());
+  MonMon_Characteristic->setCallbacks(new MonMon_Callbacks());
   MonMon_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE Time Characteristic
   YY_Characteristic = TIMEService->createCharacteristic(
                         YY_UUID,
                         BLECharacteristic::PROPERTY_WRITE
                       );
-  YY_Characteristic->setCallbacks(new TimeCallbacks());
+  YY_Characteristic->setCallbacks(new YY_Callbacks());
   YY_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE Time Characteristic
   HH_Characteristic = TIMEService->createCharacteristic(
                         HH_UUID,
                         BLECharacteristic::PROPERTY_WRITE
                       );
-  HH_Characteristic->setCallbacks(new TimeCallbacks());
+  HH_Characteristic->setCallbacks(new HH_Callbacks());
   HH_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE Time Characteristic
   MinMin_Characteristic = TIMEService->createCharacteristic(
                             MinMin_UUID,
                             BLECharacteristic::PROPERTY_WRITE
                           );
-  MinMin_Characteristic->setCallbacks(new TimeCallbacks());
+  MinMin_Characteristic->setCallbacks(new MinMin_Callbacks());
   MinMin_Characteristic->addDescriptor(new BLE2902());
 
-  // Create a BLE Time Characteristic
   SS_Characteristic = TIMEService->createCharacteristic(
                         SS_UUID,
                         BLECharacteristic::PROPERTY_WRITE
                       );
-  SS_Characteristic->setCallbacks(new TimeCallbacks());
+  SS_Characteristic->setCallbacks(new SS_Callbacks());
   SS_Characteristic->addDescriptor(new BLE2902());
 
   // Create a DATA CALL BACK
@@ -548,48 +546,23 @@ void readFile(fs::FS &fs, const char * path) {
   SDsend = true;
   while (file.available() && SDsend == true && deviceConnected) {
     char currChar = file.read();
-    if ( i > 50 ) { // remove header
+    if ( i > 58 ) { // remove header
       if (currChar == '\r') {
       }
       if (currChar == '\n') {
-        int noCommas[8];
-        uint8_t k = 0;
-        for ( int j = 0 ; j < sentence.length() ; j++) {
-          if (sentence[j] == ',') {
-            noCommas[k] = j;
-            k++;
-          }
-        }// Search for commas
-        unsigned int SensorSDData[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0}; //epoch, tof1,2,3 accel, yaw pitch roll, ldr
-        for ( uint8_t j = 0 ; j < noCommas[0] ; j++) { // first commma
-          SensorSDData[0] += (sentence[j] - '0') * pow(10, noCommas[0] - (j + 1)) ;
-        }
-        for ( uint8_t j = noCommas[0] + 1  ; j < noCommas[1] ; j++) { // first commma
-          SensorSDData[1] += (sentence[j] - '0') * pow(10, noCommas[1] - (j + 1)) ;
+
+        char buf[50];
+        sentence.toCharArray(buf, sentence.length());
+        char* token = strtok(buf, ",");
+        unsigned int SensorSDData[9]; //epoch, tof1,2,3 accel, yaw pitch roll, ldr
+
+        int count = 0;
+        while (token != NULL) {
+          SensorSDData[count] = atoi(token);
+          token = strtok(NULL, ",");
+          count += 1;
         }
 
-        for ( uint8_t j = noCommas[1] + 1  ; j < noCommas[2] ; j++) { // first commma
-          SensorSDData[2] += (sentence[j] - '0') * pow(10, noCommas[2] - (j + 1)) ;
-        }
-        for ( uint8_t j = noCommas[2] + 1  ; j < noCommas[3] ; j++) { // first commma
-          SensorSDData[3] += (sentence[j] - '0') * pow(10, noCommas[3] - (j + 1)) ;
-        }
-        for ( uint8_t j = noCommas[3] + 1  ; j < noCommas[4] ; j++) { // first commma
-          SensorSDData[4] += (sentence[j] - '0') * pow(10, noCommas[4] - (j + 1)) ;
-        }
-        for ( uint8_t j = noCommas[4] + 1  ; j < noCommas[5] ; j++) { // first commma
-          SensorSDData[5] += (sentence[j] - '0') * pow(10, noCommas[5] - (j + 1)) ;
-        }
-        for ( uint8_t j = noCommas[5] + 1  ; j < noCommas[6] ; j++) { // first commma
-          SensorSDData[6] += (sentence[j] - '0') * pow(10, noCommas[6] - (j + 1)) ;
-        }
-
-        for ( uint8_t j = noCommas[6] + 1  ; j < noCommas[7] ; j++) { // first commma
-          SensorSDData[7] += (sentence[j] - '0') * pow(10, noCommas[1] - (j + 1)) ;
-        }
-        for ( uint8_t j = noCommas[7] + 1 ; j < sentence.length() - 1 ; j++) { //TOF3
-          SensorSDData[8] += (sentence[j] - '0') * pow (10, ( sentence.length() - 1  - j   - 1 ) );
-        }
         byte SDData_Byte[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0};
         FiveByteConverter.value = SensorSDData[0];
         SDData_Byte[0] = FiveByteConverter.split[4];
@@ -611,11 +584,11 @@ void readFile(fs::FS &fs, const char * path) {
         LongByteConverter.value = SensorSDData[8];
         SDData_Byte[12] = LongByteConverter.split[1];
         SDData_Byte[13] = LongByteConverter.split[0];
+
         if (deviceConnected) {
           delay(3);
           DATA_SEND_Characteristic->setValue(SDData_Byte, 14); // 1 = 1 byte = 8 bits
           DATA_SEND_Characteristic->notify();
-
         }
         if (!deviceConnected) {
           delay(100); // give the bluetooth stack the chance to get things ready
@@ -634,9 +607,11 @@ void readFile(fs::FS &fs, const char * path) {
     }
     i++;
   }
+  Serial.print( "i = ");
+  Serial.println(i);
   SDsend = false;
   file.close();
-  deleteFile (SD , "/data.txt");
+//  deleteFile (SD , "/data.txt");
   SD_Init();
 }
 
