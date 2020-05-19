@@ -84,6 +84,7 @@ RTC_DS3231 rtc;
 const unsigned short loopInterval = 1000;
 unsigned long previousTime = 0 ;
 
+
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
@@ -253,13 +254,13 @@ void loop()
     TimeUpdate = 0;
   }
   else if (millis() - previousTime >= loopInterval) {
-//    previousTime = millis();
-//    DateTime now = rtc.now();
-//    epoch = now.unixtime();
-//    Serial.println(epoch);
-//    GetSensor();
-//    BLE_Notify();
-//    AddFile();
+    //    previousTime = millis();
+    //    DateTime now = rtc.now();
+    //    epoch = now.unixtime();
+    //    Serial.println(epoch);
+    //    GetSensor();
+    //    BLE_Notify();
+    //    AddFile();
 
     //    Serial.print("Epoch: "); Serial.println(epoch);
     //    Serial.print("TOF ");
@@ -611,7 +612,7 @@ void readFile(fs::FS &fs, const char * path) {
   Serial.println(i);
   SDsend = false;
   file.close();
-//  deleteFile (SD , "/data.txt");
+  deleteFile (SD , "/data.txt");
   SD_Init();
 }
 
