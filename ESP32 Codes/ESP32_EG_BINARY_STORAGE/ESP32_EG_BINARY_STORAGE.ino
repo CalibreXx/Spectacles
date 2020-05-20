@@ -43,7 +43,7 @@ byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 // LDR
 const int LDR_PIN = 34; // analog pins
-unsigned short lightVal;
+uint16_t lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
@@ -81,7 +81,8 @@ uint32_t value = 0;
 unsigned long epoch;
 RTC_DS3231 rtc;
 
-const unsigned short loopInterval = 25;
+const uint16_t loopInterval = 5000;
+const uint16_t sampleInterval = 250;
 unsigned long previousTime = 0 ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
@@ -275,22 +276,42 @@ void loop()
 
 /* Sensor FUNCTIONS */
 void GetSensor() {
+
   struct splitLong LongByteConverter;
-  TOF_cm[0] = (sensor1.readRangeContinuousMillimeters()) / 10;
-  TOF_cm[1] = (sensor2.readRangeContinuousMillimeters()) / 10;
-  TOF_cm[2] = (sensor3.readRangeContinuousMillimeters()) / 10;
+  uint8_t j = 0;
+
+  for ( uint8_t i = 0 ; i < 3 ; i ++) {
+    TOF_cm[i] = 0;
+  }
+  uint16_t light_value_sum = 0 ;
+  byte rotation_sum[3] = {0, 0, 0}; // Yaw Pitch Roll
+  byte acceleration_sum[1] = {0};
+
+  while ( j < 4) { //take readomg 4 times at a fixed interval
+
+    TOF_cm[0] += (sensor1.readRangeContinuousMillimeters()) / 10;
+    TOF_cm[1] += (sensor2.readRangeContinuousMillimeters()) / 10;
+    TOF_cm[2] += (sensor3.readRangeContinuousMillimeters()) / 10;
+
+    light_value_sum += analogRead(LDR_PIN);
+    getSIXDOF();
+    j += 1;
+  }
+
   for (uint8_t i = 0 ; i < 3 ; i++) {
+    TOF_cm[i] = TOF_cm[i] / 4;
     if ( TOF_cm[i] > 255 ) {
-      TOF_byte[i] = 0; // if value greater than 255cm
+      TOF_byte[i] = 255; // if value greater than 255cm
     } else {
       TOF_byte[i] = TOF_cm[i];
     }
   }
-  lightVal = analogRead(LDR_PIN);
+
+  lightVal = light_value_sum / 4;
   LongByteConverter.value = lightVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
-  getSIXDOF();
+
 }
 void getSIXDOF() {
   float angles[3];
@@ -525,7 +546,7 @@ void SD_Init() {
 void AddFile(fs::FS & fs, const char * path) {
   struct dataStore myData;
   File file = fs.open(path, FILE_APPEND);
-  
+
   myData.epochTime_SD = epoch;
   myData.tof1_SD = TOF_byte[0];
   myData.tof2_SD = TOF_byte[1];
@@ -547,7 +568,7 @@ void readFile(fs::FS &fs, const char * path) {
   struct dataStore myData;
   struct splitLong LongByteConverter;
   int counter = 0;
-  
+
   while ( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
