@@ -20,6 +20,7 @@
 #define ACCEL_UUID "d0b5f187-ac23-459f-b44b-e20d50bcf656"
 
 #define TIME_SERVICE_UUID "57675859-a6f4-4445-9492-051aa8514552"
+#define TIME_CALL_UUID "7ec7bbf4-cc3b-430b-81a3-de900b242c7a"
 #define DD_UUID "10ccece5-e44b-4502-8b69-09646d4072e1"
 #define MonMon_UUID "839a1c7a-d528-4001-a1f0-2e1409acbe3b"
 #define YY_UUID "e8e6995b-7035-44cb-9aa4-6c4e12d0d65b"
@@ -38,7 +39,7 @@
 
 //TOF Private Variables
 VL53L1X sensor1; VL53L1X sensor2; VL53L1X sensor3;
-unsigned int TOF_cm[3] = {0, 0, 0};
+
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 // LDR
@@ -59,6 +60,7 @@ BLECharacteristic* ROTATION_Characteristic = NULL;
 BLECharacteristic* ACCEL_Characteristic = NULL;
 BLECharacteristic* LDR_Characteristic = NULL;
 
+BLECharacteristic* Time_Call_Characteristic = NULL;
 BLECharacteristic* DD_Characteristic = NULL;
 BLECharacteristic* MonMon_Characteristic = NULL;
 BLECharacteristic* YY_Characteristic = NULL;
@@ -72,7 +74,7 @@ BLECharacteristic* DATA_SEND_Characteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 
-int TimeUpdate = 0; // 0 == nth, 1 == receiving, 2 == all packets in
+bool TimeUpdate = false ; //false = nth
 bool SDsend = false;
 int newTime[6]; //DD MM HH MM SS YYYY
 uint32_t value = 0;
@@ -82,7 +84,6 @@ unsigned long epoch;
 RTC_DS3231 rtc;
 
 const uint16_t loopInterval = 5000;
-const uint16_t sampleInterval = 250;
 unsigned long previousTime = 0 ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
@@ -94,6 +95,17 @@ class MyServerCallbacks: public BLEServerCallbacks {
       deviceConnected = false;
       SDsend = false;
       Serial.print(F("Device Disconnected"));
+    }
+};
+
+class Time_Call_Callbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *Time_Call_Characteristic) {
+      std::string value = Time_Call_Characteristic->getValue();
+      if (value.length() > 0) {
+        if ( int(value[0]) == 17 && int(value[1]) == 16){
+          
+        }
+      }
     }
 };
 
@@ -110,7 +122,6 @@ class DD_Callbacks: public BLECharacteristicCallbacks {
           }
         }
         newTime[0] = BLETime[0] * 10 + BLETime[1]; //dd
-        TimeUpdate = 1;
       }
     }
 };
@@ -128,7 +139,6 @@ class MonMon_Callbacks: public BLECharacteristicCallbacks {
           }
         }
         newTime[1] = BLETime[0] * 10 + BLETime[1]; //dd
-        TimeUpdate = 1;
       }
     }
 };
@@ -145,7 +155,6 @@ class YY_Callbacks: public BLECharacteristicCallbacks {
           }
         }
         newTime[2] = BLETime[0] * 1000 + BLETime[1] * 100 + BLETime[2] * 10 +  BLETime[3]; //dd
-        TimeUpdate = 1;
       }
     }
 };
@@ -162,7 +171,6 @@ class HH_Callbacks: public BLECharacteristicCallbacks {
           }
         }
         newTime[3] = BLETime[0] * 10 + BLETime[1]; //dd
-        TimeUpdate = 1;
       }
     }
 };
@@ -179,7 +187,6 @@ class MinMin_Callbacks: public BLECharacteristicCallbacks {
           }
         }
         newTime[4] = BLETime[0] * 10 + BLETime[1]; //dd
-        TimeUpdate = 1;
       }
     }
 };
@@ -196,7 +203,7 @@ class SS_Callbacks: public BLECharacteristicCallbacks {
           }
         }
         newTime[5] = BLETime[0] * 10 + BLETime[1];
-        TimeUpdate = 2;
+        TimeUpdate = true;
       }
     }
 };
@@ -215,14 +222,12 @@ struct splitLong { //split long into 2 byte sized packets
   } __attribute__((packed));
 };
 
-
 struct splitFiveLong { //split long into 5 byte sized packets for epoch time
   union {
     long value;
     char split[5];
   } __attribute__((packed));
 };
-
 
 struct dataStore {
   uint32_t epochTime_SD;
@@ -258,11 +263,11 @@ void loop()
     SDsend = false;
     Serial.println(millis());
   }
-  else if (TimeUpdate == 2) {
+  else if (TimeUpdate == true) {
     rtc.adjust(DateTime(newTime[2], newTime[1], newTime[0], //yy month dd
                         newTime[3], newTime[4], newTime[5])); //hh mm ss
     Serial.println(F("Adjust Time completed"));
-    TimeUpdate = 0;
+    TimeUpdate = false;
   }
   else if (millis() - previousTime >= loopInterval) {
     previousTime = millis();
@@ -275,32 +280,66 @@ void loop()
 }
 
 /* Sensor FUNCTIONS */
+
+void printSensor() {
+  Serial.print( "TOF Sensors:        ");
+  for ( uint8_t i = 0 ; i < 3 ; i++) {
+    Serial.print("   ");
+    Serial.print(TOF_byte[i]);
+  }
+  Serial.println("");
+  Serial.print ( "Light Val:      ");
+  Serial.println(lightVal);
+
+  for ( uint8_t i = 0 ; i < 3 ; i++) {
+    Serial.print(" ");
+    Serial.print(rotation_byte[i]);
+  }
+  Serial.println("");
+  Serial.print("Acceleration:      ");
+  Serial.println(acceleration[0]);
+
+}
 void GetSensor() {
 
   struct splitLong LongByteConverter;
-  uint8_t j = 0;
+  unsigned int TOF_cm[3] = {0, 0, 0};
+  int light_value_sum = 0 ;
+  int rotation_sum[3] = {0, 0, 0}; // Yaw Pitch Roll
+  int acceleration_sum =  0;
+  unsigned long previous_sampleTime = 0;
 
-  for ( uint8_t i = 0 ; i < 3 ; i ++) {
-    TOF_cm[i] = 0;
-  }
-  uint16_t light_value_sum = 0 ;
-  byte rotation_sum[3] = {0, 0, 0}; // Yaw Pitch Roll
-  byte acceleration_sum[1] = {0};
+  for ( uint8_t j = 0 ; j < 4 ; j++) { //take reading 4 times at a fixed interval
+    while ( millis() - previous_sampleTime < loopInterval / 4) {
+      // DO NTH
+    }
+    previous_sampleTime = millis();
 
-  while ( j < 4) { //take readomg 4 times at a fixed interval
-
-    TOF_cm[0] += (sensor1.readRangeContinuousMillimeters()) / 10;
+    TOF_cm[0] += (sensor1.readRangeContinuousMillimeters()) / 10;       // TOF sensor
     TOF_cm[1] += (sensor2.readRangeContinuousMillimeters()) / 10;
     TOF_cm[2] += (sensor3.readRangeContinuousMillimeters()) / 10;
-
-    light_value_sum += analogRead(LDR_PIN);
-    getSIXDOF();
-    j += 1;
+    light_value_sum += analogRead(LDR_PIN);                             //Light Sensor
+    float angles[3];                                                    // IMU 6D0F Sensor
+    short rawvalues[6];
+    imu.getYawPitchRoll(angles);
+    for (uint8_t i = 0 ; i < 3 ; i++) {
+      angles[i] = angles[i] - IMU_cal[i] + 90; //0-180 range
+      if ( angles[i] > 180 ) {
+        angles[i] = 360 - angles[i];
+      } else if (angles[i] < 0) {
+        angles[i] = abs (angles[i]);
+      }
+      rotation_sum[i] += angles[i];
+    }
+    imu.getRawValues(rawvalues);
+    acceleration_sum += (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
   }
 
   for (uint8_t i = 0 ; i < 3 ; i++) {
+    rotation_byte[i] = rotation_sum[i] / 4 ;
     TOF_cm[i] = TOF_cm[i] / 4;
     if ( TOF_cm[i] > 255 ) {
+      TOF_cm[i] = 255;
       TOF_byte[i] = 255; // if value greater than 255cm
     } else {
       TOF_byte[i] = TOF_cm[i];
@@ -311,29 +350,13 @@ void GetSensor() {
   LongByteConverter.value = lightVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
+  acceleration[0] = acceleration_sum / 4;
+}
 
-}
-void getSIXDOF() {
-  float angles[3];
-  imu.getYawPitchRoll(angles);
-  for (uint8_t i = 0 ; i < 3 ; i++) {
-    angles[i] -= IMU_cal[i];
-    angles[i] += 90; //0-180 range
-    if ( angles[i] > 180 ) {
-      angles[i] = 180 - (angles[i] - 180 );
-    } else if (angles[i] < 0) {
-      angles[i] = abs (angles[i]);
-    }
-    rotation_byte[i] = angles[i];
-  }
-  short rawvalues[6];
-  imu.getRawValues(rawvalues);
-  acceleration[0] = (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
-}
 void Sensor_Init() {
   pinMode(TOF_1, OUTPUT); pinMode(TOF_2, OUTPUT); pinMode(TOF_3, OUTPUT);
   digitalWrite(TOF_1, LOW); digitalWrite(TOF_2, LOW); digitalWrite(TOF_3, LOW);
-  delay(500);
+  delay(100);
   pinMode(TOF_1, INPUT); delay(150);
   sensor1.init(true); delay(100);
   sensor1.setAddress((uint8_t)23); //Set add at 0x23
@@ -445,6 +468,13 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
+  Time_Call_Characteristic = TIMEService->createCharacteristic(
+                               TIME_CALL_UUID,
+                               BLECharacteristic::PROPERTY_WRITE
+                             );
+  Time_Call_Characteristic->setCallbacks(new Time_Call_Callbacks());
+  Time_Call_Characteristic->addDescriptor(new BLE2902());
+
   // Create a BLE Time Characteristic
   DD_Characteristic = TIMEService->createCharacteristic(
                         DD_UUID,
@@ -536,10 +566,10 @@ void SD_Init() {
     return;
   }
   // If the data.txt file doesn't exist, Create a file on the SD card and write the data labels
-  File file = SD.open("/data.txt");
+  File file = SD.open("/dataHeaders.txt");
   if (!file) {
     Serial.println(F("Creating file..."));
-    writeFile(SD, "/data.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
+    writeFile(SD, "/dataHeaders.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
   }
   file.close();
 }
