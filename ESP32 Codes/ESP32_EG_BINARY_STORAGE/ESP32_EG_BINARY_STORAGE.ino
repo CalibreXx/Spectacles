@@ -113,16 +113,15 @@ class DD_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *DD_Characteristic) {
       std::string value = DD_Characteristic->getValue();
       int BLETime[15];
-      uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[j] = value[i] - '0';
-            j++;
+            BLETime[i] = value[i] - '0';
           }
         }
         newTime[0] = BLETime[0] * 10 + BLETime[1]; //dd
       }
+      Serial.println("in dd");
     }
 };
 
@@ -130,87 +129,88 @@ class MonMon_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *MonMon_Characteristic) {
       std::string value = MonMon_Characteristic->getValue();
       int BLETime[15];
-      uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[j] = value[i] - '0';
-            j++;
+            BLETime[i] = value[i] - '0';
           }
         }
         newTime[1] = BLETime[0] * 10 + BLETime[1]; //dd
       }
+      Serial.println("in dd");
     }
 };
 class YY_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *YY_Characteristic) {
       std::string value = YY_Characteristic->getValue();
       int BLETime[15];
-      uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[j] = value[i] - '0';
-            j++;
+            BLETime[i] = value[i] - '0';
           }
         }
         newTime[2] = BLETime[0] * 1000 + BLETime[1] * 100 + BLETime[2] * 10 +  BLETime[3]; //dd
       }
+      Serial.println("in dd");
     }
 };
 class HH_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *HH_Characteristic) {
       std::string value = HH_Characteristic->getValue();
       int BLETime[15];
-      uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[j] = value[i] - '0';
-            j++;
+            BLETime[i] = value[i] - '0';
           }
         }
         newTime[3] = BLETime[0] * 10 + BLETime[1]; //dd
       }
+      Serial.println("in dd");
     }
 };
 class MinMin_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *MinMin_Characteristic) {
       std::string value = MinMin_Characteristic->getValue();
       int BLETime[15];
-      uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[j] = value[i] - '0';
-            j++;
+            BLETime[i] = value[i] - '0';
           }
         }
         newTime[4] = BLETime[0] * 10 + BLETime[1]; //dd
       }
+      Serial.println("in dd");
     }
 };
 class SS_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *SS_Characteristic) {
       std::string value = SS_Characteristic->getValue();
       int BLETime[15];
-      uint8_t j = 0;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[j] = value[i] - '0';
-            j++;
+            BLETime[i] = value[i] - '0';
           }
         }
         newTime[5] = BLETime[0] * 10 + BLETime[1];
         TimeUpdate = true;
       }
+      Serial.println("in dd");
     }
 };
 
 class DataCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *DATA_CALL_Characteristic) {
       std::string value = DATA_CALL_Characteristic->getValue();
+      if (value.length() > 0 ) {
+        Serial.println("Sending SD Function");
+        for ( uint8_t i = 0 ; i < value.length(); i ++) {
+          Serial.println(int(value[i]), HEX);
+        }
+      }
       SDsend = true;
     }
 };
@@ -263,21 +263,27 @@ void loop()
     SDsend = false;
     Serial.println(millis());
   }
-  //  else if (TimeUpdate == true) {
-  //    rtc.adjust(DateTime(newTime[2], newTime[1], newTime[0], //yy month dd
-  //                        newTime[3], newTime[4], newTime[5])); //hh mm ss
-  //    Serial.println(F("Adjust Time completed"));
-  //    TimeUpdate = false;
-  //  }
+  else if (TimeUpdate == true) {
+    Serial.println( newTime [2]);
+    Serial.println( newTime [1]);
+    Serial.println( newTime [0]);
+    Serial.println( newTime [3]);
+    Serial.println( newTime [4]);
+    Serial.println( newTime [5]);
+    rtc.adjust(DateTime(newTime[2], newTime[1], newTime[0], //yy month dd
+                        newTime[3], newTime[4], newTime[5])); //hh mm ss
+    Serial.println(F("Adjust Time completed"));
+    TimeUpdate = false;
+  }
   else if (millis() - previousTime >= loopInterval) {
-    previousTime = millis();
-    DateTime now = rtc.now();
-    GetSensor();
-    epoch = now.unixtime();
-    printSensor();
-    //    BLE_Notify();
-    //    AddFile(SD , "/datalog.dat");
-    AddFile_Txt();
+    //    previousTime = millis();
+    //    DateTime now = rtc.now();
+    //    GetSensor();
+    //    epoch = now.unixtime();
+    //    printSensor();
+    //    //    BLE_Notify();
+    //    //    AddFile(SD , "/datalog.dat");
+    //    AddFile_Txt();
   }
 }
 
@@ -626,31 +632,36 @@ void readFile(fs::FS &fs, const char * path) {
   struct dataStore myData;
   struct splitLong LongByteConverter;
   int counter = 0;
-
-  while ( file.available()) {
+  bool sendNow = false;
+  byte SDData_Byte[28] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  while( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
     FiveByteConverter.value = myData.epochTime_SD;
-    byte SDData_Byte[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0};
-    SDData_Byte[0] = FiveByteConverter.split[4]; //EPOCH
-    SDData_Byte[1] = FiveByteConverter.split[3];
-    SDData_Byte[2] = FiveByteConverter.split[2];
-    SDData_Byte[3] = FiveByteConverter.split[1];
-    SDData_Byte[4] = FiveByteConverter.split[0];
-    SDData_Byte[5] = myData.tof1_SD;  //TOF
-    SDData_Byte[6] = myData.tof2_SD;
-    SDData_Byte[7] = myData.tof3_SD;
-    SDData_Byte[8] = myData.accel_SD; // ACCEL
-    SDData_Byte[9] = myData.yaw_SD;
-    SDData_Byte[10] = myData.pitch_SD;
-    SDData_Byte[11] = myData.roll_SD;
+    SDData_Byte[0 + sendNow* 14] = FiveByteConverter.split[4]; //EPOCH
+    SDData_Byte[1+ sendNow* 14] = FiveByteConverter.split[3];
+    SDData_Byte[2+ sendNow* 14] = FiveByteConverter.split[2];
+    SDData_Byte[3+ sendNow* 14] = FiveByteConverter.split[1];
+    SDData_Byte[4+ sendNow* 14] = FiveByteConverter.split[0];
+    SDData_Byte[5+ sendNow* 14] = myData.tof1_SD;  //TOF
+    SDData_Byte[6+ sendNow* 14] = myData.tof2_SD;
+    SDData_Byte[7+ sendNow* 14] = myData.tof3_SD;
+    SDData_Byte[8+ sendNow* 14] = myData.accel_SD; // ACCEL
+    SDData_Byte[9+ sendNow* 14] = myData.yaw_SD;
+    SDData_Byte[10+ sendNow* 14] = myData.pitch_SD;
+    SDData_Byte[11+ sendNow* 14] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[12] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[13] = LongByteConverter.split[0];
+    SDData_Byte[12+ sendNow* 14] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[13+ sendNow* 14] = LongByteConverter.split[0];
 
-    if (deviceConnected) {
+    if (deviceConnected && sendNow == true ) {
+      for ( uint8_t z = 0 ; z <28 ; z++){
+        Serial.print ( z);
+        Serial.print ( "     =     ");
+        Serial.println(SDData_Byte[z]);
+      }
       delay(3);
-      DATA_SEND_Characteristic->setValue(SDData_Byte, 14); // 1 = 1 byte = 8 bits
+      DATA_SEND_Characteristic->setValue(SDData_Byte, 28); // 1 = 1 byte = 8 bits
       DATA_SEND_Characteristic->notify();
     }
     if (!deviceConnected) {
@@ -662,6 +673,7 @@ void readFile(fs::FS &fs, const char * path) {
       SDsend = false;
       return;
     }
+    sendNow = !sendNow;
   }
   Serial.println(counter);
   Serial.println("Done Sending");
@@ -669,6 +681,7 @@ void readFile(fs::FS &fs, const char * path) {
   file.close();
   //  deleteFile (SD , path);
   //  SD_Init();
+  
 }
 void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file: %s\n", path);
