@@ -114,14 +114,10 @@ class DD_Callbacks: public BLECharacteristicCallbacks {
       std::string value = DD_Characteristic->getValue();
       int BLETime[15];
       if (value.length() > 0 ) {
-        for ( uint8_t i = 0 ; i < value.length() ; i++) {
-          if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[i] = value[i] - '0';
-          }
-        }
-        newTime[0] = BLETime[0] * 10 + BLETime[1]; //dd
+        BLETime[0] = int(value[0]);
+        Serial.println(BLETime[0]);
       }
-      Serial.println("in dd");
+      newTime[0] = BLETime[0];
     }
 };
 
@@ -130,14 +126,10 @@ class MonMon_Callbacks: public BLECharacteristicCallbacks {
       std::string value = MonMon_Characteristic->getValue();
       int BLETime[15];
       if (value.length() > 0 ) {
-        for ( uint8_t i = 0 ; i < value.length() ; i++) {
-          if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[i] = value[i] - '0';
-          }
-        }
-        newTime[1] = BLETime[0] * 10 + BLETime[1]; //dd
+        BLETime[0] = int(value[0]);
+        Serial.println(BLETime[0]);
       }
-      Serial.println("in dd");
+      newTime[1] = BLETime[0];
     }
 };
 class YY_Callbacks: public BLECharacteristicCallbacks {
@@ -146,13 +138,11 @@ class YY_Callbacks: public BLECharacteristicCallbacks {
       int BLETime[15];
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
-          if ( value[i] >= '0' && value[i] <= '9') {
-            BLETime[i] = value[i] - '0';
-          }
+          BLETime[i] = int(value[i]);
+          Serial.println(BLETime[i]);
         }
         newTime[2] = BLETime[0] * 1000 + BLETime[1] * 100 + BLETime[2] * 10 +  BLETime[3]; //dd
       }
-      Serial.println("in dd");
     }
 };
 class HH_Callbacks: public BLECharacteristicCallbacks {
@@ -167,7 +157,6 @@ class HH_Callbacks: public BLECharacteristicCallbacks {
         }
         newTime[3] = BLETime[0] * 10 + BLETime[1]; //dd
       }
-      Serial.println("in dd");
     }
 };
 class MinMin_Callbacks: public BLECharacteristicCallbacks {
@@ -182,7 +171,6 @@ class MinMin_Callbacks: public BLECharacteristicCallbacks {
         }
         newTime[4] = BLETime[0] * 10 + BLETime[1]; //dd
       }
-      Serial.println("in dd");
     }
 };
 class SS_Callbacks: public BLECharacteristicCallbacks {
@@ -198,19 +186,18 @@ class SS_Callbacks: public BLECharacteristicCallbacks {
         newTime[5] = BLETime[0] * 10 + BLETime[1];
         TimeUpdate = true;
       }
-      Serial.println("in dd");
     }
 };
 
 class DataCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *DATA_CALL_Characteristic) {
       std::string value = DATA_CALL_Characteristic->getValue();
-      if (value.length() > 0 ) {
-        Serial.println("Sending SD Function");
-        for ( uint8_t i = 0 ; i < value.length(); i ++) {
-          Serial.println(int(value[i]), HEX);
-        }
-      }
+      //      if (value.length() > 0 ) {
+      //        Serial.println("Sending SD Function");
+      //        for ( uint8_t i = 0 ; i < value.length(); i ++) {
+      //          Serial.println(int(value[i]), HEX);
+      //        }
+      //      }
       SDsend = true;
     }
 };
@@ -426,7 +413,8 @@ void BLE_Notify() {
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
-  BLEDevice::setMTU(23);
+  BLEDevice::setMTU(150);
+  Serial.print("GET MTU"); Serial.println(BLEDevice::getMTU());
   // Create the BLE Server
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
@@ -634,32 +622,27 @@ void readFile(fs::FS &fs, const char * path) {
   int counter = 0;
   bool sendNow = false;
   byte SDData_Byte[28] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  while( file.available()) {
+  while ( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
     FiveByteConverter.value = myData.epochTime_SD;
-    SDData_Byte[0 + sendNow* 14] = FiveByteConverter.split[4]; //EPOCH
-    SDData_Byte[1+ sendNow* 14] = FiveByteConverter.split[3];
-    SDData_Byte[2+ sendNow* 14] = FiveByteConverter.split[2];
-    SDData_Byte[3+ sendNow* 14] = FiveByteConverter.split[1];
-    SDData_Byte[4+ sendNow* 14] = FiveByteConverter.split[0];
-    SDData_Byte[5+ sendNow* 14] = myData.tof1_SD;  //TOF
-    SDData_Byte[6+ sendNow* 14] = myData.tof2_SD;
-    SDData_Byte[7+ sendNow* 14] = myData.tof3_SD;
-    SDData_Byte[8+ sendNow* 14] = myData.accel_SD; // ACCEL
-    SDData_Byte[9+ sendNow* 14] = myData.yaw_SD;
-    SDData_Byte[10+ sendNow* 14] = myData.pitch_SD;
-    SDData_Byte[11+ sendNow* 14] = myData.roll_SD;
+    SDData_Byte[0 + sendNow * 14] = FiveByteConverter.split[4]; //EPOCH
+    SDData_Byte[1 + sendNow * 14] = FiveByteConverter.split[3];
+    SDData_Byte[2 + sendNow * 14] = FiveByteConverter.split[2];
+    SDData_Byte[3 + sendNow * 14] = FiveByteConverter.split[1];
+    SDData_Byte[4 + sendNow * 14] = FiveByteConverter.split[0];
+    SDData_Byte[5 + sendNow * 14] = myData.tof1_SD; //TOF
+    SDData_Byte[6 + sendNow * 14] = myData.tof2_SD;
+    SDData_Byte[7 + sendNow * 14] = myData.tof3_SD;
+    SDData_Byte[8 + sendNow * 14] = myData.accel_SD; // ACCEL
+    SDData_Byte[9 + sendNow * 14] = myData.yaw_SD;
+    SDData_Byte[10 + sendNow * 14] = myData.pitch_SD;
+    SDData_Byte[11 + sendNow * 14] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[12+ sendNow* 14] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[13+ sendNow* 14] = LongByteConverter.split[0];
+    SDData_Byte[12 + sendNow * 14] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[13 + sendNow * 14] = LongByteConverter.split[0];
 
     if (deviceConnected && sendNow == true ) {
-      for ( uint8_t z = 0 ; z <28 ; z++){
-        Serial.print ( z);
-        Serial.print ( "     =     ");
-        Serial.println(SDData_Byte[z]);
-      }
       delay(3);
       DATA_SEND_Characteristic->setValue(SDData_Byte, 28); // 1 = 1 byte = 8 bits
       DATA_SEND_Characteristic->notify();
@@ -681,7 +664,7 @@ void readFile(fs::FS &fs, const char * path) {
   file.close();
   //  deleteFile (SD , path);
   //  SD_Init();
-  
+
 }
 void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file: %s\n", path);
