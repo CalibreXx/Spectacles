@@ -83,7 +83,7 @@ uint32_t value = 0;
 unsigned long epoch;
 RTC_DS3231 rtc;
 
-const uint16_t loopInterval = 5000;
+const uint16_t loopInterval = 800;// 15s
 unsigned long previousTime = 0 ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
@@ -102,8 +102,8 @@ class Time_Call_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *Time_Call_Characteristic) {
       std::string value = Time_Call_Characteristic->getValue();
       if (value.length() > 0) {
-        if ( int(value[0]) == 17 && int(value[1]) == 16){
-          
+        if ( int(value[0]) == 17 && int(value[1]) == 16) {
+
         }
       }
     }
@@ -263,24 +263,25 @@ void loop()
     SDsend = false;
     Serial.println(millis());
   }
-  else if (TimeUpdate == true) {
-    rtc.adjust(DateTime(newTime[2], newTime[1], newTime[0], //yy month dd
-                        newTime[3], newTime[4], newTime[5])); //hh mm ss
-    Serial.println(F("Adjust Time completed"));
-    TimeUpdate = false;
-  }
+  //  else if (TimeUpdate == true) {
+  //    rtc.adjust(DateTime(newTime[2], newTime[1], newTime[0], //yy month dd
+  //                        newTime[3], newTime[4], newTime[5])); //hh mm ss
+  //    Serial.println(F("Adjust Time completed"));
+  //    TimeUpdate = false;
+  //  }
   else if (millis() - previousTime >= loopInterval) {
     previousTime = millis();
     DateTime now = rtc.now();
-    epoch = now.unixtime();
     GetSensor();
-    BLE_Notify();
-    AddFile(SD , "/datalog.dat");
+    epoch = now.unixtime();
+    printSensor();
+    //    BLE_Notify();
+    //    AddFile(SD , "/datalog.dat");
+    AddFile_Txt();
   }
 }
 
 /* Sensor FUNCTIONS */
-
 void printSensor() {
   Serial.print( "TOF Sensors:        ");
   for ( uint8_t i = 0 ; i < 3 ; i++) {
@@ -298,10 +299,11 @@ void printSensor() {
   Serial.println("");
   Serial.print("Acceleration:      ");
   Serial.println(acceleration[0]);
-
+  Serial.print("Epoch:    ");
+  Serial.println(epoch);
 }
-void GetSensor() {
 
+void GetSensor() {
   struct splitLong LongByteConverter;
   unsigned int TOF_cm[3] = {0, 0, 0};
   int light_value_sum = 0 ;
@@ -573,6 +575,32 @@ void SD_Init() {
   }
   file.close();
 }
+
+void AddFile_Txt() {
+  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
+                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + "," + String(rotation_byte[2]) + ","
+                       + String(lightVal) + "\r\n";
+  Serial.print(F("Save data: "));
+  Serial.println(dataMessage);
+  appendFile(SD, "/dataHeaders.txt", dataMessage.c_str());
+  delay(200);
+}
+
+void appendFile(fs::FS & fs, const char * path, const char * message) {
+  Serial.printf("Appending to file: %s\n", path);
+  File file = fs.open(path, FILE_APPEND);
+  if (!file) {
+    Serial.println(F("Failed to open file for appending"));
+    return;
+  }
+  if (file.print(message)) {
+    Serial.println(F("Message appended"));
+  } else {
+    Serial.println(F("Append failed"));
+  }
+  file.close();
+}
+
 void AddFile(fs::FS & fs, const char * path) {
   struct dataStore myData;
   File file = fs.open(path, FILE_APPEND);
