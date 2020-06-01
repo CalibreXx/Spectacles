@@ -132,12 +132,6 @@ class Time_Callbacks: public BLECharacteristicCallbacks {
 class DataCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *DATA_CALL_Characteristic) {
       std::string value = DATA_CALL_Characteristic->getValue();
-      //      if (value.length() > 0 ) {
-      //        Serial.println("Sending SD Function");
-      //        for ( uint8_t i = 0 ; i < value.length(); i ++) {
-      //          Serial.println(int(value[i]), HEX);
-      //        }
-      //      }
       SDsend = true;
     }
 };
