@@ -105,13 +105,12 @@ class Date_Callbacks: public BLECharacteristicCallbacks {
       int BLETime[15];
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
-          BLETime[i] = int(value[i]);
-          Serial.println(BLETime[i]);
+          Serial.println(int(value[i]));
         }
         newTime[5] = BLETime[0] * 10 + BLETime[1];
         //        TimeUpdate = true;
       }
-      Serial.println("6 Data");
+      Serial.println("5 Data");
     }
 };
 class Time_Callbacks: public BLECharacteristicCallbacks {
