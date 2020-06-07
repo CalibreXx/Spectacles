@@ -318,7 +318,6 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
   BLEDevice::setMTU(150);
-  Serial.print("GET MTU"); Serial.println(BLEDevice::getMTU());
   // Create the BLE Server
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
@@ -327,35 +326,28 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   BLEService *ClockService = pServer->createService(CLOCK_SERVICE_UUID);
   BLEService *DATAService = pServer->createService(DATA_SERVICE_UUID);
 
-  // Create a BLE TOF_1 Characteristic
   TOF_Characteristic = TOFService->createCharacteristic(
                          TOF_UUID,
                          BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_NOTIFY 
+                         BLECharacteristic::PROPERTY_NOTIFY
                        );
   TOF_Characteristic->addDescriptor(new BLE2902());
-
-  // Create a GYROX Characteristic
   ROTATION_Characteristic = TOFService->createCharacteristic(
                               ROTATION_UUID,
                               BLECharacteristic::PROPERTY_READ   |
-                              BLECharacteristic::PROPERTY_NOTIFY 
+                              BLECharacteristic::PROPERTY_NOTIFY
                             );
   ROTATION_Characteristic->addDescriptor(new BLE2902());
-
-  //Create a acceleration characteristic
   ACCEL_Characteristic = TOFService->createCharacteristic(
                            ACCEL_UUID,
                            BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_NOTIFY 
+                           BLECharacteristic::PROPERTY_NOTIFY
                          );
   ACCEL_Characteristic->addDescriptor(new BLE2902());
-
-  // Create a LDR Characteristic
   LDR_Characteristic = TOFService->createCharacteristic(
                          LDR_UUID,
                          BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_NOTIFY 
+                         BLECharacteristic::PROPERTY_NOTIFY
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
@@ -379,8 +371,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   DATA_SEND_Characteristic = DATAService->createCharacteristic(
                                DATA_SEND_UUID,
                                BLECharacteristic::PROPERTY_READ   |
-                               BLECharacteristic::PROPERTY_NOTIFY|
-                               BLECharacteristic::PROPERTY_INDICATE
+                               BLECharacteristic::PROPERTY_NOTIFY
                              );
   DATA_SEND_Characteristic->addDescriptor(new BLE2902());
 
@@ -462,7 +453,7 @@ void AddFile(fs::FS & fs, const char * path) {
 
   Serial.println(F("Save data: "));
   file.write((const uint8_t *)&myData, sizeof(myData));
-  delay(200);
+  delay(100);
   file.close();
 }
 void readFile(fs::FS &fs, const char * path) {
@@ -515,7 +506,6 @@ void readFile(fs::FS &fs, const char * path) {
   file.close();
   //  deleteFile (SD , path);
   //  SD_Init();
-
 }
 void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file: %s\n", path);
