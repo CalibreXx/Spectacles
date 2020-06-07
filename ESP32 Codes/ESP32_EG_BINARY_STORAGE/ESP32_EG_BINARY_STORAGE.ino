@@ -18,9 +18,7 @@
 #define ACCEL_UUID "d0b5f187-ac23-459f-b44b-e20d50bcf656"
 
 #define CLOCK_SERVICE_UUID "57675859-a6f4-4445-9492-051aa8514552"
-#define CLOCK_CALL_UUID "7ec7bbf4-cc3b-430b-81a3-de900b242c7a"
 #define DATE_UUID "10ccece5-e44b-4502-8b69-09646d4072e1"
-#define TIME_UUID "839a1c7a-d528-4001-a1f0-2e1409acbe3b"
 
 #define DATA_SERVICE_UUID "b8ec9f13-81e2-489f-b736-f4e440c86e03"
 #define DATA_CALL_UUID "5022e570-0f19-4357-848a-fc74234b1348" // Write to this uuid to req for data xfer
@@ -54,9 +52,7 @@ BLECharacteristic* ROTATION_Characteristic = NULL;
 BLECharacteristic* ACCEL_Characteristic = NULL;
 BLECharacteristic* LDR_Characteristic = NULL;
 
-BLECharacteristic* Clock_Call_Characteristic = NULL;
 BLECharacteristic* Date_Characteristic = NULL;
-BLECharacteristic* Time_Characteristic = NULL;
 
 BLECharacteristic* DATA_CALL_Characteristic = NULL;
 BLECharacteristic* DATA_SEND_Characteristic = NULL;
@@ -67,7 +63,6 @@ bool oldDeviceConnected = false;
 bool TimeUpdate = false ; //false = nth
 bool SDsend = false;
 int newTime[6]; //DD MM HH MM SS YYYY
-uint32_t value = 0;
 
 //RTC
 unsigned long epoch;
@@ -88,43 +83,19 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
-class Clock_Call_Callbacks: public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *Time_Call_Characteristic) {
-      std::string value = Time_Call_Characteristic->getValue();
-      if (value.length() > 0) {
-        if ( int(value[0]) == 17 && int(value[1]) == 16) {
-
-        }
-      }
-    }
-};
-
 class Date_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *Date_Characteristic) {
       std::string value = Date_Characteristic->getValue();
       int BLETime[15];
+      String sentence;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
-          Serial.println(value[i]);
+          sentence+= value[i];
         }
-        newTime[5] = BLETime[0] * 10 + BLETime[1];
+        Serial.println(sentence);
         //        TimeUpdate = true;
       }
       Serial.println("5 Data");
-    }
-};
-class Time_Callbacks: public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *Time_Characteristic) {
-      std::string value = Time_Characteristic->getValue();
-      int BLETime[15];
-      if (value.length() > 0 ) {
-        for ( uint8_t i = 0 ; i < value.length() ; i++) {
-          Serial.println(value[i]);
-        }
-        newTime[5] = BLETime[0] * 10 + BLETime[1];
-        //        TimeUpdate = true;
-      }
-      Serial.println("6 Data");
     }
 };
 
@@ -396,13 +367,6 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
-  Clock_Call_Characteristic = ClockService->createCharacteristic(
-                               CLOCK_CALL_UUID,
-                               BLECharacteristic::PROPERTY_WRITE
-                             );
-  Clock_Call_Characteristic->setCallbacks(new Clock_Call_Callbacks());
-  Clock_Call_Characteristic->addDescriptor(new BLE2902());
-
   // Create a BLE Time Characteristic
   Date_Characteristic = ClockService->createCharacteristic(
                         DATE_UUID,
@@ -410,14 +374,6 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
                       );
   Date_Characteristic->setCallbacks(new Date_Callbacks());
   Date_Characteristic->addDescriptor(new BLE2902());
-
-  // Create a BLE Time Characteristic****************** TIME ****************************
-  Time_Characteristic = ClockService->createCharacteristic(
-                            TIME_UUID,
-                            BLECharacteristic::PROPERTY_WRITE
-                          );
-  Time_Characteristic->setCallbacks(new Time_Callbacks());
-  Time_Characteristic->addDescriptor(new BLE2902());
 
   // Create a DATA CALL BACK
   DATA_CALL_Characteristic = DATAService->createCharacteristic(
