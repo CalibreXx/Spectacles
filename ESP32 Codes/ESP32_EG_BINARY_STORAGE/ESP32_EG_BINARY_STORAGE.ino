@@ -90,10 +90,10 @@ class Date_Callbacks: public BLECharacteristicCallbacks {
       String sentence;
       if (value.length() > 0 ) {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
-          sentence+= value[i];
+          sentence += value[i];
         }
         Serial.println(sentence);
-        //        TimeUpdate = true;
+        TimeUpdate = true;
       }
       Serial.println("5 Data");
     }
@@ -293,7 +293,7 @@ void BLE_Notify() {
     TOF_Characteristic->notify();
     ROTATION_Characteristic->setValue(rotation_byte, 3);
     ROTATION_Characteristic->notify();
-    LDR_Characteristic->setValue(light_byte, 2); 
+    LDR_Characteristic->setValue(light_byte, 2);
     LDR_Characteristic->notify();
     ACCEL_Characteristic->setValue(acceleration , 1 );
     ACCEL_Characteristic->notify();
@@ -331,9 +331,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   TOF_Characteristic = TOFService->createCharacteristic(
                          TOF_UUID,
                          BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_WRITE  |
-                         BLECharacteristic::PROPERTY_NOTIFY |
-                         BLECharacteristic::PROPERTY_INDICATE
+                         BLECharacteristic::PROPERTY_NOTIFY 
                        );
   TOF_Characteristic->addDescriptor(new BLE2902());
 
@@ -341,9 +339,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   ROTATION_Characteristic = TOFService->createCharacteristic(
                               ROTATION_UUID,
                               BLECharacteristic::PROPERTY_READ   |
-                              BLECharacteristic::PROPERTY_WRITE  |
-                              BLECharacteristic::PROPERTY_NOTIFY |
-                              BLECharacteristic::PROPERTY_INDICATE
+                              BLECharacteristic::PROPERTY_NOTIFY 
                             );
   ROTATION_Characteristic->addDescriptor(new BLE2902());
 
@@ -351,9 +347,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   ACCEL_Characteristic = TOFService->createCharacteristic(
                            ACCEL_UUID,
                            BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_WRITE  |
-                           BLECharacteristic::PROPERTY_NOTIFY |
-                           BLECharacteristic::PROPERTY_INDICATE
+                           BLECharacteristic::PROPERTY_NOTIFY 
                          );
   ACCEL_Characteristic->addDescriptor(new BLE2902());
 
@@ -361,17 +355,15 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   LDR_Characteristic = TOFService->createCharacteristic(
                          LDR_UUID,
                          BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_WRITE  |
-                         BLECharacteristic::PROPERTY_NOTIFY |
-                         BLECharacteristic::PROPERTY_INDICATE
+                         BLECharacteristic::PROPERTY_NOTIFY 
                        );
   LDR_Characteristic->addDescriptor(new BLE2902());
 
   // Create a BLE Time Characteristic
   Date_Characteristic = ClockService->createCharacteristic(
-                        DATE_UUID,
-                        BLECharacteristic::PROPERTY_WRITE
-                      );
+                          DATE_UUID,
+                          BLECharacteristic::PROPERTY_WRITE
+                        );
   Date_Characteristic->setCallbacks(new Date_Callbacks());
   Date_Characteristic->addDescriptor(new BLE2902());
 
@@ -387,7 +379,8 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   DATA_SEND_Characteristic = DATAService->createCharacteristic(
                                DATA_SEND_UUID,
                                BLECharacteristic::PROPERTY_READ   |
-                               BLECharacteristic::PROPERTY_NOTIFY
+                               BLECharacteristic::PROPERTY_NOTIFY|
+                               BLECharacteristic::PROPERTY_INDICATE
                              );
   DATA_SEND_Characteristic->addDescriptor(new BLE2902());
 
