@@ -7,7 +7,7 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
-#include <FreeSixIMU.h>
+#include <SparkFunLSM9DS1.h>
 #include "RTClib.h"
 
 // SERVICE and CHARACTERISTICS UUID for BLE
@@ -43,7 +43,8 @@ byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 float IMU_cal[3] = {0, 0, 0};
 byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
 byte acceleration[1] = {0};
-FreeSixIMU imu;
+LSM9DS1 imu;
+#define DECLINATION -8.58 // Declination (degrees) in Boulder, CO.
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
@@ -218,6 +219,14 @@ void GetSensor() {
     TOF_cm[1] += (sensor2.readRangeContinuousMillimeters()) / 10;
     TOF_cm[2] += (sensor3.readRangeContinuousMillimeters()) / 10;
     light_value_sum += analogRead(LDR_PIN);                             //Light Sensor
+
+
+    imu.readGyro();
+    imu.readAccel();
+    imu.readMag();
+    float roll = atan2(imu.ay, imu.az);
+    float pitch = atan2(-imu.ax, sqrt(imu.ay * imu.ay + imu.az * imu.az));
+    
     float angles[3];                                                    // IMU 6D0F Sensor
     short rawvalues[6];
     imu.getYawPitchRoll(angles);
