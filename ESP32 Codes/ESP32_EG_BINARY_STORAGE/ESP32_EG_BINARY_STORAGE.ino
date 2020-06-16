@@ -8,7 +8,8 @@
 #include "SD.h"
 #include "SPI.h"
 #include <SparkFunLSM9DS1.h>
-#include "RTClib.h"
+#include "SparkFun_VEML6030_Ambient_Light_Sensor.h"
+#include <SparkFun_RV1805.h>
 
 // SERVICE and CHARACTERISTICS UUID for BLE
 #define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
@@ -29,19 +30,24 @@
 #define TOF_2 26 //0x24 CENTRE
 #define TOF_3 27 //0x25 RIGHT
 
+#define AL_ADDR 0x48
+
 //TOF Private Variables
 VL53L1X sensor1; VL53L1X sensor2; VL53L1X sensor3;
 
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 // LDR
-const int LDR_PIN = 34; // analog pins
+SparkFun_Ambient_Light light(AL_ADDR);
+float gain = .125; // Possible values: .125, .25, 1, 2
+int newtime = 100;
+int powMode = 1; //
 uint16_t lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
 float IMU_cal[6] = {0, 0, 0, 0, 0, 0};
-byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
+byte rotation_byte[3] = {0, 0}; // Yaw Pitch Roll
 byte acceleration[1] = {0};
 LSM9DS1 imu;
 float previousTime_9DOF;
@@ -68,11 +74,11 @@ int newTime[6]; //DD MM HH MM SS YYYY
 
 //RTC
 unsigned long epoch;
-RTC_DS3231 rtc;
+RV1805 rtc;
+String receivedTime;
 
-const uint16_t loopInterval = 500;// 15s
+const uint16_t loopInterval = 200;// 15s
 unsigned long previousTime = 0 ;
-
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -95,10 +101,9 @@ class Date_Callbacks: public BLECharacteristicCallbacks {
         for ( uint8_t i = 0 ; i < value.length() ; i++) {
           sentence += value[i];
         }
-        Serial.println(sentence);
+        receivedTime = sentence;
         TimeUpdate = true;
       }
-      Serial.println("5 Data");
     }
 };
 
@@ -129,7 +134,6 @@ struct dataStore {
   uint8_t tof2_SD;
   uint8_t tof3_SD;
   uint8_t accel_SD;
-  uint8_t yaw_SD;
   uint8_t pitch_SD;
   uint8_t roll_SD;
   uint16_t ldr_SD;
@@ -142,10 +146,10 @@ void setup()
   Sensor_Init();
   BLE_Init();
   //  SD_Init();
-  //  if (! rtc.begin()) {
-  //    Serial.println(F("Couldn't find RTC"));
-  //    while (1);
-  //  }
+  if (! rtc.begin()) {
+    Serial.println(F("Couldn't find RTC"));
+  }
+
 }
 
 void loop()
@@ -164,16 +168,18 @@ void loop()
     Serial.println( newTime [3]);
     Serial.println( newTime [4]);
     Serial.println( newTime [5]);
-    rtc.adjust(DateTime(newTime[2], newTime[1], newTime[0], //yy month dd
-                        newTime[3], newTime[4], newTime[5])); //hh mm ss
+    rtc.setTime(0, newTime[5], newTime[4] , newTime[3], newTime[0], newTime[1], newTime[2], 5);//hund, sec, minute, hour, date, month, year, day
     Serial.println(F("Adjust Time completed"));
+    rtc.updateTime();
+    epoch = rtc.getEpoch();
+    Serial.println(epoch);
     TimeUpdate = false;
   }
   else if (millis() - previousTime >= loopInterval) {
     previousTime = millis();
-    DateTime now = rtc.now();
     GetSensor();
-    epoch = now.unixtime();
+    rtc.updateTime();
+    epoch = rtc.getEpoch();
     //        printSensor();
     BLE_Notify();
     //    AddFile(SD , "/datalog.dat");
@@ -192,7 +198,7 @@ void printSensor() {
   Serial.print ( "Light Val:      ");
   Serial.println(lightVal);
 
-  for ( uint8_t i = 0 ; i < 3 ; i++) {
+  for ( uint8_t i = 0 ; i < 2 ; i++) {
     Serial.print(" ");
     Serial.print(rotation_byte[i]);
   }
@@ -206,7 +212,6 @@ void printSensor() {
 void GetSensor() {
   struct splitLong LongByteConverter;
   unsigned int TOF_cm[3] = {0, 0, 0};
-  int light_value_sum = 0 ;
   short rotation_sum[2] = {0, 0}; // Yaw Pitch Roll
   float acceleration_sum =  0;
   unsigned long previous_sampleTime = 0;
@@ -220,7 +225,6 @@ void GetSensor() {
     TOF_cm[0] += (sensor1.readRangeContinuousMillimeters()) / 10;       // TOF sensor
     TOF_cm[1] += (sensor2.readRangeContinuousMillimeters()) / 10;
     TOF_cm[2] += (sensor3.readRangeContinuousMillimeters()) / 10;
-    light_value_sum += analogRead(LDR_PIN);                             //Light Sensor
 
     imu.readGyro();
     imu.readAccel();
@@ -257,8 +261,9 @@ void GetSensor() {
     }
   }
 
-  lightVal = light_value_sum / 4;
-  LongByteConverter.value = lightVal;
+  long luxVal = light.readLight();
+  lightVal = luxVal;
+  LongByteConverter.value = luxVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
   acceleration[0] = acceleration_sum / 4;
@@ -288,7 +293,21 @@ void Sensor_Init() {
   sensor3.setAddress((uint8_t)25); //Set add at 0x25
   sensor1.setTimeout(500); sensor2.setTimeout(500); sensor3.setTimeout(500);
   sensor1.startContinuous(33); sensor2.startContinuous(33); sensor3.startContinuous(33);
+  initLight();
   initIMU_6DOF();
+}
+
+void initLight() {
+  if (!light.begin()) {
+    Serial.println("Could not communicate with the light sensor!");
+  }
+  light.setGain(gain);
+  light.setIntegTime(newtime);
+  light.setPowSavMode(powMode);
+  // This will power down the sensor and the sensor will draw 0.5 micro-amps of power while shutdown.
+  // light.shutDown();
+  // light.powerOn();
+  delay(250);
 }
 void initIMU_6DOF() {
   imu.settings.gyro.enabled = true;
@@ -356,7 +375,7 @@ void BLE_Notify() {
   if (deviceConnected) {
     TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
     TOF_Characteristic->notify();
-    ROTATION_Characteristic->setValue(rotation_byte, 3);
+    ROTATION_Characteristic->setValue(rotation_byte, 2);
     ROTATION_Characteristic->notify();
     LDR_Characteristic->setValue(light_byte, 2);
     LDR_Characteristic->notify();
@@ -479,7 +498,7 @@ void SD_Init() {
 
 void AddFile_Txt() {
   String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
-                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + "," + String(rotation_byte[2]) + ","
+                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + ","  + ","
                        + String(lightVal) + "\r\n";
   Serial.print(F("Save data: "));
   Serial.println(dataMessage);
@@ -511,9 +530,8 @@ void AddFile(fs::FS & fs, const char * path) {
   myData.tof2_SD = TOF_byte[1];
   myData.tof3_SD = TOF_byte[2];
   myData.accel_SD = acceleration[0];
-  myData.yaw_SD = rotation_byte[0];
   myData.pitch_SD = rotation_byte[1];
-  myData.roll_SD = rotation_byte[2];
+  myData.roll_SD = rotation_byte[0];
   myData.ldr_SD = lightVal;
 
   Serial.println(F("Save data: "));
@@ -542,12 +560,11 @@ void readFile(fs::FS &fs, const char * path) {
     SDData_Byte[6 + sendNow * 14] = myData.tof2_SD;
     SDData_Byte[7 + sendNow * 14] = myData.tof3_SD;
     SDData_Byte[8 + sendNow * 14] = myData.accel_SD; // ACCEL
-    SDData_Byte[9 + sendNow * 14] = myData.yaw_SD;
-    SDData_Byte[10 + sendNow * 14] = myData.pitch_SD;
-    SDData_Byte[11 + sendNow * 14] = myData.roll_SD;
+    SDData_Byte[9 + sendNow * 14] = myData.pitch_SD;
+    SDData_Byte[10 + sendNow * 14] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[12 + sendNow * 14] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[13 + sendNow * 14] = LongByteConverter.split[0];
+    SDData_Byte[11 + sendNow * 14] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[12 + sendNow * 14] = LongByteConverter.split[0];
 
     if (deviceConnected && sendNow == true ) {
       delay(3);
