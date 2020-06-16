@@ -40,11 +40,12 @@ uint16_t lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
-float IMU_cal[3] = {0, 0, 0};
+float IMU_cal[6] = {0, 0, 0, 0, 0, 0};
 byte rotation_byte[3] = {0, 0, 0}; // Yaw Pitch Roll
 byte acceleration[1] = {0};
 LSM9DS1 imu;
-#define DECLINATION -8.58 // Declination (degrees) in Boulder, CO.
+float previousTime_9DOF;
+float currentTime_9DOF;
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
@@ -69,8 +70,9 @@ int newTime[6]; //DD MM HH MM SS YYYY
 unsigned long epoch;
 RTC_DS3231 rtc;
 
-const uint16_t loopInterval = 800;// 15s
+const uint16_t loopInterval = 500;// 15s
 unsigned long previousTime = 0 ;
+
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -139,11 +141,11 @@ void setup()
   Serial.begin (115200);
   Sensor_Init();
   BLE_Init();
-  SD_Init();
-  if (! rtc.begin()) {
-    Serial.println(F("Couldn't find RTC"));
-    while (1);
-  }
+  //  SD_Init();
+  //  if (! rtc.begin()) {
+  //    Serial.println(F("Couldn't find RTC"));
+  //    while (1);
+  //  }
 }
 
 void loop()
@@ -205,8 +207,8 @@ void GetSensor() {
   struct splitLong LongByteConverter;
   unsigned int TOF_cm[3] = {0, 0, 0};
   int light_value_sum = 0 ;
-  int rotation_sum[3] = {0, 0, 0}; // Yaw Pitch Roll
-  int acceleration_sum =  0;
+  short rotation_sum[2] = {0, 0}; // Yaw Pitch Roll
+  float acceleration_sum =  0;
   unsigned long previous_sampleTime = 0;
 
   for ( uint8_t j = 0 ; j < 4 ; j++) { //take reading 4 times at a fixed interval
@@ -220,31 +222,32 @@ void GetSensor() {
     TOF_cm[2] += (sensor3.readRangeContinuousMillimeters()) / 10;
     light_value_sum += analogRead(LDR_PIN);                             //Light Sensor
 
-
     imu.readGyro();
     imu.readAccel();
-    imu.readMag();
-    float roll = atan2(imu.ay, imu.az);
-    float pitch = atan2(-imu.ax, sqrt(imu.ay * imu.ay + imu.az * imu.az));
-    
-    float angles[3];                                                    // IMU 6D0F Sensor
-    short rawvalues[6];
-    imu.getYawPitchRoll(angles);
-    for (uint8_t i = 0 ; i < 3 ; i++) {
-      angles[i] = angles[i] - IMU_cal[i] + 90; //0-180 range
-      if ( angles[i] > 180 ) {
-        angles[i] = 360 - angles[i];
-      } else if (angles[i] < 0) {
-        angles[i] = abs (angles[i]);
-      }
-      rotation_sum[i] += angles[i];
-    }
-    imu.getRawValues(rawvalues);
-    acceleration_sum += (uint8_t)(sqrt(pow(rawvalues[0], 2) + pow(rawvalues[1], 2) + pow(rawvalues[2], 2)));
+
+    float accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
+    accelX = imu.calcAccel(imu.ax) ;
+    accelY = imu.calcAccel(imu.ay) ;
+    accelZ = imu.calcAccel(imu.az) ;
+    gyroX = imu.calcGyro( imu.gx);
+    gyroY = imu.calcGyro( imu.gy) ;
+    gyroZ = imu.calcGyro( imu.gz) ;
+
+    float accelRoll = atan2 (accelY, accelZ) * 180 / PI;
+    float accelPitch = atan2 ( -accelX, sqrt ( accelY * accelY + accelZ * accelZ)) * 180 / PI;
+
+    previousTime_9DOF = currentTime_9DOF;
+    currentTime_9DOF = millis();
+    float elapsedTime = (currentTime_9DOF - previousTime_9DOF) / 1000;
+    float gyroRoll = gyroX * elapsedTime;
+    float gyroPitch = gyroY * elapsedTime;
+
+    rotation_sum[0] += (0.96 * accelRoll + 0.04 * gyroRoll) - IMU_cal[0];
+    rotation_sum[1] += -((0.96 * accelPitch + 0.04 * gyroPitch ) - IMU_cal[1]);
+    acceleration_sum += sqrt(pow(accelX, 2) + pow(accelY, 2) + pow(accelZ, 2));
   }
 
   for (uint8_t i = 0 ; i < 3 ; i++) {
-    rotation_byte[i] = rotation_sum[i] / 4 ;
     TOF_cm[i] = TOF_cm[i] / 4;
     if ( TOF_cm[i] > 255 ) {
       TOF_cm[i] = 255;
@@ -259,6 +262,15 @@ void GetSensor() {
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
   acceleration[0] = acceleration_sum / 4;
+  for (uint8_t i = 0 ; i < 2 ; i++) {
+    rotation_sum[i] / 4;
+    if (rotation_sum[i] < 0) {
+      rotation_byte[i] = abs(rotation_sum[i]);
+    }
+    else {
+      rotation_byte[i] = rotation_sum[i] + 90;
+    }
+  }
 }
 
 void Sensor_Init() {
@@ -279,17 +291,61 @@ void Sensor_Init() {
   initIMU_6DOF();
 }
 void initIMU_6DOF() {
-  imu.init(true);
-  float angles[3];
-  for (int cal_int = 0; cal_int < 500 ; cal_int ++) {//Run this code 500 times
-    imu.getYawPitchRoll(angles);
-    IMU_cal[0] += angles[0];
-    IMU_cal[1] += angles[1];
-    IMU_cal[2] += angles[2];
+  imu.settings.gyro.enabled = true;
+  imu.settings.gyro.scale = 2000; //set gyro range to +/-2000dps
+  // scale can be set to either 245, 500, or 2000
+  imu.settings.gyro.lowPowerEnable = false;
+  imu.settings.gyro.sampleRate = 6; //59.5HZ
+  // sampleRate can be set between 1-6
+  // 1 = 14.9    4 = 238
+  // 2 = 59.5    5 = 476
+  // 3 = 119     6 = 952
+  imu.settings.accel.enabled = true;
+  imu.settings.accel.enableX = true;
+  imu.settings.accel.enableY = true;
+  imu.settings.accel.enableZ = true;
+  imu.settings.accel.scale = 8; //set accel scle +/-8g accel scale can be 2, 4, 8, or 16
+  imu.settings.accel.sampleRate = 4; // Set accel to 10Hz.
+  // accelerometer. ONLY APPLICABLE WHEN THE GYROSCOPE IS
+  // DISABLED! Otherwise accel sample rate = gyro sample rate.
+  // accel sample rate can be 1-6
+  // 1 = 10 Hz    4 = 238 Hz
+  // 2 = 50 Hz    5 = 476 Hz
+  // 3 = 119 Hz   6 = 952 Hz
+
+  imu.settings.mag.enabled = false;
+  imu.settings.temp.enabled = false;
+  if (imu.begin() == false) {
+    Serial.println(F("9DOF failed"));
+  }
+
+  for (int cal_int = 0; cal_int < 250 ; cal_int ++) {//Run this code 250 times
+    imu.readGyro();
+    imu.readAccel();
+
+    float accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
+    accelX = imu.calcAccel(imu.ax) ;
+    accelY = imu.calcAccel(imu.ay) ;
+    accelZ = imu.calcAccel(imu.az) ;
+    gyroX = imu.calcGyro( imu.gx) ;
+    gyroY = imu.calcGyro( imu.gy) ;
+    gyroZ = imu.calcGyro( imu.gz) ;
+
+    float accelRoll = atan2 (accelY, accelZ) * 180 / PI;
+    float accelPitch = atan2 ( -accelX, sqrt ( accelY * accelY + accelZ * accelZ)) * 180 / PI;
+
+    previousTime_9DOF = currentTime_9DOF;
+    currentTime_9DOF = millis();
+    float elapsedTime = (currentTime_9DOF - previousTime_9DOF) / 1000;
+    float gyroRoll = gyroX * elapsedTime;
+    float gyroPitch = gyroY * elapsedTime;
+
+    IMU_cal[0] += 0.96 * accelRoll + 0.04 * gyroRoll;
+    IMU_cal[1] += 0.96 * accelPitch + 0.04 * gyroPitch;
     delay(3);    //Delay 3us to simulate the 250Hz program loop
   }
-  for (uint8_t i = 0 ; i < 3 ; i++) {
-    IMU_cal[i] /= 500;
+  for (uint8_t i = 0 ; i < 2 ; i++) {
+    IMU_cal[i] /= 250;
   }
   Serial.println(F("IMU Calibration DONE"));
 }
@@ -312,7 +368,7 @@ void BLE_Notify() {
   if (!deviceConnected && oldDeviceConnected) {
     delay(250); // give the bluetooth stack the chance to get things ready
     pServer->startAdvertising(); // restart advertising
-    Serial.println("start advertising");
+    Serial.println(F("start advertising"));
     oldDeviceConnected = deviceConnected;
   }
   // connecting
@@ -499,10 +555,10 @@ void readFile(fs::FS &fs, const char * path) {
       DATA_SEND_Characteristic->notify();
     }
     if (!deviceConnected) {
-      Serial.println("Device disconnected");
+      Serial.println(F("Device disconnected"));
       delay(100); // give the bluetooth stack the chance to get things ready
       pServer->startAdvertising(); // restart advertising
-      Serial.println("start advertising");
+      Serial.println(F("start advertising"));
       oldDeviceConnected = deviceConnected;
       SDsend = false;
       return;
@@ -510,7 +566,7 @@ void readFile(fs::FS &fs, const char * path) {
     sendNow = !sendNow;
   }
   Serial.println(counter);
-  Serial.println("Done Sending");
+  Serial.println(F("Done Sending"));
   SDsend = false;
   file.close();
   //  deleteFile (SD , path);
