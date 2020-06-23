@@ -77,7 +77,7 @@ unsigned long epoch;
 RV1805 rtc;
 String receivedTime;
 
-const uint16_t loopInterval = 200;// 15s
+const uint16_t loopInterval = 13333;// 15s
 unsigned long previousTime = 0 ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
@@ -193,7 +193,6 @@ void loop()
     epoch += 3600 * 4;
     printSensor();
     BLE_Notify();
-
     AddFile(SD , "/datalog.dat");
     AddFile_Txt();
   }
