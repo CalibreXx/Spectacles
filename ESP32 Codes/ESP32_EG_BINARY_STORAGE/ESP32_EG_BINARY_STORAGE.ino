@@ -77,7 +77,7 @@ unsigned long epoch;
 RV1805 rtc;
 String receivedTime;
 
-const uint16_t loopInterval = 13333;// 15s
+const uint16_t loopInterval = 1500;// 15s
 unsigned long previousTime = 0 ;
 
 class MyServerCallbacks: public BLEServerCallbacks {
@@ -145,7 +145,7 @@ void setup()
   Serial.begin (115200);
   Sensor_Init();
   BLE_Init();
-  //  SD_Init();
+  SD_Init();
   if (! rtc.begin()) {
     Serial.println(F("Couldn't find RTC"));
   }
@@ -277,9 +277,9 @@ void GetSensor() {
   LongByteConverter.value = luxVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
-  acceleration[0] = acceleration_sum / 4;
+  acceleration[0] = acceleration_sum*10 / 4;
   for (uint8_t i = 0 ; i < 2 ; i++) {
-    rotation_sum[i] / 4;
+    rotation_sum[i] /=4;
     if (rotation_sum[i] < 0) {
       rotation_byte[i] = abs(rotation_sum[i]);
     }
@@ -509,8 +509,7 @@ void SD_Init() {
 
 void AddFile_Txt() {
   String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
-                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + ","  + ","
-                       + String(lightVal) + "\r\n";
+                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + ","   + String(lightVal) + "\r\n";
   Serial.print(F("Save data: "));
   Serial.println(dataMessage);
   appendFile(SD, "/dataHeaders.txt", dataMessage.c_str());
