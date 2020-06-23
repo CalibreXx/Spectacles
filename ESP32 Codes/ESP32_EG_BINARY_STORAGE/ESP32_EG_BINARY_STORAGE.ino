@@ -70,7 +70,7 @@ bool oldDeviceConnected = false;
 
 bool TimeUpdate = false ; //false = nth
 bool SDsend = false;
-int newTime[6]; //DD MM HH MM SS YYYY
+short newTime[6];
 
 //RTC
 unsigned long epoch;
@@ -95,15 +95,15 @@ class MyServerCallbacks: public BLEServerCallbacks {
 class Date_Callbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *Date_Characteristic) {
       std::string value = Date_Characteristic->getValue();
-      int BLETime[15];
       String sentence;
+      uint8_t count;
       if (value.length() > 0 ) {
-        for ( uint8_t i = 0 ; i < value.length() ; i++) {
+        for ( uint8_t i = 1 ; i < value.length() ; i++) {
           sentence += value[i];
         }
-        receivedTime = sentence;
-        TimeUpdate = true;
       }
+      receivedTime = sentence;
+      TimeUpdate = true;
     }
 };
 
@@ -162,17 +162,27 @@ void loop()
     Serial.println(millis());
   }
   else if (TimeUpdate == true) {
-    Serial.println( newTime [2]);
-    Serial.println( newTime [1]);
-    Serial.println( newTime [0]);
-    Serial.println( newTime [3]);
-    Serial.println( newTime [4]);
-    Serial.println( newTime [5]);
-    rtc.setTime(0, newTime[5], newTime[4] , newTime[3], newTime[0], newTime[1], newTime[2], 5);//hund, sec, minute, hour, date, month, year, day
+    char buff[receivedTime.length()];
+    receivedTime.toCharArray(buff, receivedTime.length());
+    char *strings[7];
+    char *ptr = NULL;
+    byte index = 0;
+    ptr = strtok(buff, ":");  // takes a list of delimiters
+    while (ptr != NULL)
+    {
+      strings[index] = ptr;
+      index++;
+      ptr = strtok(NULL, ":;");  // takes a list of delimiters
+    }
+    for (uint8_t i = 0 ; i < index ; i++) {
+      newTime[i] = atoi(strings[i]); //dd mm yy hh mm ss
+    }
+
+    rtc.setTime(0, newTime[5], newTime[4] , newTime[3], newTime[0], newTime[1], newTime[2], 1);//hund, sec, minute, hour, date, month, year, day
     Serial.println(F("Adjust Time completed"));
     rtc.updateTime();
     epoch = rtc.getEpoch();
-    Serial.println(epoch);
+    epoch += 3600 * 4;
     TimeUpdate = false;
   }
   else if (millis() - previousTime >= loopInterval) {
@@ -180,10 +190,12 @@ void loop()
     GetSensor();
     rtc.updateTime();
     epoch = rtc.getEpoch();
-    //        printSensor();
+    epoch += 3600 * 4;
+    printSensor();
     BLE_Notify();
-    //    AddFile(SD , "/datalog.dat");
-    //        AddFile_Txt();
+
+    AddFile(SD , "/datalog.dat");
+    AddFile_Txt();
   }
 }
 
@@ -491,7 +503,7 @@ void SD_Init() {
   File file = SD.open("/dataHeaders.txt");
   if (!file) {
     Serial.println(F("Creating file..."));
-    writeFile(SD, "/dataHeaders.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, Roll, LDR \r\n");
+    writeFile(SD, "/dataHeaders.txt", "Epoch, TOF_1, TOF_2, TOF_3, Accel, Yaw, Pitch, LDR \r\n");
   }
   file.close();
 }
