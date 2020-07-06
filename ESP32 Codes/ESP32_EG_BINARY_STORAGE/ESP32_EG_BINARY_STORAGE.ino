@@ -1,5 +1,10 @@
 #include <Wire.h>
-#include <VL53L1X.h>
+#include <SparkFun_VL53L1X.h>
+#include <vl53l1_error_codes.h>
+#include <vl53l1x_class.h>
+#include <RangeSensor.h>
+#include <ComponentObject.h>
+#include "SparkFun_VL53L1X.h"
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
@@ -33,7 +38,7 @@
 #define AL_ADDR 0x48
 
 //TOF Private Variables
-VL53L1X sensor1; VL53L1X sensor2; VL53L1X sensor3;
+SFEVL53L1X sensor1; SFEVL53L1X sensor2; SFEVL53L1X sensor3;
 
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
@@ -232,10 +237,12 @@ void GetSensor() {
       // DO NTH
     }
     previous_sampleTime = millis();
-
-    TOF_cm[0] += (sensor1.readRangeContinuousMillimeters()) / 10;       // TOF sensor
-    TOF_cm[1] += (sensor2.readRangeContinuousMillimeters()) / 10;
-    TOF_cm[2] += (sensor3.readRangeContinuousMillimeters()) / 10;
+    sensor1.startRanging(); sensor2.startRanging(); sensor3.startRanging();
+    TOF_cm[0] += (sensor1.getDistance()) / 10;       // TOF sensor
+    TOF_cm[1] += (sensor2.getDistance()) / 10;
+    TOF_cm[2] += (sensor3.getDistance()) / 10;
+    sensor1.clearInterrupt(); sensor2.clearInterrupt(); sensor3.clearInterrupt();
+    sensor1.stopRanging(); sensor2.stopRanging(); sensor3.stopRanging();
 
     imu.readGyro();
     imu.readAccel();
@@ -277,9 +284,9 @@ void GetSensor() {
   LongByteConverter.value = luxVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
-  acceleration[0] = acceleration_sum*10 / 4;
+  acceleration[0] = acceleration_sum * 10 / 4;
   for (uint8_t i = 0 ; i < 2 ; i++) {
-    rotation_sum[i] /=4;
+    rotation_sum[i] /= 4;
     if (rotation_sum[i] < 0) {
       rotation_byte[i] = abs(rotation_sum[i]);
     }
@@ -295,19 +302,22 @@ void Sensor_Init() {
   digitalWrite(TOF_1, LOW); digitalWrite(TOF_2, LOW); digitalWrite(TOF_3, LOW);
   delay(100);
   pinMode(TOF_1, INPUT); delay(150);
-  sensor1.init(true); delay(100);
-  sensor1.setAddress((uint8_t)23); //Set add at 0x23
+  sensor1.init(); delay(100);
+  sensor1.setI2CAddress((uint8_t)23); //Set add at 0x23
+
   pinMode(TOF_2, INPUT); delay(150);
-  sensor2.init(true); delay(100);
-  sensor2.setAddress((uint8_t)24); //Set add at 0x24
+  sensor2.init(); delay(100);
+  sensor2.setI2CAddress((uint8_t)24); //Set add at 0x24
+
   pinMode(TOF_3, INPUT); delay(150);
-  sensor3.init(true); delay(100);
-  sensor3.setAddress((uint8_t)25); //Set add at 0x25
-  sensor1.setTimeout(500); sensor2.setTimeout(500); sensor3.setTimeout(500);
-  sensor1.startContinuous(33); sensor2.startContinuous(33); sensor3.startContinuous(33);
+  sensor3.init(); delay(100);
+  sensor3.setI2CAddress((uint8_t)29); //Set add at 0x25
+  sensor1.setTimingBudgetInMs(50); sensor2.setTimingBudgetInMs(50); sensor3.setTimingBudgetInMs(50);
+  //timing budget = ranging period
+  sensor1.setIntermeasurementPeriod(300); sensor2.setIntermeasurementPeriod(100); sensor3.setIntermeasurementPeriod(100);
+  // intermeasurementPeriod - timing budget = time not doing ranging
   initLight();
   initIMU_6DOF();
-  rtc.enableLowPower();
 }
 
 void initLight() {
