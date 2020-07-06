@@ -149,7 +149,6 @@ void setup()
   if (! rtc.begin()) {
     Serial.println(F("Couldn't find RTC"));
   }
-
 }
 
 void loop()
@@ -226,6 +225,7 @@ void GetSensor() {
   short rotation_sum[2] = {0, 0}; // Yaw Pitch Roll
   float acceleration_sum =  0;
   unsigned long previous_sampleTime = 0;
+  light.powerOn();
 
   for ( uint8_t j = 0 ; j < 4 ; j++) { //take reading 4 times at a fixed interval
     while ( millis() - previous_sampleTime < loopInterval / 4) {
@@ -287,6 +287,7 @@ void GetSensor() {
       rotation_byte[i] = rotation_sum[i] + 90;
     }
   }
+  light.shutDown();
 }
 
 void Sensor_Init() {
@@ -306,6 +307,7 @@ void Sensor_Init() {
   sensor1.startContinuous(33); sensor2.startContinuous(33); sensor3.startContinuous(33);
   initLight();
   initIMU_6DOF();
+  rtc.enableLowPower();
 }
 
 void initLight() {
@@ -324,7 +326,7 @@ void initIMU_6DOF() {
   imu.settings.gyro.enabled = true;
   imu.settings.gyro.scale = 2000; //set gyro range to +/-2000dps
   // scale can be set to either 245, 500, or 2000
-  imu.settings.gyro.lowPowerEnable = false;
+  imu.settings.gyro.lowPowerEnable = true;
   imu.settings.gyro.sampleRate = 6; //59.5HZ
   // sampleRate can be set between 1-6
   // 1 = 14.9    4 = 238
@@ -344,6 +346,7 @@ void initIMU_6DOF() {
   // 3 = 119 Hz   6 = 952 Hz
 
   imu.settings.mag.enabled = false;
+  imu.settings.mag.operatingMode = 2; //0 = continuous, 1 = single, 2 = power down
   imu.settings.temp.enabled = false;
   if (imu.begin() == false) {
     Serial.println(F("9DOF failed"));
