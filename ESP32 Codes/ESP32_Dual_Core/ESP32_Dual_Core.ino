@@ -158,6 +158,7 @@ void setup()
 
 void loop()
 {
+  Serial.println(xPortGetCoreID());
   if (SDsend == true) {
     Serial.println(millis());
     Serial.println(F("Reading file"));
