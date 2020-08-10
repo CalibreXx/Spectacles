@@ -51,12 +51,12 @@ uint16_t lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
-float IMU_cal[6] = {0, 0, 0, 0, 0, 0};
+float IMU_cal[2] = {0, 0};
 byte rotation_byte[3] = {0, 0}; // Yaw Pitch Roll
 byte acceleration[1] = {0};
 LSM9DS1 imu;
-float previousTime_9DOF;
-float currentTime_9DOF;
+long previousTime_9DOF;
+long currentTime_9DOF;
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
@@ -158,7 +158,6 @@ void setup()
 
 void loop()
 {
-  ArduinoOTA.handle();
   if (SDsend == true) {
     Serial.println(millis());
     Serial.println(F("Reading file"));
