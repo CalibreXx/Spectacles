@@ -17,11 +17,8 @@
 #include <SparkFun_RV1805.h>
 
 // SERVICE and CHARACTERISTICS UUID for BLE
-#define TOF_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
-#define TOF_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
-#define LDR_UUID "e9ff40d9-21da-44dd-b125-ad2d8ef6b026"
-#define ROTATION_UUID  "2403ca8c-0500-4404-8141-6b0210045365"
-#define ACCEL_UUID "d0b5f187-ac23-459f-b44b-e20d50bcf656"
+#define SENSOR_SERVICE_UUID        "efbf52a5-d22b-4808-bccd-b45c5b1d1928"
+#define SENSOR_UUID        "3018bff0-ca31-430b-a6ef-dc5fefd7ee17"
 
 #define CLOCK_SERVICE_UUID "57675859-a6f4-4445-9492-051aa8514552"
 #define DATE_UUID "10ccece5-e44b-4502-8b69-09646d4072e1"
@@ -34,7 +31,6 @@
 #define TOF_1 25 //0x23 LEFT
 #define TOF_2 26 //0x24 CENTRE
 #define TOF_3 27 //0x25 RIGHT
-
 #define AL_ADDR 0x48
 
 //TOF Private Variables
@@ -44,9 +40,6 @@ byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 // LDR
 SparkFun_Ambient_Light light(AL_ADDR);
-float gain = .125; // Possible values: .125, .25, 1, 2
-int newtime = 100;
-int powMode = 1; //
 uint16_t lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
@@ -60,13 +53,8 @@ float currentTime_9DOF;
 
 //BLE Private Variables
 BLEServer* pServer = NULL;
-BLECharacteristic* TOF_Characteristic = NULL;
-BLECharacteristic* ROTATION_Characteristic = NULL;
-BLECharacteristic* ACCEL_Characteristic = NULL;
-BLECharacteristic* LDR_Characteristic = NULL;
-
+BLECharacteristic* Sensor_Characteristic = NULL;
 BLECharacteristic* Date_Characteristic = NULL;
-
 BLECharacteristic* DATA_CALL_Characteristic = NULL;
 BLECharacteristic* DATA_SEND_Characteristic = NULL;
 
@@ -88,12 +76,12 @@ unsigned long previousTime = 0 ;
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
       deviceConnected = true;
-      Serial.print(F("Device Connected:"));
+      Serial.print(F("BLE C"));
     };
     void onDisconnect(BLEServer* pServer) {
       deviceConnected = false;
       SDsend = false;
-      Serial.print(F("Device Disconnected"));
+      Serial.print(F("BLE DC"));
     }
 };
 
@@ -158,10 +146,9 @@ void setup()
 
 void loop()
 {
-  ArduinoOTA.handle();
   if (SDsend == true) {
     Serial.println(millis());
-    Serial.println(F("Reading file"));
+    Serial.println(F("Send SD"));
     readFile(SD, "/datalog.dat");
     SDsend = false;
     Serial.println(millis());
@@ -184,7 +171,7 @@ void loop()
     }
 
     rtc.setTime(0, newTime[5], newTime[4] , newTime[3], newTime[0], newTime[1], newTime[2], 1);//hund, sec, minute, hour, date, month, year, day
-    Serial.println(F("Adjust Time completed"));
+    Serial.println(F("TIME Up"));
     rtc.updateTime();
     epoch = rtc.getEpoch();
     epoch += 3600 * 4;
@@ -196,34 +183,34 @@ void loop()
     rtc.updateTime();
     epoch = rtc.getEpoch();
     epoch += 3600 * 4;
-    printSensor();
+    //    printSensor();
     BLE_Notify();
     AddFile(SD , "/datalog.dat");
-    AddFile_Txt();
+    //    AddFile_Txt();
   }
 }
 
 /* Sensor FUNCTIONS */
-void printSensor() {
-  Serial.print( "TOF Sensors:        ");
-  for ( uint8_t i = 0 ; i < 3 ; i++) {
-    Serial.print("   ");
-    Serial.print(TOF_byte[i]);
-  }
-  Serial.println("");
-  Serial.print ( "Light Val:      ");
-  Serial.println(lightVal);
-
-  for ( uint8_t i = 0 ; i < 2 ; i++) {
-    Serial.print(" ");
-    Serial.print(rotation_byte[i]);
-  }
-  Serial.println("");
-  Serial.print("Acceleration:      ");
-  Serial.println(acceleration[0]);
-  Serial.print("Epoch:    ");
-  Serial.println(epoch);
-}
+//void printSensor() {
+//  Serial.print( "TOF Sensors:        ");
+//  for ( uint8_t i = 0 ; i < 3 ; i++) {
+//    Serial.print("   ");
+//    Serial.print(TOF_byte[i]);
+//  }
+//  Serial.println("");
+//  Serial.print ( "Light Val:      ");
+//  Serial.println(lightVal);
+//
+//  for ( uint8_t i = 0 ; i < 2 ; i++) {
+//    Serial.print(" ");
+//    Serial.print(rotation_byte[i]);
+//  }
+//  Serial.println("");
+//  Serial.print("Acceleration:      ");
+//  Serial.println(acceleration[0]);
+//  Serial.print("Epoch:    ");
+//  Serial.println(epoch);
+//}
 
 void GetSensor() {
   struct splitLong LongByteConverter;
@@ -239,7 +226,7 @@ void GetSensor() {
     }
     previous_sampleTime = millis();
     sensor1.startRanging(); sensor2.startRanging(); sensor3.startRanging();
-    TOF_cm[0] += (sensor1.getDistance()) / 10;       // TOF sensor
+    TOF_cm[0] += (sensor1.getDistance()) / 10;       // TOF 
     TOF_cm[1] += (sensor2.getDistance()) / 10;
     TOF_cm[2] += (sensor3.getDistance()) / 10;
     sensor1.clearInterrupt(); sensor2.clearInterrupt(); sensor3.clearInterrupt();
@@ -271,8 +258,8 @@ void GetSensor() {
   }
 
   for (uint8_t i = 0 ; i < 3 ; i++) {
-    TOF_cm[i] = TOF_cm[i] / 4;
-    if ( TOF_cm[i] > 255 ) {
+    TOF_cm[i] /= 4;
+    if ( TOF_cm[i] > 254 ) {
       TOF_cm[i] = 255;
       TOF_byte[i] = 255; // if value greater than 255cm
     } else {
@@ -325,9 +312,9 @@ void initLight() {
   if (!light.begin()) {
     Serial.println("Could not communicate with the light sensor!");
   }
-  light.setGain(gain);
-  light.setIntegTime(newtime);
-  light.setPowSavMode(powMode);
+  light.setGain(0.125); // Possible values: .125, .25, 1, 2
+  light.setIntegTime(100);
+  light.setPowSavMode(1);
   // This will power down the sensor and the sensor will draw 0.5 micro-amps of power while shutdown.
   // light.shutDown();
   // light.powerOn();
@@ -398,14 +385,18 @@ void initIMU_6DOF() {
 void BLE_Notify() {
   //   notify changed value
   if (deviceConnected) {
-    TOF_Characteristic->setValue(TOF_byte, 3); // 1 = 1 byte = 8 bits
-    TOF_Characteristic->notify();
-    ROTATION_Characteristic->setValue(rotation_byte, 2);
-    ROTATION_Characteristic->notify();
-    LDR_Characteristic->setValue(light_byte, 2);
-    LDR_Characteristic->notify();
-    ACCEL_Characteristic->setValue(acceleration , 1 );
-    ACCEL_Characteristic->notify();
+    byte Sensor_Byte[8] = {0, 0, 0, 0, 0, 0, 0, 0 };
+    Sensor_Byte[0] = TOF_byte[0];
+    Sensor_Byte[1] = TOF_byte[1];
+    Sensor_Byte[2] = TOF_byte[2];
+    Sensor_Byte[3] = acceleration[0];
+    Sensor_Byte[4] = rotation_byte[0]; //roll
+    Sensor_Byte[5] = rotation_byte[1]; //pitch
+    Sensor_Byte[6] = light_byte[1];
+    Sensor_Byte[7] = light_byte[0];
+    Sensor_Characteristic-> setValue ( Sensor_Byte, 8);
+    Sensor_Characteristic->notify();
+
     delay(3); // bluetooth stack wi3ll go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
   }
   // disconnecting
@@ -431,34 +422,16 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
   // Create the BLE Service
-  BLEService *TOFService = pServer->createService(TOF_SERVICE_UUID);
+  BLEService *SensorService = pServer->createService(SENSOR_SERVICE_UUID);
   BLEService *ClockService = pServer->createService(CLOCK_SERVICE_UUID);
   BLEService *DATAService = pServer->createService(DATA_SERVICE_UUID);
 
-  TOF_Characteristic = TOFService->createCharacteristic(
-                         TOF_UUID,
-                         BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_NOTIFY
-                       );
-  TOF_Characteristic->addDescriptor(new BLE2902());
-  ROTATION_Characteristic = TOFService->createCharacteristic(
-                              ROTATION_UUID,
-                              BLECharacteristic::PROPERTY_READ   |
-                              BLECharacteristic::PROPERTY_NOTIFY
-                            );
-  ROTATION_Characteristic->addDescriptor(new BLE2902());
-  ACCEL_Characteristic = TOFService->createCharacteristic(
-                           ACCEL_UUID,
-                           BLECharacteristic::PROPERTY_READ   |
-                           BLECharacteristic::PROPERTY_NOTIFY
-                         );
-  ACCEL_Characteristic->addDescriptor(new BLE2902());
-  LDR_Characteristic = TOFService->createCharacteristic(
-                         LDR_UUID,
-                         BLECharacteristic::PROPERTY_READ   |
-                         BLECharacteristic::PROPERTY_NOTIFY
-                       );
-  LDR_Characteristic->addDescriptor(new BLE2902());
+  Sensor_Characteristic = SensorService->createCharacteristic(
+                            SENSOR_UUID,
+                            BLECharacteristic::PROPERTY_READ   |
+                            BLECharacteristic::PROPERTY_NOTIFY
+                          );
+  Sensor_Characteristic->addDescriptor(new BLE2902());
 
   // Create a BLE Time Characteristic
   Date_Characteristic = ClockService->createCharacteristic(
@@ -485,13 +458,13 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   DATA_SEND_Characteristic->addDescriptor(new BLE2902());
 
   // Start the service
-  TOFService->start();
+  SensorService->start();
   ClockService->start();
   DATAService->start();
   // Start advertising
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
 
-  pAdvertising->addServiceUUID(TOF_SERVICE_UUID);
+  pAdvertising->addServiceUUID(SENSOR_SERVICE_UUID);
   pAdvertising->addServiceUUID(CLOCK_SERVICE_UUID);
   pAdvertising->addServiceUUID(DATA_SERVICE_UUID);
 
@@ -520,15 +493,15 @@ void SD_Init() {
   }
   file.close();
 }
-
-void AddFile_Txt() {
-  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
-                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + ","   + String(lightVal) + "\r\n";
-  Serial.print(F("Save data: "));
-  Serial.println(dataMessage);
-  appendFile(SD, "/dataHeaders.txt", dataMessage.c_str());
-  delay(200);
-}
+//
+//void AddFile_Txt() {
+//  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
+//                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + ","   + String(lightVal) + "\r\n";
+//  Serial.print(F("Save data: "));
+//  Serial.println(dataMessage);
+//  appendFile(SD, "/dataHeaders.txt", dataMessage.c_str());
+//  delay(200);
+//}
 
 void appendFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Appending to file: %s\n", path);
