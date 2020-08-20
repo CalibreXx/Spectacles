@@ -44,7 +44,7 @@ uint16_t lightVal;
 byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
 
 //ICM20948 Private Variables
-float IMU_cal[6] = {0, 0, 0, 0, 0, 0};
+float IMU_cal[2] = {0, 0};
 byte rotation_byte[3] = {0, 0}; // Yaw Pitch Roll
 byte acceleration[1] = {0};
 LSM9DS1 imu;
@@ -236,10 +236,10 @@ void GetSensor() {
     imu.readAccel();
 
     float accelX, accelY, accelZ, gyroX, gyroY, gyroZ;
-    accelX = imu.calcAccel(imu.ax) ;
+    accelX = imu.calcAccel(imu.ax) ;//g's
     accelY = imu.calcAccel(imu.ay) ;
     accelZ = imu.calcAccel(imu.az) ;
-    gyroX = imu.calcGyro( imu.gx);
+    gyroX = imu.calcGyro( imu.gx);// degrees per second
     gyroY = imu.calcGyro( imu.gy) ;
     gyroZ = imu.calcGyro( imu.gz) ;
 
@@ -334,8 +334,8 @@ void initIMU_6DOF() {
   imu.settings.accel.enableX = true;
   imu.settings.accel.enableY = true;
   imu.settings.accel.enableZ = true;
-  imu.settings.accel.scale = 8; //set accel scle +/-8g accel scale can be 2, 4, 8, or 16
-  imu.settings.accel.sampleRate = 4; // Set accel to 10Hz.
+  imu.settings.accel.scale = 2; //set accel scle +/-8g accel scale can be 2, 4, 8, or 16
+  imu.settings.accel.sampleRate = 6; // Set accel to 10Hz.
   // accelerometer. ONLY APPLICABLE WHEN THE GYROSCOPE IS
   // DISABLED! Otherwise accel sample rate = gyro sample rate.
   // accel sample rate can be 1-6
