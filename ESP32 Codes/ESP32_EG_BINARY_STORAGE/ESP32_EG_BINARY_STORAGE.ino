@@ -545,7 +545,7 @@ void readFile(fs::FS &fs, const char * path) {
   bool sendNow = false;
   byte SDData_Byte[26] = {1, 2, 33, 44, 55, 66, 77, 88, 99, 111, 222, 53, 34, 34, 11, 76, 89, 101, 201, 104, 21, 22, 23};
   while (1) {
-    if (deviceConnected && sendNow == true ) {
+    if (deviceConnected) {
       delay(3);
       DATA_SEND_Characteristic->setValue(SDData_Byte, 13); // 1 = 1 byte = 8 bits
       DATA_SEND_Characteristic->notify();
