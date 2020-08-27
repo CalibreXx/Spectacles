@@ -226,7 +226,7 @@ void GetSensor() {
     }
     previous_sampleTime = millis();
     sensor1.startRanging(); sensor2.startRanging(); sensor3.startRanging();
-    TOF_cm[0] += (sensor1.getDistance()) / 10;       // TOF 
+    TOF_cm[0] += (sensor1.getDistance()) / 10;       // TOF
     TOF_cm[1] += (sensor2.getDistance()) / 10;
     TOF_cm[2] += (sensor3.getDistance()) / 10;
     sensor1.clearInterrupt(); sensor2.clearInterrupt(); sensor3.clearInterrupt();
@@ -543,26 +543,8 @@ void readFile(fs::FS &fs, const char * path) {
   struct splitLong LongByteConverter;
   int counter = 0;
   bool sendNow = false;
-  byte SDData_Byte[13] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  while ( file.available()) {
-    counter += 1;
-    file.read((uint8_t *)&myData, sizeof(myData));
-    FiveByteConverter.value = myData.epochTime_SD;
-    SDData_Byte[0] = FiveByteConverter.split[4]; //EPOCH
-    SDData_Byte[1] = FiveByteConverter.split[3];
-    SDData_Byte[2] = FiveByteConverter.split[2];
-    SDData_Byte[3] = FiveByteConverter.split[1];
-    SDData_Byte[4] = FiveByteConverter.split[0];
-    SDData_Byte[5] = myData.tof1_SD; //TOF
-    SDData_Byte[6] = myData.tof2_SD;
-    SDData_Byte[7] = myData.tof3_SD;
-    SDData_Byte[8] = myData.accel_SD; // ACCEL
-    SDData_Byte[9] = myData.pitch_SD;
-    SDData_Byte[10] = myData.roll_SD;
-    LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[11] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[12] = LongByteConverter.split[0];
-
+  byte SDData_Byte[26] = {1, 2, 33, 44, 55, 66, 77, 88, 99, 111, 222, 53, 34, 34, 11, 76, 89, 101, 201, 104, 21, 22, 23};
+  while (1) {
     if (deviceConnected && sendNow == true ) {
       delay(3);
       DATA_SEND_Characteristic->setValue(SDData_Byte, 13); // 1 = 1 byte = 8 bits
@@ -577,8 +559,42 @@ void readFile(fs::FS &fs, const char * path) {
       SDsend = false;
       return;
     }
-    sendNow = !sendNow;
   }
+  //  while ( file.available()) {
+  //    counter += 1;
+  //    file.read((uint8_t *)&myData, sizeof(myData));
+  //    FiveByteConverter.value = myData.epochTime_SD;
+  //    SDData_Byte[0] = FiveByteConverter.split[4]; //EPOCH
+  //    SDData_Byte[1] = FiveByteConverter.split[3];
+  //    SDData_Byte[2] = FiveByteConverter.split[2];
+  //    SDData_Byte[3] = FiveByteConverter.split[1];
+  //    SDData_Byte[4] = FiveByteConverter.split[0];
+  //    SDData_Byte[5] = myData.tof1_SD; //TOF
+  //    SDData_Byte[6] = myData.tof2_SD;
+  //    SDData_Byte[7] = myData.tof3_SD;
+  //    SDData_Byte[8] = myData.accel_SD; // ACCEL
+  //    SDData_Byte[9] = myData.pitch_SD;
+  //    SDData_Byte[10] = myData.roll_SD;
+  //    LongByteConverter.value =  myData.ldr_SD;
+  //    SDData_Byte[11] = LongByteConverter.split[1]; //LDR
+  //    SDData_Byte[12] = LongByteConverter.split[0];
+  //
+  //    if (deviceConnected && sendNow == true ) {
+  //      delay(3);
+  //      DATA_SEND_Characteristic->setValue(SDData_Byte, 13); // 1 = 1 byte = 8 bits
+  //      DATA_SEND_Characteristic->notify();
+  //    }
+  //    if (!deviceConnected) {
+  //      Serial.println(F("Device disconnected"));
+  //      delay(100); // give the bluetooth stack the chance to get things ready
+  //      pServer->startAdvertising(); // restart advertising
+  //      Serial.println(F("start advertising"));
+  //      oldDeviceConnected = deviceConnected;
+  //      SDsend = false;
+  //      return;
+  //    }
+  //    sendNow = !sendNow;
+  //  }
   Serial.println(counter);
   Serial.println(F("Done Sending"));
   SDsend = false;
