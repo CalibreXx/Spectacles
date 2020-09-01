@@ -417,7 +417,6 @@ void BLE_Notify() {
 void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   // Create the BLE Device
   BLEDevice::init("ESP32-BRYAN");
-  BLEDevice::setMTU(150);
   // Create the BLE Server
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
@@ -469,7 +468,9 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   pAdvertising->addServiceUUID(DATA_SERVICE_UUID);
 
   pAdvertising->setScanResponse(false);
-  pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
+  pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter\
+
+  BLEDevice::setMTU(150);
   BLEDevice::startAdvertising();
   Serial.println(F("Waiting a client connection to notify..."));
 }
