@@ -27,9 +27,9 @@
 
 > Or Contributors/People
 
-| <a href="http://fvcproductions.com" target="_blank">Loh Yun Ying</a> | <a href="http://fvcproductions.com" target="_blank">**Oung Kennedy**</a> | <a href="http://fvcproductions.com" target="_blank">**Sun Xiu Qi**</a> |
+| <a href="https://github.com/skyspace123" target="_blank">Loh Yun Ying</a> | <a href="https://github.com/OungKennedy">**Oung Kennedy**</a> | <a href="https://github.com/sunxiuqi-stacked">**Sun Xiu Qi**</a> |
 | :---: |:---:| :---:|
-| ![Loh Yun Ying](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)| [![Oung Kennedy](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg) | [![Sun Xiu Qi](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)|
+| ![Loh Yun Ying](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)| ![Oung Kennedy](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg) | ![Sun Xiu Qi](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)|
 
 
 
