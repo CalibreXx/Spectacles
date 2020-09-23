@@ -27,11 +27,6 @@
 
 > Or Contributors/People
 
-| <a href="http://fvcproductions.com" target="_blank">**FVCproductions**</a> 
-| :---: |:---:| :---:|
-![picture](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)
-
-
 | <a href="http://fvcproductions.com" target="_blank">**FVCproductions**</a> | <a href="http://fvcproductions.com" target="_blank">**FVCproductions**</a> | <a href="http://fvcproductions.com" target="_blank">**FVCproductions**</a> |
 | :---: |:---:| :---:|
 | [![FVCproductions](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)]| [![FVCproductions](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)] | [![FVCproductions](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)  |
