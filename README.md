@@ -30,9 +30,6 @@
 | ![Eugene_EE](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)| ![Zi Jun](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic_female_icon.jpg) |
 
 
-- You can just grab their GitHub profile image URL
-- You should probably resize their picture using `?s=200` at the end of the image URL.
-
 ## FAQ
 ---
 
