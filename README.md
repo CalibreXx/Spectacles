@@ -14,7 +14,7 @@
 - [FAQ](#faq)
 - [Support](#support)
 - [License](#license)
-- <a href="https://github.com/CalibreXx/Spectacles/wiki" target="_blank">ESP32 Wiki</a>
+- <a href="https://github.com/CalibreXx/Spectacles/wiki" target="_blank">Project Wiki</a>
 
 ## Team
 
