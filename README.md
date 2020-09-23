@@ -33,8 +33,8 @@
 
 > Supervisors
 
-| <a href="https://github.com/skyspace123" target="_blank">Loh Yun Ying</a> | <a href="https://github.com/OungKennedy">**Oung Kennedy**</a> |
-| :---: |:---:| :---:|
+| <a href="https://www.eng.nus.edu.sg/idp/staff/eugene-ee/" target="_blank">Eugene Ee</a> | <a href="https://www.linkedin.com/in/kwok-zi-jun-226017184/?originalSubdomain=sg">**Kwok Zi Jun**</a> | 
+| :---: |:---:|
 | ![Loh Yun Ying](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)| ![Oung Kennedy](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg) |
 
 
