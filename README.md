@@ -8,21 +8,13 @@
 #IOTWearable
 
 ---
-# Table of Contents 
 
-- [BOM](#BOM)
-- [ESP32_Setup](#ESP32_Setup)
-- [Universally Unique Identifier](#UUID)
+# Table of Contents 
 - [Team](#team)
 - [FAQ](#faq)
 - [Support](#support)
 - [License](#license)
 
-## Features
-
-
-## FAQ
----
 ## Team
 
 > Tech Leads
@@ -40,6 +32,9 @@
 
 - You can just grab their GitHub profile image URL
 - You should probably resize their picture using `?s=200` at the end of the image URL.
+
+## FAQ
+---
 
 ## Support
 
