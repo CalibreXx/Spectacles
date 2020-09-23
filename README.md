@@ -33,7 +33,7 @@
 
 > Supervisors
 
-| <a href="https://github.com/skyspace123" target="_blank">Loh Yun Ying</a> | <a href="https://github.com/OungKennedy">**Oung Kennedy**</a> | <a href="https://github.com/sunxiuqi-stacked">**Sun Xiu Qi**</a> |
+| <a href="https://github.com/skyspace123" target="_blank">Loh Yun Ying</a> | <a href="https://github.com/OungKennedy">**Oung Kennedy**</a> |
 | :---: |:---:| :---:|
 | ![Loh Yun Ying](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg)| ![Oung Kennedy](https://wearesutd.sutd.edu.sg/wp-content/uploads/2017/11/generic-male-icon-blue.jpg) |
 
