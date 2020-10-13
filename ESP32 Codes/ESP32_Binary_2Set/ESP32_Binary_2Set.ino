@@ -622,7 +622,6 @@ void writeFile(fs::FS & fs, const char * path, const char * message) {
   }
   file.close();
 }
-
 void deleteFile(fs::FS & fs, const char * path) {
   Serial.printf("Deleting file: %s\n", path);
   if (fs.remove(path)) {
