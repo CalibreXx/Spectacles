@@ -185,7 +185,7 @@ void loop()
     rtc.updateTime();
     epoch = rtc.getEpoch();
     epoch += 3600 * 4;
-    //    printSensor();
+    printSensor();
     BLE_Notify();
     //    AddFile(SD , "/datalog.dat");
     //    AddFile_Txt();
@@ -225,7 +225,7 @@ void GetSensor() {
   short rotation_sum[2] = {0, 0}; // Yaw Pitch Roll
   //  float acceleration_sum =  0;
   //  unsigned long previous_sampleTime = 0;
-  light.powerOn();
+
 
   //  for ( uint8_t j = 0 ; j < 4 ; j++) { //take reading 4 times at a fixed interval
   //    while ( millis() - previous_sampleTime < loopInterval) {
@@ -285,15 +285,15 @@ void GetSensor() {
       TOF_byte[i] = TOF_cm[i];
     }
   }
-
+  
+//  light.powerOn();
+//  delay (600);
   long luxVal = light.readLight();
   lightVal = luxVal;
   LongByteConverter.value = luxVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
-
-
-  light.shutDown();
+//  light.shutDown();
 }
 
 void Sensor_Init() {
@@ -326,10 +326,15 @@ void initLight() {
   light.setGain(0.125); // Possible values: .125, .25, 1, 2
   light.setIntegTime(100);
   light.setPowSavMode(1);
-  // This will power down the sensor and the sensor will draw 0.5 micro-amps of power while shutdown.
-  // light.shutDown();
-  // light.powerOn();
-  delay(250);
+//  light.enablePowSave();
+  Serial.println("Is power save enabled: ");
+  int enaVal = light.readPowSavEnabled(); 
+
+  if(enaVal)
+    Serial.println("Yes!");
+  else
+    Serial.println("No!");  
+  delay(1000);
 }
 void initIMU_6DOF() {
   imu.settings.gyro.enabled = true;
