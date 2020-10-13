@@ -183,7 +183,7 @@ void loop()
     rtc.updateTime();
     epoch = rtc.getEpoch();
     epoch += 3600 * 4;
-    //    printSensor();
+     printSensor();
     BLE_Notify();
     AddFile(SD , "/datalog.dat");
     //    AddFile_Txt();
@@ -191,26 +191,26 @@ void loop()
 }
 
 /* Sensor FUNCTIONS */
-//void printSensor() {
-//  Serial.print( "TOF Sensors:        ");
-//  for ( uint8_t i = 0 ; i < 3 ; i++) {
-//    Serial.print("   ");
-//    Serial.print(TOF_byte[i]);
-//  }
-//  Serial.println("");
-//  Serial.print ( "Light Val:      ");
-//  Serial.println(lightVal);
-//
-//  for ( uint8_t i = 0 ; i < 2 ; i++) {
-//    Serial.print(" ");
-//    Serial.print(rotation_byte[i]);
-//  }
-//  Serial.println("");
-//  Serial.print("Acceleration:      ");
-//  Serial.println(acceleration[0]);
-//  Serial.print("Epoch:    ");
-//  Serial.println(epoch);
-//}
+void printSensor() {
+  Serial.print( "TOF Sensors:        ");
+  for ( uint8_t i = 0 ; i < 3 ; i++) {
+    Serial.print("   ");
+    Serial.print(TOF_byte[i]);
+  }
+  Serial.println("");
+  Serial.print ( "Light Val:      ");
+  Serial.println(lightVal);
+
+  for ( uint8_t i = 0 ; i < 2 ; i++) {
+    Serial.print(" ");
+    Serial.print(rotation_byte[i]);
+  }
+  Serial.println("");
+  Serial.print("Acceleration:      ");
+  Serial.println(acceleration[0]);
+  Serial.print("Epoch:    ");
+  Serial.println(epoch);
+}
 
 void GetSensor() {
   struct splitLong LongByteConverter;
