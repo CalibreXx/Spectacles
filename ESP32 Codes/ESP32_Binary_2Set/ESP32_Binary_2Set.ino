@@ -561,32 +561,33 @@ void readFile(fs::FS &fs, const char * path) {
   struct dataStore myData;
   struct splitLong LongByteConverter;
   int counter = 0;
-  byte SDData_Byte[15];
+  bool sendNow = false;
+  byte SDData_Byte[30];
 
   while ( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
     FiveByteConverter.value = myData.epochTime_SD;
-    SDData_Byte[0] = FiveByteConverter.split[4]; //EPOCH
-    SDData_Byte[1] = FiveByteConverter.split[3];
-    SDData_Byte[2] = FiveByteConverter.split[2];
-    SDData_Byte[3] = FiveByteConverter.split[1];
-    SDData_Byte[4] = FiveByteConverter.split[0];
-    SDData_Byte[5] = myData.tof1_SD; //TOF
-    SDData_Byte[6] = myData.tof2_SD;
-    SDData_Byte[7] = myData.tof3_SD;
-    SDData_Byte[8] = myData.accelx_SD; // ACCEL
-    SDData_Byte[9] = myData.accely_SD; // ACCEL
-    SDData_Byte[10] = myData.accelz_SD; // ACCEL
-    SDData_Byte[11] = myData.pitch_SD;
-    SDData_Byte[12] = myData.roll_SD;
+    SDData_Byte[sendNow * 15 + 0] = FiveByteConverter.split[4]; //EPOCH
+    SDData_Byte[sendNow * 15 + 1] = FiveByteConverter.split[3];
+    SDData_Byte[sendNow * 15 + 2] = FiveByteConverter.split[2];
+    SDData_Byte[sendNow * 15 + 3] = FiveByteConverter.split[1];
+    SDData_Byte[sendNow * 15 + 4] = FiveByteConverter.split[0];
+    SDData_Byte[sendNow * 15 + 5] = myData.tof1_SD; //TOF
+    SDData_Byte[sendNow * 15 + 6] = myData.tof2_SD;
+    SDData_Byte[sendNow * 15 + 7] = myData.tof3_SD;
+    SDData_Byte[sendNow * 15 + 8] = myData.accelx_SD; // ACCEL
+    SDData_Byte[sendNow * 15 + 9] = myData.accely_SD; // ACCEL
+    SDData_Byte[sendNow * 15 + 10] = myData.accelz_SD; // ACCEL
+    SDData_Byte[sendNow * 15 + 11] = myData.pitch_SD;
+    SDData_Byte[sendNow * 15 + 12] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[13] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[14] = LongByteConverter.split[0];
+    SDData_Byte[sendNow * 15 + 13] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[sendNow * 15 + 14] = LongByteConverter.split[0];
 
-    if (deviceConnected) {
+    if (deviceConnected && sendNow == true) {
       delay(3);
-      DATA_SEND_Characteristic->setValue(SDData_Byte, 15); // 1 = 1 byte = 8 bits
+      DATA_SEND_Characteristic->setValue(SDData_Byte, 30); // 1 = 1 byte = 8 bits
       DATA_SEND_Characteristic->notify();
     }
     if (!deviceConnected) {
@@ -598,8 +599,8 @@ void readFile(fs::FS &fs, const char * path) {
       SDsend = false;
       return;
     }
+    sendNow = !sendNow;
   }
-
   Serial.println(counter);
   SDsend = false;
   file.close();
