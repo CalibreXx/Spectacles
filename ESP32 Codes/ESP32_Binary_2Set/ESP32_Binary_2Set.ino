@@ -567,7 +567,7 @@ void readFile(fs::FS &fs, const char * path) {
   while ( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
-    FiveByteConverter.value = myData.epochTime_SD;
+    FourByteConverter.value = myData.epochTime_SD;
     SDData_Byte[sendNow * 15 + 0] = FourByteConverter.split[3];
     SDData_Byte[sendNow * 15 + 1] = FourByteConverter.split[2];
     SDData_Byte[sendNow * 15 + 2] = FourByteConverter.split[1];
