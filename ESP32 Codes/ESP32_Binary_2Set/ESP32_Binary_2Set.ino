@@ -114,7 +114,7 @@ struct splitLong { //split long into 2 byte sized packets
   } __attribute__((packed));
 };
 
-struct splitFiveLong { //split long into 5 byte sized packets for epoch time
+struct splitFourLong { //split long into 5 byte sized packets for epoch time
   union {
     long value;
     char split[5];
@@ -557,37 +557,36 @@ void AddFile(fs::FS & fs, const char * path) {
 }
 void readFile(fs::FS &fs, const char * path) {
   File file = fs.open(path, FILE_READ);
-  struct splitFiveLong FiveByteConverter;
+  struct splitFourLong FourByteConverter;
   struct dataStore myData;
   struct splitLong LongByteConverter;
   int counter = 0;
   bool sendNow = false;
-  byte SDData_Byte[30];
+  byte SDData_Byte[28];
 
   while ( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
     FiveByteConverter.value = myData.epochTime_SD;
-    SDData_Byte[sendNow * 15 + 0] = FiveByteConverter.split[4]; //EPOCH
-    SDData_Byte[sendNow * 15 + 1] = FiveByteConverter.split[3];
-    SDData_Byte[sendNow * 15 + 2] = FiveByteConverter.split[2];
-    SDData_Byte[sendNow * 15 + 3] = FiveByteConverter.split[1];
-    SDData_Byte[sendNow * 15 + 4] = FiveByteConverter.split[0];
-    SDData_Byte[sendNow * 15 + 5] = myData.tof1_SD; //TOF
-    SDData_Byte[sendNow * 15 + 6] = myData.tof2_SD;
-    SDData_Byte[sendNow * 15 + 7] = myData.tof3_SD;
-    SDData_Byte[sendNow * 15 + 8] = myData.accelx_SD; // ACCEL
-    SDData_Byte[sendNow * 15 + 9] = myData.accely_SD; // ACCEL
-    SDData_Byte[sendNow * 15 + 10] = myData.accelz_SD; // ACCEL
-    SDData_Byte[sendNow * 15 + 11] = myData.pitch_SD;
-    SDData_Byte[sendNow * 15 + 12] = myData.roll_SD;
+    SDData_Byte[sendNow * 15 + 0] = FourByteConverter.split[3];
+    SDData_Byte[sendNow * 15 + 1] = FourByteConverter.split[2];
+    SDData_Byte[sendNow * 15 + 2] = FourByteConverter.split[1];
+    SDData_Byte[sendNow * 15 + 3] = FourByteConverter.split[0];
+    SDData_Byte[sendNow * 15 + 4] = myData.tof1_SD; //TOF
+    SDData_Byte[sendNow * 15 + 5] = myData.tof2_SD;
+    SDData_Byte[sendNow * 15 + 6] = myData.tof3_SD;
+    SDData_Byte[sendNow * 15 + 7] = myData.accelx_SD; // ACCEL
+    SDData_Byte[sendNow * 15 + 8] = myData.accely_SD; // ACCEL
+    SDData_Byte[sendNow * 15 + 9] = myData.accelz_SD; // ACCEL
+    SDData_Byte[sendNow * 15 + 10] = myData.pitch_SD;
+    SDData_Byte[sendNow * 15 + 11] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[sendNow * 15 + 13] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[sendNow * 15 + 14] = LongByteConverter.split[0];
+    SDData_Byte[sendNow * 15 + 12] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[sendNow * 15 + 13] = LongByteConverter.split[0];
 
     if (deviceConnected && sendNow == true) {
       delay(3);
-      DATA_SEND_Characteristic->setValue(SDData_Byte, 30); // 1 = 1 byte = 8 bits
+      DATA_SEND_Characteristic->setValue(SDData_Byte, 28); // 1 = 1 byte = 8 bits
       DATA_SEND_Characteristic->notify();
     }
     if (!deviceConnected) {
