@@ -604,7 +604,7 @@ void readFile(fs::FS &fs, const char * path) {
   SDsend = false;
   file.close();
   Serial.println(F("Done Sending"));
-  //  deleteFile (SD , path);
+  deleteFile (SD , path);
   //  SD_Init();
 }
 void writeFile(fs::FS & fs, const char * path, const char * message) {
