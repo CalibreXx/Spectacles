@@ -114,10 +114,10 @@ struct splitLong { //split long into 2 byte sized packets
   } __attribute__((packed));
 };
 
-struct splitFiveLong { //split long into 5 byte sized packets for epoch time
+struct splitFourLong { //split long into 4 byte sized packets for epoch time
   union {
     long value;
-    char split[5];
+    char split[4];
   } __attribute__((packed));
 };
 
@@ -557,7 +557,7 @@ void AddFile(fs::FS & fs, const char * path) {
 }
 void readFile(fs::FS &fs, const char * path) {
   File file = fs.open(path, FILE_READ);
-  struct splitFiveLong FiveByteConverter;
+  struct splitFourLong FourByteConverter;
   struct dataStore myData;
   struct splitLong LongByteConverter;
   int counter = 0;
@@ -566,23 +566,22 @@ void readFile(fs::FS &fs, const char * path) {
   while ( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
-    FiveByteConverter.value = myData.epochTime_SD;
-    SDData_Byte[0] = FiveByteConverter.split[4]; //EPOCH
-    SDData_Byte[1] = FiveByteConverter.split[3];
-    SDData_Byte[2] = FiveByteConverter.split[2];
-    SDData_Byte[3] = FiveByteConverter.split[1];
-    SDData_Byte[4] = FiveByteConverter.split[0];
-    SDData_Byte[5] = myData.tof1_SD; //TOF
-    SDData_Byte[6] = myData.tof2_SD;
-    SDData_Byte[7] = myData.tof3_SD;
-    SDData_Byte[8] = myData.accelx_SD; // ACCEL
-    SDData_Byte[9] = myData.accely_SD; // ACCEL
-    SDData_Byte[10] = myData.accelz_SD; // ACCEL
-    SDData_Byte[11] = myData.pitch_SD;
-    SDData_Byte[12] = myData.roll_SD;
+    FourByteConverter.value = myData.epochTime_SD;
+    SDData_Byte[0] = FourByteConverter.split[3];
+    SDData_Byte[1] = FourByteConverter.split[2];
+    SDData_Byte[2] = FourByteConverter.split[1];
+    SDData_Byte[3] = FourByteConverter.split[0];
+    SDData_Byte[4] = myData.tof1_SD; //TOF
+    SDData_Byte[5] = myData.tof2_SD;
+    SDData_Byte[6] = myData.tof3_SD;
+    SDData_Byte[7] = myData.accelx_SD; // ACCEL
+    SDData_Byte[8] = myData.accely_SD; // ACCEL
+    SDData_Byte[9] = myData.accelz_SD; // ACCEL
+    SDData_Byte[10] = myData.pitch_SD;
+    SDData_Byte[11] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[13] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[14] = LongByteConverter.split[0];
+    SDData_Byte[12] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[13] = LongByteConverter.split[0];
 
     if (deviceConnected) {
       delay(3);
