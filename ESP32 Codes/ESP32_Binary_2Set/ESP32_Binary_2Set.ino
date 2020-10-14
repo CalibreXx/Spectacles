@@ -568,21 +568,21 @@ void readFile(fs::FS &fs, const char * path) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
     FourByteConverter.value = myData.epochTime_SD;
-    SDData_Byte[sendNow * 15 + 0] = FourByteConverter.split[3];
-    SDData_Byte[sendNow * 15 + 1] = FourByteConverter.split[2];
-    SDData_Byte[sendNow * 15 + 2] = FourByteConverter.split[1];
-    SDData_Byte[sendNow * 15 + 3] = FourByteConverter.split[0];
-    SDData_Byte[sendNow * 15 + 4] = myData.tof1_SD; //TOF
-    SDData_Byte[sendNow * 15 + 5] = myData.tof2_SD;
-    SDData_Byte[sendNow * 15 + 6] = myData.tof3_SD;
-    SDData_Byte[sendNow * 15 + 7] = myData.accelx_SD; // ACCEL
-    SDData_Byte[sendNow * 15 + 8] = myData.accely_SD; // ACCEL
-    SDData_Byte[sendNow * 15 + 9] = myData.accelz_SD; // ACCEL
-    SDData_Byte[sendNow * 15 + 10] = myData.pitch_SD;
-    SDData_Byte[sendNow * 15 + 11] = myData.roll_SD;
+    SDData_Byte[sendNow * 14 + 0] = FourByteConverter.split[3];
+    SDData_Byte[sendNow * 14 + 1] = FourByteConverter.split[2];
+    SDData_Byte[sendNow * 14 + 2] = FourByteConverter.split[1];
+    SDData_Byte[sendNow * 14 + 3] = FourByteConverter.split[0];
+    SDData_Byte[sendNow * 14 + 4] = myData.tof1_SD; //TOF
+    SDData_Byte[sendNow * 14 + 5] = myData.tof2_SD;
+    SDData_Byte[sendNow * 14 + 6] = myData.tof3_SD;
+    SDData_Byte[sendNow * 14 + 7] = myData.accelx_SD; // ACCEL
+    SDData_Byte[sendNow * 14 + 8] = myData.accely_SD; // ACCEL
+    SDData_Byte[sendNow * 14 + 9] = myData.accelz_SD; // ACCEL
+    SDData_Byte[sendNow * 14 + 10] = myData.pitch_SD;
+    SDData_Byte[sendNow * 14 + 11] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[sendNow * 15 + 12] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[sendNow * 15 + 13] = LongByteConverter.split[0];
+    SDData_Byte[sendNow * 14 + 12] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[sendNow * 14 + 13] = LongByteConverter.split[0];
 
     if (deviceConnected && sendNow == true) {
       delay(3);

@@ -36,6 +36,11 @@
 //TOF Private Variables
 SFEVL53L1X sensor1; SFEVL53L1X sensor2; SFEVL53L1X sensor3;
 
+
+int noSet = 1 ; //USER DEFINED
+
+
+
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 // LDR
@@ -486,7 +491,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter\
 
-  BLEDevice::setMTU(150);
+  BLEDevice::setMTU(1500);
   BLEDevice::startAdvertising();
   Serial.println(F("Waiting a client connection to notify..."));
 }
@@ -561,31 +566,32 @@ void readFile(fs::FS &fs, const char * path) {
   struct dataStore myData;
   struct splitLong LongByteConverter;
   int counter = 0;
-  byte SDData_Byte[14];
+  byte SDData_Byte[noSet * 14];
 
   while ( file.available()) {
     counter += 1;
     file.read((uint8_t *)&myData, sizeof(myData));
     FourByteConverter.value = myData.epochTime_SD;
-    SDData_Byte[0] = FourByteConverter.split[3];
-    SDData_Byte[1] = FourByteConverter.split[2];
-    SDData_Byte[2] = FourByteConverter.split[1];
-    SDData_Byte[3] = FourByteConverter.split[0];
-    SDData_Byte[4] = myData.tof1_SD; //TOF
-    SDData_Byte[5] = myData.tof2_SD;
-    SDData_Byte[6] = myData.tof3_SD;
-    SDData_Byte[7] = myData.accelx_SD; // ACCEL
-    SDData_Byte[8] = myData.accely_SD; // ACCEL
-    SDData_Byte[9] = myData.accelz_SD; // ACCEL
-    SDData_Byte[10] = myData.pitch_SD;
-    SDData_Byte[11] = myData.roll_SD;
-    LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[12] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[13] = LongByteConverter.split[0];
 
-    if (deviceConnected) {
+    SDData_Byte[(counter % noSet - 1) * 15 + 0] = FourByteConverter.split[3];
+    SDData_Byte[(counter % noSet - 1) * 15 + 1] = FourByteConverter.split[2];
+    SDData_Byte[(counter % noSet - 1) * 15 + 2] = FourByteConverter.split[1];
+    SDData_Byte[(counter % noSet - 1) * 15 + 3] = FourByteConverter.split[0];
+    SDData_Byte[(counter % noSet - 1) * 15 + 4] = myData.tof1_SD; //TOF
+    SDData_Byte[(counter % noSet - 1) * 15 + 5] = myData.tof2_SD;
+    SDData_Byte[(counter % noSet - 1) * 15 + 6] = myData.tof3_SD;
+    SDData_Byte[(counter % noSet - 1) * 15 + 7] = myData.accelx_SD; // ACCEL
+    SDData_Byte[(counter % noSet - 1) * 15 + 8] = myData.accely_SD; // ACCEL
+    SDData_Byte[(counter % noSet - 1) * 15 + 9] = myData.accelz_SD; // ACCEL
+    SDData_Byte[(counter % noSet - 1) * 15 + 10] = myData.pitch_SD;
+    SDData_Byte[(counter % noSet - 1) * 15 + 11] = myData.roll_SD;
+    LongByteConverter.value =  myData.ldr_SD;
+    SDData_Byte[(counter % noSet - 1) * 15 + 12] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[(counter % noSet - 1) * 15 + 13] = LongByteConverter.split[0];
+
+    if (deviceConnected && counter % noSet == 0) {
       delay(3);
-      DATA_SEND_Characteristic->setValue(SDData_Byte, 14); // 1 = 1 byte = 8 bits
+      DATA_SEND_Characteristic->setValue(SDData_Byte, noSet * 14); // 1 = 1 byte = 8 bits
       DATA_SEND_Characteristic->notify();
     }
     if (!deviceConnected) {
