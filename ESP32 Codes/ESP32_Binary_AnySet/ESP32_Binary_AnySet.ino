@@ -31,22 +31,22 @@
 #define TOF_1 25 //0x23 LEFT
 #define TOF_2 26 //0x24 CENTRE
 #define TOF_3 27 //0x25 RIGHT
-#define AL_ADDR 0x48
+#define AL_ADDR 0x48 //uC
+#define AL2_ADDR 0x10
 
 //TOF Private Variables
 SFEVL53L1X sensor1; SFEVL53L1X sensor2; SFEVL53L1X sensor3;
 
-
 int noSet = 5 ; //USER DEFINED
-
-
 
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
 // LDR
-SparkFun_Ambient_Light light(AL_ADDR);
+SparkFun_Ambient_Light light(AL_ADDR); //uC
+SparkFun_Ambient_Light light2(AL2_ADDR); // TOF
 uint16_t lightVal;
-byte light_byte[2] = { 0 , 0 }; // 2 bytes range from 0 to 65,535
+uint16_t lightVal2;
+byte light_byte[4] = { 0 , 0 , 0 , 0 }; // 2 bytes range from 0 to 65,535 x 2
 
 //ICM20948 Private Variables
 float IMU_cal[2] = {0, 0};
@@ -137,6 +137,7 @@ struct dataStore {
   uint8_t pitch_SD;
   uint8_t roll_SD;
   uint16_t ldr_SD;
+  uint16_t ldr2_SD;
 };
 
 void setup()
@@ -205,8 +206,10 @@ void printSensor() {
     Serial.print(TOF_byte[i]);
   }
   Serial.println("");
-  Serial.print ( "Light Val:      ");
-  Serial.println(lightVal);
+  Serial.print ( "Light Val uC:  ");
+  Serial.print(lightVal);
+  Serial.print ("TOF:  ");
+  Serial.println(lightVal2);
   Serial.print("ROtation:      ");
   for ( uint8_t i = 0 ; i < 2 ; i++) {
     Serial.print(" ");
@@ -231,13 +234,20 @@ void GetSensor() {
   short rotation_sum[2] = {0, 0}; // Yaw Pitch Roll
 
   light.powerOn();
+  light2.powerOn();
   delay(200);
   long luxVal = light.readLight();
+  long luxVal2 = light2.readLight();
+  lightVal2 = luxVal2;
   lightVal = luxVal;
   LongByteConverter.value = luxVal;
   light_byte[0] = LongByteConverter.split[1];
   light_byte[1] = LongByteConverter.split[0];
   light.shutDown();
+  LongByteConverter.value = luxVal2;
+  light_byte[2] = LongByteConverter.split[3];
+  light_byte[3] = LongByteConverter.split[2];
+  light2.shutDown();
 
   sensor1.startRanging(); sensor2.startRanging(); sensor3.startRanging();
   TOF_cm[0] += (sensor1.getDistance()) / 10;       // TOF
@@ -319,14 +329,20 @@ void Sensor_Init() {
 
 void initLight() {
   if (!light.begin()) {
-    Serial.println("Could not communicate with the light sensor!");
+    Serial.println("uC light down");
   }
+  if (!light2.begin()) {
+    Serial.println("TOF light down");
+  }
+  light2.setGain(0.125);
   light.setGain(0.125); // Possible values: .125, .25, 1, 2
+  light2.setIntegTime(100);
   light.setIntegTime(100);
   int powMode = 1;
+  light2.setPowSavMode(powMode);
   light.setPowSavMode(powMode);
+  light2.enablePowSave();
   light.enablePowSave();
-
   delay(1000);
 }
 void initIMU_6DOF() {
@@ -404,7 +420,7 @@ void initIMU_6DOF() {
 void BLE_Notify() {
   //   notify changed value
   if (deviceConnected) {
-    byte Sensor_Byte[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    byte Sensor_Byte[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     Sensor_Byte[0] = TOF_byte[0];
     Sensor_Byte[1] = TOF_byte[1];
     Sensor_Byte[2] = TOF_byte[2];
@@ -415,7 +431,9 @@ void BLE_Notify() {
     Sensor_Byte[7] = rotation_byte[1]; //pitch
     Sensor_Byte[8] = light_byte[1];
     Sensor_Byte[9] = light_byte[0];
-    Sensor_Characteristic-> setValue ( Sensor_Byte, 10);
+    Sensor_Byte[10] = light_byte[3];
+    Sensor_Byte[11] = light_byte[2];
+    Sensor_Characteristic-> setValue ( Sensor_Byte, 12);
     Sensor_Characteristic->notify();
 
     delay(2); // bluetooth stack wi3ll go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
@@ -515,18 +533,20 @@ void SD_Init() {
   }
   file.close();
 }
-//
-//void AddFile_Txt() {
-//  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
-//                       String(acceleration[0]) + "," + String(rotation_byte[0]) + "," + String(rotation_byte[1]) + ","   + String(lightVal) + "\r\n";
-//  Serial.print(F("Save data: "));
-//  Serial.println(dataMessage);
-//  appendFile(SD, "/dataHeaders.txt", dataMessage.c_str());
-//  delay(200);
-//}
+
+void AddFile_Txt() {
+  String dataMessage = String(epoch) + "," + String(TOF_byte[0]) + "," + String(TOF_byte[1]) + "," + String(TOF_byte[2]) + "," +
+                       String(accel_byte[0]) + "," + String(accel_byte[1]) + "," + String(accel_byte[2]) + "," +
+                       String(rotation_byte[0]) + "," + String(rotation_byte[1]) + ","   +
+                       String(lightVal) + "," + String (lightVal2) + "\r\n";
+  Serial.print(F("Save data: "));
+  Serial.println(dataMessage);
+  appendFile(SD, " / dataHeaders.txt", dataMessage.c_str());
+  delay(200);
+}
 
 void appendFile(fs::FS & fs, const char * path, const char * message) {
-  Serial.printf("Appending to file: %s\n", path);
+  Serial.printf("Appending to file: % s\n", path);
   File file = fs.open(path, FILE_APPEND);
   if (!file) {
     Serial.println(F("Failed to open file for appending"));
@@ -554,8 +574,9 @@ void AddFile(fs::FS & fs, const char * path) {
   myData.pitch_SD = rotation_byte[1];
   myData.roll_SD = rotation_byte[0];
   myData.ldr_SD = lightVal;
+  myData.ldr_SD = lightVal2;
 
-  Serial.println(F("Save data: "));
+  Serial.println(F("Save data : "));
   file.write((const uint8_t *)&myData, sizeof(myData));
   delay(100);
   file.close();
@@ -566,7 +587,7 @@ void readFile(fs::FS &fs, const char * path) {
   struct dataStore myData;
   struct splitLong LongByteConverter;
   int counter = 0;
-  byte SDData_Byte[noSet * 14];
+  byte SDData_Byte[noSet * 16];
   short multiplier;
   while ( file.available()) {
     counter += 1;
@@ -578,25 +599,28 @@ void readFile(fs::FS &fs, const char * path) {
       multiplier = noSet - 1 ;
     }
     Serial.println (multiplier);
-    SDData_Byte[multiplier * 14 + 0] = FourByteConverter.split[3];
-    SDData_Byte[multiplier * 14 + 1] = FourByteConverter.split[2];
-    SDData_Byte[multiplier * 14 + 2] = FourByteConverter.split[1];
-    SDData_Byte[multiplier * 14 + 3] = FourByteConverter.split[0];
-    SDData_Byte[multiplier * 14 + 4] = myData.tof1_SD; //TOF
-    SDData_Byte[multiplier * 14 + 5] = myData.tof2_SD;
-    SDData_Byte[multiplier * 14 + 6] = myData.tof3_SD;
-    SDData_Byte[multiplier * 14 + 7] = myData.accelx_SD; // ACCEL
-    SDData_Byte[multiplier * 14 + 8] = myData.accely_SD; // ACCEL
-    SDData_Byte[multiplier * 14 + 9] = myData.accelz_SD; // ACCEL
-    SDData_Byte[multiplier * 14 + 10] = myData.pitch_SD;
-    SDData_Byte[multiplier * 14 + 11] = myData.roll_SD;
+    SDData_Byte[multiplier * 16 + 0] = FourByteConverter.split[3];
+    SDData_Byte[multiplier * 16 + 1] = FourByteConverter.split[2];
+    SDData_Byte[multiplier * 16 + 2] = FourByteConverter.split[1];
+    SDData_Byte[multiplier * 16 + 3] = FourByteConverter.split[0];
+    SDData_Byte[multiplier * 16 + 4] = myData.tof1_SD; //TOF
+    SDData_Byte[multiplier * 16 + 5] = myData.tof2_SD;
+    SDData_Byte[multiplier * 16 + 6] = myData.tof3_SD;
+    SDData_Byte[multiplier * 16 + 7] = myData.accelx_SD; // ACCEL
+    SDData_Byte[multiplier * 16 + 8] = myData.accely_SD; // ACCEL
+    SDData_Byte[multiplier * 16 + 9] = myData.accelz_SD; // ACCEL
+    SDData_Byte[multiplier * 16 + 10] = myData.pitch_SD;
+    SDData_Byte[multiplier * 16 + 11] = myData.roll_SD;
     LongByteConverter.value =  myData.ldr_SD;
-    SDData_Byte[multiplier * 14 + 12] = LongByteConverter.split[1]; //LDR
-    SDData_Byte[multiplier * 14 + 13] = LongByteConverter.split[0];
+    SDData_Byte[multiplier * 16 + 12] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[multiplier * 16 + 13] = LongByteConverter.split[0];
+    LongByteConverter.value =  myData.ldr2_SD;
+    SDData_Byte[multiplier * 16 + 14] = LongByteConverter.split[1]; //LDR
+    SDData_Byte[multiplier * 16 + 15] = LongByteConverter.split[0];
 
     if (deviceConnected && counter % noSet == 0) {
       delay(3);
-      DATA_SEND_Characteristic->setValue(SDData_Byte, noSet * 14); // 1 = 1 byte = 8 bits
+      DATA_SEND_Characteristic->setValue(SDData_Byte, noSet * 16); // 1 = 1 byte = 8 bits
       DATA_SEND_Characteristic->notify();
     }
     if (!deviceConnected) {
@@ -618,7 +642,7 @@ void readFile(fs::FS &fs, const char * path) {
   //  SD_Init();
 }
 void writeFile(fs::FS & fs, const char * path, const char * message) {
-  Serial.printf("Writing file: %s\n", path);
+  Serial.printf("Writing file : % s\n", path);
   File file = fs.open(path, FILE_WRITE);
   if (!file) {
     Serial.println(F("Failed to open file for writing"));
@@ -633,7 +657,7 @@ void writeFile(fs::FS & fs, const char * path, const char * message) {
 }
 
 void deleteFile(fs::FS & fs, const char * path) {
-  Serial.printf("Deleting file: %s\n", path);
+  Serial.printf("Deleting file : % s\n", path);
   if (fs.remove(path)) {
     Serial.println(F("File deleted"));
   } else {
