@@ -37,7 +37,7 @@
 //TOF Private Variables
 SFEVL53L1X sensor1; SFEVL53L1X sensor2; SFEVL53L1X sensor3;
 
-int noSet = 5 ; //USER DEFINED
+int noSet = 2 ; //USER DEFINED
 
 byte TOF_byte[3] = {0, 0, 0}; // 1 byte each sensor limited to 255cm range
 
@@ -194,7 +194,7 @@ void loop()
     printSensor();
     BLE_Notify();
     AddFile(SD , "/datalog.dat");
-    //    AddFile_Txt();
+    AddFile_Txt();
   }
 }
 
@@ -242,12 +242,14 @@ void GetSensor() {
   lightVal = luxVal;
   LongByteConverter.value = luxVal;
   light_byte[0] = LongByteConverter.split[1];
-  light_byte[1] = LongByteConverter.split[0];
+  light_byte[1] = LongByteConverter.split[0];  
   light.shutDown();
   LongByteConverter.value = luxVal2;
-  light_byte[2] = LongByteConverter.split[3];
-  light_byte[3] = LongByteConverter.split[2];
+  light_byte[2] = LongByteConverter.split[1];
+  light_byte[3] = LongByteConverter.split[0];
   light2.shutDown();
+  Serial.println(light_byte[2]);
+  Serial.println(light_byte[3]);
 
   sensor1.startRanging(); sensor2.startRanging(); sensor3.startRanging();
   TOF_cm[0] += (sensor1.getDistance()) / 10;       // TOF
@@ -360,7 +362,6 @@ void initIMU_6DOF() {
   // 1 = 14.9    4 = 238
   // 2 = 59.5    5 = 476
   // 3 = 119     6 = 952
-
 
   imu.settings.accel.enabled = true;
   imu.settings.accel.enableX = true;
@@ -541,7 +542,7 @@ void AddFile_Txt() {
                        String(lightVal) + "," + String (lightVal2) + "\r\n";
   Serial.print(F("Save data: "));
   Serial.println(dataMessage);
-  appendFile(SD, " / dataHeaders.txt", dataMessage.c_str());
+  appendFile(SD, "/dataHeaders.txt", dataMessage.c_str());
   delay(200);
 }
 
