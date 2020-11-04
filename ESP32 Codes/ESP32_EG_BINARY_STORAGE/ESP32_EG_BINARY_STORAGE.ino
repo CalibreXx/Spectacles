@@ -185,7 +185,7 @@ void loop()
     rtc.updateTime();
     epoch = rtc.getEpoch();
     epoch += 3600 * 4;
-    //    printSensor();
+        printSensor();
     BLE_Notify();
     //    AddFile(SD , "/datalog.dat");
     //    AddFile_Txt();
