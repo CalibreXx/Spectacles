@@ -28,8 +28,8 @@
 #define DATA_SEND_UUID "38ca7184-8eeb-481f-9197-2c106f076031"
 
 //XSHUT OF TOF
-#define TOF_1 25 //0x23 LEFT
-#define TOF_2 26 //0x24 CENTRE
+#define TOF_1 26 //0x24 LEFT
+#define TOF_2 25 //0x23 CENTRE
 #define TOF_3 27 //0x25 RIGHT
 #define AL_ADDR 0x48 //uC
 #define AL2_ADDR 0x10
@@ -140,8 +140,11 @@ struct dataStore {
   uint16_t ldr2_SD;
 };
 
+int LED_BUILTIN = 4;
+
 void setup()
 {
+  pinMode (LED_BUILTIN, OUTPUT);
   Wire.begin();
   Serial.begin (115200);
   Sensor_Init();
@@ -150,10 +153,21 @@ void setup()
   if (! rtc.begin()) {
     Serial.println(F("Couldn't find RTC"));
   }
+  //Set to compiler time
+  //  if (rtc.setToCompilerTime() == false) {
+  //    Serial.println("Something went wrong setting the time");
+  //  }
 }
 
 void loop()
 {
+  if (TOF_byte[0] < 15 || TOF_byte[1] < 15 || TOF_byte[2] < 15) {
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
+  else {
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+
   if (SDsend == true) {
     Serial.println(millis());
     Serial.println(F("Send SD"));
@@ -242,7 +256,7 @@ void GetSensor() {
   lightVal = luxVal;
   LongByteConverter.value = luxVal;
   light_byte[0] = LongByteConverter.split[1];
-  light_byte[1] = LongByteConverter.split[0];  
+  light_byte[1] = LongByteConverter.split[0];
   light.shutDown();
   LongByteConverter.value = luxVal2;
   light_byte[2] = LongByteConverter.split[1];
@@ -422,9 +436,9 @@ void BLE_Notify() {
   //   notify changed value
   if (deviceConnected) {
     byte Sensor_Byte[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    Sensor_Byte[0] = TOF_byte[0];
+    Sensor_Byte[0] = TOF_byte[2]; //swapped
     Sensor_Byte[1] = TOF_byte[1];
-    Sensor_Byte[2] = TOF_byte[2];
+    Sensor_Byte[2] = TOF_byte[0];
     Sensor_Byte[3] = accel_byte[0];
     Sensor_Byte[4] = accel_byte[1];
     Sensor_Byte[5] = accel_byte[2];
@@ -517,7 +531,7 @@ void BLE_Init() { //Server --> Service --> Characteristics <-- sensor data input
 
 /* SD Card functions */
 void SD_Init() {
-  if (!SD.begin()) {
+  if (!SD.begin(2)) {
     Serial.println(F("Card Mount Failed"));
     return;
   }
@@ -604,9 +618,9 @@ void readFile(fs::FS &fs, const char * path) {
     SDData_Byte[multiplier * 16 + 1] = FourByteConverter.split[2];
     SDData_Byte[multiplier * 16 + 2] = FourByteConverter.split[1];
     SDData_Byte[multiplier * 16 + 3] = FourByteConverter.split[0];
-    SDData_Byte[multiplier * 16 + 4] = myData.tof1_SD; //TOF
+    SDData_Byte[multiplier * 16 + 4] = myData.tof3_SD; //TOF swapped
     SDData_Byte[multiplier * 16 + 5] = myData.tof2_SD;
-    SDData_Byte[multiplier * 16 + 6] = myData.tof3_SD;
+    SDData_Byte[multiplier * 16 + 6] = myData.tof1_SD;
     SDData_Byte[multiplier * 16 + 7] = myData.accelx_SD; // ACCEL
     SDData_Byte[multiplier * 16 + 8] = myData.accely_SD; // ACCEL
     SDData_Byte[multiplier * 16 + 9] = myData.accelz_SD; // ACCEL
@@ -639,8 +653,8 @@ void readFile(fs::FS &fs, const char * path) {
   SDsend = false;
   file.close();
   Serial.println(F("Done Sending"));
-  //  deleteFile (SD , path);
-  //  SD_Init();
+  deleteFile (SD , path);
+  SD_Init();
 }
 void writeFile(fs::FS & fs, const char * path, const char * message) {
   Serial.printf("Writing file : % s\n", path);
