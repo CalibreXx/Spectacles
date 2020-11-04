@@ -144,6 +144,7 @@ void setup()
   if (! rtc.begin()) {
     Serial.println(F("Couldn't find RTC"));
   }
+  pinMode( 21, INPUT_PULLUP);
 }
 
 void loop()
@@ -185,7 +186,7 @@ void loop()
     rtc.updateTime();
     epoch = rtc.getEpoch();
     epoch += 3600 * 4;
-    //    printSensor();
+      printSensor();
     BLE_Notify();
     AddFile(SD , "/datalog.dat");
     //    AddFile_Txt();
